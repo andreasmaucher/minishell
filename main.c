@@ -44,7 +44,7 @@ t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
 {
 	t_token *token;
 
-	token = malloc(sizeof(t_token));
+	token = malloc(sizeof(t_token)); //! where to free this?
 	if (!token)
 		return(NULL);
 	token->str = str_with_all_tokens;
@@ -213,11 +213,23 @@ t_list *check_for_tokens(char *line)
 	return(token_list);
 }
 
-void free_all
+/* to free up all memory in the end*/
+void	freememory(t_list *head)
+{
+	t_list	*delete;
+
+	while (lst_size(head) > 0)
+	{
+		delete = head;
+		head = head->next;
+		free(delete);
+	}
+}
 
 int main(int ac, char **av)
 {
 	char *line;
+	t_list *delete_list;
 
 	(void) ac;
 	(void) av;
@@ -228,9 +240,11 @@ int main(int ac, char **av)
         if (line == NULL || strcmp(line, "exit") == 0) {
             printf("\nExiting...\n");
             free(line);
+			freememory(delete_list);
             exit(1);
         }
-		printlist(check_for_tokens(line)); //! where do we store this?
+		delete_list = check_for_tokens(line);
+		printlist(delete_list); //! where do we store this?
 		add_history(line);
 		free(line); // memory automatically allocated by readline function
 	}
