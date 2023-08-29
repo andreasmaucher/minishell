@@ -1,0 +1,11 @@
+# Ignore compiled files
+*.o
+a.out
+minishell
+
+# Ignore log files
+*.log
+
+# Ignore directories
+/node_modules/
+/dist/
