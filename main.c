@@ -24,16 +24,32 @@
 	6. check if it's a character string / word
 */
 
-t_token *add_token_type(char *str, t_type type)
+t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
 {
 	t_token *token;
 
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return(NULL);
-	token->str = str;
-	token->type = type;
+	token->str = str_with_all_tokens;
+	token->type = token_type;
 	return(token);
+}
+
+/* determine the size of a list */
+int	lst_size(t_list *head)
+{
+	int		lsize;
+	t_list	*current_node_pos;
+
+	lsize = 0;
+	current_node_pos = head;
+	while (current_node_pos != NULL)
+	{
+		current_node_pos = current_node_pos->next;
+		lsize++;
+	}
+	return (lsize);
 }
 
 t_list	*return_tail_value(t_list *head)
@@ -51,7 +67,19 @@ t_list	*return_tail_value(t_list *head)
 	return (current_node_pos);
 }
 
-t_list	*insert_at_tail(t_list *head, int new_value)
+t_list	*create_new_node(void *value)
+{
+	t_list	*newnode;
+
+	newnode = malloc(sizeof(t_list));
+	if (newnode == NULL)
+		return (NULL);
+	newnode->value = value;
+	newnode->next = NULL;
+	return (newnode);
+}
+
+t_list	*insert_at_tail(t_list *head, t_list *new_value)
 {
 	t_list	*new_node;
 	t_list	*current;
@@ -64,28 +92,16 @@ t_list	*insert_at_tail(t_list *head, int new_value)
 	return (head);
 }
 
-t_list	*create_new_node(int value)
-{
-	t_list	*newnode;
-
-	newnode = malloc(sizeof(t_list));
-	if (newnode == NULL)
-		return (NULL);
-	newnode->value = value;
-	newnode->next = NULL;
-	return (newnode);
-}
-
 t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type token_type)
 {
 	t_list *new_node;
-	///t_token *data;
+	t_token *data;
 
-	//data = add_token_type(str, type);
-	//if (!data)
-	//	return (NULL);
+	data = add_token_type_and_str(str_with_all_tokens, token_type);
+	if (!data)
+		return (NULL);
 	new_node = create_new_node(data);
-	ft_lstadd_back(token_list, new_node);
+	insert_at_tail(*token_list, new_node);
 	return (*token_list);
 }
 
@@ -109,7 +125,7 @@ char *check_for_word_token(char *line, int *i, t_type *token_type)
 }
 
 // add multiple checks for all kind of delimiters e.g. pipes, redirects
-int *check_for_tokens(char *line, t_data *data)
+t_list *check_for_tokens(char *line)
 {
 	int 	i;
 	char 	*str_with_all_tokens;
@@ -118,26 +134,26 @@ int *check_for_tokens(char *line, t_data *data)
 
 	i = 0;
 	token_list = NULL;
-	while (line[i])
+	while (line && line[i]) // first check ensures that line points to a valid memory address
 	{
 		str_with_all_tokens = check_for_word_token(line, &i, &token_type);
 		token_list = add_token_to_list(&token_list, str_with_all_tokens, token_type);
-		i++;
 	}
-	return(str);
+	// here we could go through the full list & remove whitespace & merge or split words
+	return(token_list);
 }
 
 int main(int ac, char **av)
 {
 	char *line;
-	t_data data;
+	//t_data data;
 
 	(void) ac;
 	(void) av;
 	while(1)
 	{
 		line = readline("Myshell: ");
-		data->tokens = check_for_tokens(line, data);
+		check_for_tokens(line); // where do we store this?
 		//add_history(line);
 		printf("%s\n", line);
 		free(line); // memory automatically allocated by readline function

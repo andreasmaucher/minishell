@@ -67,7 +67,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	sub[i] = '\0';
 	return (sub);
 }
-
+/* 
 t_list	*ft_lstnew(void *content)
 {
 	t_list	*node;
@@ -104,4 +104,4 @@ void	ft_lstadd_back(t_list **lst, t_list *new)
 		prev = ft_lstlast(*lst);
 		prev->next = new;
 	}
-}
+} */

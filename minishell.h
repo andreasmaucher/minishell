@@ -26,17 +26,16 @@ typedef struct s_data
     int tokens;
 }   t_data;
 
-typedef struct s_list
-{
-	int value;
-	struct s_list	*next;
-}	t_list;
-
 typedef struct s_token
 {
 	int		type;
 	char	*str;
 }	t_token;
+typedef struct s_list
+{
+	void *value;
+	struct s_list	*next;
+}	t_list;
 
 //token type
 typedef enum type
