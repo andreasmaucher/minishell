@@ -20,6 +20,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct s_data
 {
@@ -33,7 +34,7 @@ typedef struct s_token
 }	t_token;
 typedef struct s_list
 {
-	void *value;
+	void *value; //value needs to be void since we want to be able to store multiple different types
 	struct s_list	*next;
 }	t_list;
 
@@ -42,12 +43,19 @@ typedef enum type
 {
 	WORD,
 	WHITESPACE,
+    PIPE,
+    REDIRECT_HEREDOC,
+    REDIRECT_APPEND,
+    REDIRECT_IN,
+    REDIRECT_OUT,
 }	t_type;
 
-/*parser_utils*/
+//parser_utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);
-t_list	*ft_lstnew(void *content);
-void	ft_lstadd_back(t_list **lst, t_list *new);
+char	*ft_strdup(const char *s);
+
+//list operators
+void	printlist(t_list *head);
 
 
 #endif

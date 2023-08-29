@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME = minishell
-SOURCES = main.c parser_utils.c
+SOURCES = main.c parser_utils.c list_operators.c
 
 OBJS = $(SOURCES:.c=.o)
 
