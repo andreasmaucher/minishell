@@ -22,6 +22,7 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
+
 char	*ft_strdup(const char *s)
 {
 	char	*duplicate;
@@ -67,41 +68,3 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	sub[i] = '\0';
 	return (sub);
 }
-/* 
-t_list	*ft_lstnew(void *content)
-{
-	t_list	*node;
-
-	node = malloc(sizeof(t_list));
-	if (node == 0)
-		return (0);
-	node->content = content;
-	node->next = 0;
-	return (node);
-}
-
-t_list	*ft_lstlast(t_list *lst)
-{
-	while (lst)
-	{
-		if (!lst->next)
-			return (lst);
-		lst = lst->next;
-	}
-	return (lst);
-}
-
-void	ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*prev;
-
-	if (lst == 0 || new == 0)
-		return ;
-	if (*lst == 0)
-		*lst = new;
-	else
-	{
-		prev = ft_lstlast(*lst);
-		prev->next = new;
-	}
-} */
