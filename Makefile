@@ -18,7 +18,7 @@ OBJS = $(SOURCES:.c=.o)
 CC = cc -g
 RM = rm -f
 CFLAGS = -Wall -Wextra -Werror
-MLXFLAGS = -lreadline -lhistory
+MLXFLAGS = -lreadline
 
 all: $(NAME)	
 

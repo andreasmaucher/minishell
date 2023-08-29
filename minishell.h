@@ -19,10 +19,16 @@
 #include <stdarg.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <stdbool.h>
+
+typedef struct s_data
+{
+    int tokens;
+}   t_data;
 
 typedef struct s_list
 {
-	void			*content;
+	int value;
 	struct s_list	*next;
 }	t_list;
 

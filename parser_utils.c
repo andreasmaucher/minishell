@@ -12,6 +12,36 @@
 
 #include "minishell.h"
 
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*duplicate;
+	int		i;
+	int		len;
+
+	i = 0;
+	len = ft_strlen((char *)s);
+	duplicate = (char *)malloc(sizeof(char) * (len + 1));
+	if (!duplicate)
+		return (NULL);
+	while (s[i] != '\0')
+	{
+		duplicate[i] = (char)s[i];
+		i++;
+	}
+	duplicate[i] = '\0';
+	return (duplicate);
+}
+
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	unsigned int	i;
@@ -48,6 +78,17 @@ t_list	*ft_lstnew(void *content)
 	node->content = content;
 	node->next = 0;
 	return (node);
+}
+
+t_list	*ft_lstlast(t_list *lst)
+{
+	while (lst)
+	{
+		if (!lst->next)
+			return (lst);
+		lst = lst->next;
+	}
+	return (lst);
 }
 
 void	ft_lstadd_back(t_list **lst, t_list *new)
