@@ -188,50 +188,46 @@ char *check_for_word_token(char *line, int *i, t_type *token_type)
 }
 
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
-t_list *check_for_tokens(char *line)
+t_list *check_for_tokens(t_data m)
 {
 	int 	i;
 	char 	*str_with_all_tokens;
-	t_list 	*token_list;
 	t_type 	token_type;
 
 	i = 0;
-	token_list = NULL;
-	while (line[i])
+	m.list = NULL;
+	while (m.line[i])
 	{
-		if (line[i] == '|')
+		if (m.line[i] == '|')
 			str_with_all_tokens = pipe_token(&i, &token_type);
-		else if (line[i] == '<' || line[i] == '>')
-			str_with_all_tokens = redirection_token(line, &i, &token_type);
+		else if (m.line[i] == '<' || m.line[i] == '>')
+			str_with_all_tokens = redirection_token(m.line, &i, &token_type);
 		else
-			str_with_all_tokens = check_for_word_token(line, &i, &token_type);
+			str_with_all_tokens = check_for_word_token(m.line, &i, &token_type);
 		//printf("str_with_all_tokens: %s\n", str_with_all_tokens);
-		token_list = add_token_to_list(&token_list, str_with_all_tokens, token_type);
+		m.list = add_token_to_list(&m.list, str_with_all_tokens, token_type);
 		i++; //! this needs to go!
 	}
 	// here we could go through the full list & remove whitespace & merge or split words
-	return(token_list);
+	return(m.list);
 }
 
-void free_all
 
-int main(int ac, char **av)
+int main(void)
 {
-	char *line;
+	t_data m;
 
-	(void) ac;
-	(void) av;
 	while(1)
 	{
-		line = readline("Myshell: ");
+		m.line = readline("Myshell: ");
 		// Check for end-of-input or Ctrl+D
-        if (line == NULL || strcmp(line, "exit") == 0) {
+        if (m.line == NULL || strcmp(m.line, "exit") == 0) {
             printf("\nExiting...\n");
-            free(line);
+            free(m.line);
             exit(1);
         }
-		printlist(check_for_tokens(line)); //! where do we store this?
-		add_history(line);
-		free(line); // memory automatically allocated by readline function
+		printlist(check_for_tokens(m)); //! where do we store this?
+		add_history(m.line);
+		free(m.line); // memory automatically allocated by readline function
 	}
 }
