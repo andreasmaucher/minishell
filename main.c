@@ -187,7 +187,7 @@ char *check_for_word_token(char *line, int *i, t_type *token_type)
 	return(ft_substr(line, token_start, *i - token_start));
 }
 
-// add multiple checks for all kind of delimiters e.g. pipes, redirects, parameter, quotes, whitespaces
+// add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
 t_list *check_for_tokens(char *line)
 {
 	int 	i;
@@ -212,6 +212,8 @@ t_list *check_for_tokens(char *line)
 	// here we could go through the full list & remove whitespace & merge or split words
 	return(token_list);
 }
+
+void free_all
 
 int main(int ac, char **av)
 {
