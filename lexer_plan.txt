@@ -1,0 +1,27 @@
+Purpose: Split the input string into different tokens, so that they can be interpreted by the parser.
+
+1. readline() function receives the input string
+
+2. Split up into different tokens:
+    - WORD
+    - Input Redirection <
+    - Output Redirection >
+    - Here-doc <<
+    - Output Redirection with Append >>
+
+3. For the split up we need a struct that holds the token type:
+    typedef struct {
+    TokenType type;
+    char *value;  // For TOKEN_WORD, this will hold the actual word.
+    } Token;
+
+
+BUILD:
+
+- run an infinite while loop, that reads each line
+- send that line into a function that checks for tokens and allocates them
+- store that in a struct 
+- check_for_tokens function that loops until the end of line
+    - if line[i] == '>' /// redirections: < >
+    - token_str = redirection_token(pass line, i, type)
+    - after each iteration add 
