@@ -12,6 +12,13 @@
 
 #include "minishell.h"
 
+/* m struct needs initialization
+fix token type, add it to m struct
+add additional functions
+make sure the loop does not stop and run smoothly and that i can take out i++
+free all memory
+put functions into separate files */
+
 /* LEXER: check for various tokens: 
 	1. redirections < >
 	2. $
@@ -49,7 +56,6 @@ t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
 		return(NULL);
 	token->str = str_with_all_tokens;
 	token->type = token_type;
-	printf("token_type %d\n", token->type);
 	return(token);
 }
 
@@ -144,27 +150,28 @@ bool	check_for_quotes(char c)
 
 char *redirection_token(char *line, int *i, t_type *token_type)
 {
-	(*i)++;
-	if (line[*i] == '<' && line[*i++] == '<')
+	if (line[*i] == '<' && line[*i + 1] == '<')
 	{
 		*token_type = REDIRECT_HEREDOC;
-		(*i)++;
+		(*i) += 2;
 		return (ft_strdup("<<"));
 	}
-	else if (line[*i] == '>' && line[*i++] == '>')
+	else if (line[*i] == '>' && line[*i + 1] == '>')
 	{
 		*token_type = REDIRECT_APPEND;
-		(*i)++;
+		(*i) += 2;
 		return (ft_strdup(">>"));
 	}
 	else if (line[*i] == '>') //! not detected correctly
 	{
 		*token_type = REDIRECT_OUT;
+		(*i) += 1;
 		return (ft_strdup(">"));
 	}
 	else
 	{
 		*token_type = REDIRECT_IN;
+		(*i) += 1;
 		return (ft_strdup("<"));
 	}
 }
@@ -176,42 +183,72 @@ char *pipe_token(int *i, t_type *token_type)
 	return(ft_strdup("|"));
 }
 
+//used to print out the token types (only for testing purposes)
+const char *token_type_names[] = 
+{
+	"WORD",
+	"WHITESPACE",
+    "PIPE",
+    "REDIRECT_HEREDOC",
+    "REDIRECT_APPEND",
+    "REDIRECT_IN",
+    "REDIRECT_OUT"
+};
+
 char *check_for_word_token(char *line, int *i, t_type *token_type)
 {
 	int token_start;
 
 	token_start = *i;
-	while (check_for_metacharacter(line[*i]) == false && check_for_quotes(line[*i]) == false && line[*i] != '$')
+	while (check_for_metacharacter(line[*i]) == false && check_for_quotes(line[*i]) == false && line[*i] != '$' && line[*i])
 		(*i)++;
 	*token_type = WORD;
 	return(ft_substr(line, token_start, *i - token_start));
 }
 
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
-t_list *check_for_tokens(t_data m)
+t_list *split_line_into_tokens(t_data m)
 {
 	int 	i;
-	char 	*str_with_all_tokens;
-	t_type 	token_type;
 
 	i = 0;
 	m.list = NULL;
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')
-			str_with_all_tokens = pipe_token(&i, &token_type);
+			m.str_with_all_tokens = pipe_token(&i, &m.token_type);
 		else if (m.line[i] == '<' || m.line[i] == '>')
-			str_with_all_tokens = redirection_token(m.line, &i, &token_type);
+			m.str_with_all_tokens = redirection_token(m.line, &i, &m.token_type);
+	/* 	else if (m.line[i] == '$')
+			str_with_all_tokens = env_token(m.line, &i, &token_type);
+		else if (whitespace(m.line[i]) == true)
+			str_with_all_tokens = whitespace_token(m.line, &i, &token_type); */
+		/* else if (m.line[i] == '\'' || m.line[i] == '\"')
+			str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &token_type); */
 		else
-			str_with_all_tokens = check_for_word_token(m.line, &i, &token_type);
-		//printf("str_with_all_tokens: %s\n", str_with_all_tokens);
-		m.list = add_token_to_list(&m.list, str_with_all_tokens, token_type);
+			m.str_with_all_tokens = check_for_word_token(m.line, &i, &m.token_type);
+		m.list = add_token_to_list(&m.list, m.str_with_all_tokens, m.token_type);
+		printf("TT: %s\n", token_type_names[m.token_type]);
 		i++; //! this needs to go!
 	}
 	// here we could go through the full list & remove whitespace & merge or split words
 	return(m.list);
 }
 
+//! SEGFAULTS AT EXIT
+/* to free up all memory in the end, including memory automatically allocated by readline function */
+void	freememory(t_data m)
+{
+	t_list	*delete;
+
+	while (lst_size(m.list) > 0)
+	{
+		delete = m.list;
+		m.list = m.list->next;
+		free(delete);
+	}
+	free(m.line);
+}
 
 int main(void)
 {
@@ -221,13 +258,12 @@ int main(void)
 	{
 		m.line = readline("Myshell: ");
 		// Check for end-of-input or Ctrl+D
-        if (m.line == NULL || strcmp(m.line, "exit") == 0) {
+        if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) {
             printf("\nExiting...\n");
-            free(m.line);
+			freememory(m);
             exit(1);
         }
-		printlist(check_for_tokens(m)); //! where do we store this?
+		printlist(split_line_into_tokens(m)); //! where do we store this?
 		add_history(m.line);
-		free(m.line); // memory automatically allocated by readline function
 	}
 }

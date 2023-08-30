@@ -22,8 +22,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-//token type
-typedef enum type
+//token type (index starts at 0 e.g. word = 0, pipe = 2)
+typedef enum
 {
 	WORD,
 	WHITESPACE,
@@ -43,18 +43,20 @@ typedef struct s_data
     int tokens;
     t_list *list;
     char *line;
+	char 	*str_with_all_tokens;
     t_type token_type;
 }   t_data;
 
 typedef struct s_token
 {
-	int		type;
+	t_type		type;
 	char	*str;
 }	t_token;
 
 //parser_utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strdup(const char *s);
+int	ft_strcmp(const char *s1, const char *s2);
 
 //list operators
 void	printlist(t_list *head);
