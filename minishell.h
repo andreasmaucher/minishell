@@ -32,26 +32,30 @@ typedef enum
     REDIRECT_APPEND,
     REDIRECT_IN,
     REDIRECT_OUT,
+    DOUBLE_QUOTES,
+    SINGLE_QUOTES,
 }	t_type;
 typedef struct s_list
 {
 	void *value; //value needs to be void since we want to be able to store multiple different types
 	struct s_list	*next;
 }	t_list;
-typedef struct s_data
-{
-    int tokens;
-    t_list *list;
-    char *line;
-	char 	*str_with_all_tokens;
-    t_type token_type;
-}   t_data;
 
 typedef struct s_token
 {
 	t_type		type;
 	char	*str;
 }	t_token;
+typedef struct s_data
+{
+    int tokens;
+    t_list *list;
+    char *line;
+    char *string_between_quotes;
+	char 	*str_with_all_tokens;
+    t_type token_type;
+    t_token token;
+}   t_data;
 
 //parser_utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);
