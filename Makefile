@@ -1,5 +1,17 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
+#    Updated: 2023/08/23 13:24:07 by amaucher         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME = minishell
-SOURCES = lexer.c
+SOURCES = main.c parser_utils.c list_operators.c
 
 OBJS = $(SOURCES:.c=.o)
 
