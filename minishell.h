@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
