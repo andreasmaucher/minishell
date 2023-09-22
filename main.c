@@ -12,22 +12,6 @@
 
 #include "minishell.h"
 
-/* m struct needs initialization
-fix token type, add it to m struct
-add additional functions
-make sure the loop does not stop and run smoothly and that i can take out i++
-free all memory
-put functions into separate files */
-
-/* LEXER: check for various tokens: 
-	1. redirections < >
-	2. $
-	3. '\'
-	4. whitespace
-	5. | 
-	6. check if it's a character string / word
-*/
-
 //used to print out the token types (only for testing purposes)
 const char *token_type_names[] = 
 {
@@ -58,7 +42,6 @@ void	printlist(t_list *head)
 		temporary = temporary->next;
 		i++;
 	}
-	printf("\n");
 }
 
 /* determine the size of a list */
@@ -77,6 +60,7 @@ int	lst_size(t_list *head)
 	return (lsize);
 }
 
+/* returns the value of the last node in a list */
 t_list	*return_tail_value(t_list *head)
 {
 	t_list	*current_node_pos;
@@ -92,6 +76,7 @@ t_list	*return_tail_value(t_list *head)
 	return (current_node_pos);
 }
 
+/* creates a new node (that is to be added to a list in subsequent function) */
 t_list	*create_new_node(void *value)
 {
 	t_list	*newnode;
@@ -104,6 +89,7 @@ t_list	*create_new_node(void *value)
 	return (newnode);
 }
 
+/* inserts a node at the end of a list */
 void	insert_at_tail(t_list *head, t_list *new_value)
 {
 	t_list	*current;
@@ -129,6 +115,8 @@ t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
 	return(token);
 }
 
+/* adds a new node to a list; in case the list is empty, the new node becomes the head, else 
+it is added at the end of the list */
 t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type token_type)
 {
 	t_list *new_node;
@@ -153,7 +141,7 @@ bool	check_for_metacharacter(char c)
 		return (false);
 }
 
-//checks if c is a double or single quote
+/* checks if c is a double or single quote */
 bool	check_for_quotes(char c)
 {
 	if (c == '"' || c == '\'')
@@ -162,6 +150,8 @@ bool	check_for_quotes(char c)
 		return (false);
 }
 
+/* function that gets called in case a redirection token was encountered in the input string;
+determines the redirection type depending on the input and returns a duplicate */
 char *redirection_token(char *line, int *i, t_type *token_type)
 {
 	if (line[*i] == '<' && line[*i + 1] == '<')
@@ -190,6 +180,8 @@ char *redirection_token(char *line, int *i, t_type *token_type)
 	}
 }
 
+/* function that gets called when a pipe token was detected in the input string; it sets the 
+token type and returns a duplicate */
 char *pipe_token(int *i, t_type *token_type)
 {
 	*token_type = PIPE;
@@ -224,16 +216,48 @@ char *whitespace_token(char *line, int *i, t_type *token_type)
 	return(ft_substr(line, start_index, end_index));
 }
 
+//! this should be the expand function check for 
+char *env_within_double_quotes(char *line, int *i)
+{
+	int start;
+	int length;
+	char *env_string;
+
+	start = ++(*i); // pre-iterate since index is still at '$'
+	if (line[*i] == '\0' || line[*i] == '"')
+		return(ft_strdup("$"));
+	while (line[*i] && check_for_metacharacter(line[*i]) == false && line[*i] != '\'' && line[*i] != '"' && line[*i] != '$')
+		(*i)++;
+	length = *i - start;
+	env_string = malloc(sizeof(char) * (length + 1)); //! MALLOC
+	if (!env_string)
+		return (NULL);
+	strncpy(env_string, &line[start], length);
+	env_string[length] = '\0';
+	printf("%s", env_string);
+	return(env_string);
+}
+
 //! case if env is within double quote string
+//! i need to have it in the same loop, but how do I get the lenght?!
+//! cant use same logic with strncpy need to use append 
 char *double_quote_to_string(char *line, int *i)
 {
 	char *str_between_quotes;
+	char *env;
 	int start;
 	int length;
 
 	start = *i;
-	while (line[*i] != '"' && line[*i])
+	while (line[*i] != '"' && line[*i] != '\0')
+	{
+		if (line[*i] == '$')
+		{	
+			env = env_within_double_quotes(line, i);
+			printf("%s", env);
+		}
 		(*i)++;
+	}
 	length = *i - start;
 	str_between_quotes = malloc(sizeof(char) * (length + 1)); //! MALLOC
 	if (!str_between_quotes)
@@ -285,12 +309,12 @@ char *single_or_double_quotes_token(char *line, int *i, t_type *token_type)
 }
 
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
-t_list *split_line_into_tokens(t_data m)
+t_list *split_line_into_tokens(t_minishell m)
 {
 	int 	i;
 
 	i = 0;
-	m.list = NULL;
+	m.tlist = NULL;
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')
@@ -305,66 +329,51 @@ t_list *split_line_into_tokens(t_data m)
 			m.str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &m.token_type);
 		else
 			m.str_with_all_tokens = check_for_word_token(m.line, &i, &m.token_type);
-		m.list = add_token_to_list(&m.list, m.str_with_all_tokens, m.token_type);
+		m.tlist = add_token_to_list(&m.tlist, m.str_with_all_tokens, m.token_type);
 		//! could I free substrings here?
 		//i++; //! this needs to go!
 	}
 	// here we could go through the full list & remove whitespace & merge or split words
-	return(m.list);
+	return(m.tlist);
 }
 
 //! SEGFAULTS AT EXIT
 /* to free up all memory in the end, including memory automatically allocated by readline function */
-void	freememory(t_data m)
+void	freememory(t_minishell m)
 {
 	t_list	*delete;
 
-	while (lst_size(m.list) > 0)
+	while (lst_size(m.tlist) > 0)
 	{
-		delete = m.list;
-		m.list = m.list->next;
+		delete = m.tlist;
+		m.tlist = m.tlist->next;
 		free(delete);
 	}
 	free(m.line);
 }
 
-/* void free_all_memory(t_data m)
+int main(int ac, char **av, char **envp)
 {
-	t_list *current;
-	t_list *next_node;
-	t_token *token;
+	t_minishell m;
 
-	current = m.list;
-	while (current != NULL)
+	(void)av;
+	(void)envp;
+	if (ac == 1)
 	{
-		token = (t_token *)current->value;
-		free(token->str);  // Free the token string.
-		free(token);       // Free the token structure.
-
-		next_node = current->next; // Save the next node.
-		free(current);            // Free the current list node.
-		current = next_node;      // Move to the next node.
+		while(1)
+		{
+			m.line = readline("Myshell: ");
+			// Check for end-of-input or Ctrl+D
+			if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) {
+				printf("\nExiting...\n");
+				freememory(m);
+				exit(1);
+			}
+			m.tlist = split_line_into_tokens(m); // line that holds all the tokens
+			printlist(m.tlist); //only for testing
+			*m.clist = parser(m);
+			add_history(m.line);
+		}
 	}
-
-	if (m.line)
-		free(m.line);
-} */
-
-int main(void)
-{
-	t_data m;
-
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		// Check for end-of-input or Ctrl+D
-        if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) {
-            printf("\nExiting...\n");
-			//free_all_memory(m);
-			freememory(m);
-            exit(1);
-        }
-		printlist(split_line_into_tokens(m)); //! where do we store this?
-		add_history(m.line);
-	}
+	//! if ac != 1 terminate program immediately, we don't want any command line arguments except executable name
 }

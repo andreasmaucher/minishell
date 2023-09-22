@@ -77,6 +77,35 @@ int	ft_strcmp(const char *s1, const char *s2)
 		i++;
 	return ((unsigned char) s1[i] - (unsigned char)s2[i]);
 }
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	i;
+	size_t	b;
+	size_t	new_len;
+	char	*new;
+
+	i = 0;
+	b = 0;
+	new_len = ft_strlen(s1) + ft_strlen(s2);
+	new = malloc(sizeof(char) * (new_len + 1));
+	if (new == NULL)
+		return (NULL);
+	while (s1[i] != '\0')
+	{
+		new[i] = s1[i];
+		i++;
+	}
+	while (s2[b] != '\0')
+	{
+		new[i] = s2[b];
+		i++;
+		b++;
+	}
+	new[i] = '\0';
+	return (new);
+}
+
 /* 
 t_list	*ft_lstnew(void *content)
 {
