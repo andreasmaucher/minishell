@@ -371,7 +371,7 @@ int main(int ac, char **av, char **envp)
 			}
 			m.tlist = split_line_into_tokens(m); // line that holds all the tokens
 			printlist(m.tlist); //only for testing
-			*m.clist = parser(m);
+			m.clist = parser(m);
 			add_history(m.line);
 		}
 	}

@@ -1,5 +1,19 @@
 #include "minishell.h"
 
+//used to print out the token types (only for testing purposes)
+const char *token_type_names2[] = 
+{
+	"WORD",
+	"WHITESPACE",
+    "PIPE",
+    "REDIRECT_HEREDOC",
+    "REDIRECT_APPEND",
+    "REDIRECT_IN",
+    "REDIRECT_OUT",
+	"DOUBLE_QUOTES",
+    "SINGLE_QUOTES"
+};
+
 /* counts the amount of commands (len) in a token list, determined by the amount of PIPES;
 iteration by 1 at the end to account for the fact, that a PIPE is always splitting two parts */
 int command_count(t_list *tlist) 
@@ -23,7 +37,7 @@ int command_count(t_list *tlist)
 }
 
 //!
-static t_command	*ft_create_cmd(void)
+t_command	*ft_create_cmd(void)
 {
 	t_command	*cmd;
 
@@ -61,23 +75,25 @@ void print_command_list(t_list *clist) {
     while (current != NULL) {
         t_command *cmd = (t_command *)current->value;
 
+        printf("Node 1:\n");
         printf("Command Type: %d\n", cmd->type);
         printf("Before Pipe: %s\n", cmd->before_pipe ? "true" : "false");
         printf("After Pipe: %s\n", cmd->after_pipe ? "true" : "false");
-        printf("In Redir Type: %d\n", cmd->input_redir_or_heredoc);
+        printf("Input redir or heredoc: %s\n", token_type_names2[cmd->input_redir_or_heredoc]);
         printf("Out Redir Type: %d\n", cmd->out_redir_type);
+        //printf("list[%d]: %s type: %s\n", i, token->str, token_type_names[token->type]);
         
         // Check and print the inred_file and outred_file attributes
         printf("In Redir File: %s\n", cmd->inred_file != NULL ? (char *)(cmd->inred_file) : "None");
         printf("Out Redir File: %s\n", cmd->outred_file != NULL ? (char *)(cmd->outred_file) : "None");
-
-        // Print the arguments assuming it's a null-terminated array of strings
-        /* printf("Arguments:\n");
-        if (cmd->arguments != NULL) {
-            for (int i = 0; cmd->arguments[i] != NULL; i++) {
-                printf("  Argument %d: %s\n", i, cmd->arguments[i]);
-            }
+        ///printf("Arguments: %s\n", (char *)cmd->arguments);
+        /* t_list *arguments_list = cmd->arguments;
+        while (arguments_list != NULL) {
+            printf("Argument: %s\n", (char *)(arguments_list->value));
+            printf("TEST\n");
+            arguments_list = arguments_list->next;
         } */
+        printf("Arguments: %s\n", cmd->arguments != NULL ? (char *)(cmd->arguments) : "None");
 
         // Move to the next node
         current = current->next;
@@ -85,25 +101,23 @@ void print_command_list(t_list *clist) {
 }
 
 /* initialization of clist to NULL, to ensure that it starts as an empty list */
-static t_list *command_list(t_list **clist, t_list *tlist)
+t_list *setup_command_list(t_list **clist, t_list *tlist)
 {
     int len;
     t_command   *tmp_cmd;
 
     *clist = NULL;
     len = command_count(tlist);
-    while (len--) //! enough loops?
+    while (len--)
     {
         tmp_cmd = ft_create_cmd();
         *clist = create_command_list(clist, tmp_cmd);
-        ///len--;
     }
     return(*clist);
 }
 
-//! can I actually assign sth like this or does clist need to be double pointer?
 /* modifies the attributes of the command node in the list that m.clist points to */
-void cmd_pipe(t_list **clist) //bool *first_word_after_pipe
+void cmd_pipe(t_list **clist, bool *first_word)
 {
     t_command *tmp_cmd;
     t_list *tmp_head;
@@ -114,14 +128,14 @@ void cmd_pipe(t_list **clist) //bool *first_word_after_pipe
     tmp_head = tmp_head->next;
     tmp_cmd = (t_command *) tmp_head->value;
     tmp_cmd->after_pipe = true;
-    //first_word_after_pipe = true;
+    *first_word = true;
 }
 
 /* generates a unique filename for a heredoc file by using a static index that increments with each call;
 converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename */
 //! MALLOC
-char *create_heredoc_file(void)
+static char *create_heredoc_file(void)
 {
     static int index = 0;
     char        *filename;
@@ -139,7 +153,7 @@ e.g. >> append: echo "hello again" >> file2 this adds hello again to file 2
 e.g. << redirect heredoc: cat <<EOF >> output.txt in this case the heredoc allows to write directly in the terminal
 until 'EOF' is typed; in a 2nd step it is then appended to the output.txt file;
 it's necessary to have a separate structure for file to be able to create as many structures as needed */
-void cmd_input_redirection(t_list **tlist, t_list **clist)
+void cmd_input_redirection(t_list **tlist, t_list *clist)
 {
     t_file  *file;
     t_command *tmp_cmd;
@@ -148,7 +162,7 @@ void cmd_input_redirection(t_list **tlist, t_list **clist)
     file = malloc(sizeof(t_file));
     if (!file)
         return;
-    tmp_cmd = (t_command *) (* clist)->value;
+    tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->input_redir_or_heredoc = tmp_token->type; //! if not used later, delete again
     file->input_or_heredoc = tmp_token->type; //! if not used later, delete again
@@ -156,82 +170,116 @@ void cmd_input_redirection(t_list **tlist, t_list **clist)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
     file->fd = -1;
-    if (tmp_token->type == REDIRECT_IN)
-    {
-        file->text_to_file = ft_strdup(tmp_token->str);
-        file->stop_heredoc = NULL;
-        file->new_heredoc_file = NULL;
-    }
-    else
+    if (tmp_token->type == REDIRECT_HEREDOC)
     {
         file->stop_heredoc = ft_strdup(tmp_token->str);
         file->new_heredoc_file = create_heredoc_file();
         file->text_to_file = NULL;
     }
+    else if (tmp_token->type == REDIRECT_IN)
+    {
+        file->text_to_file = ft_strdup(tmp_token->str);
+        file->stop_heredoc = NULL;
+        file->new_heredoc_file = NULL;
+    }
     //new_node = create_new_node((void *)file);
+    //! NOT WORKING
     insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
 }
 
+t_list	*ft_lstnew(void *content)
+{
+	t_list	*node;
+
+	node = malloc(sizeof(t_list));
+	if (node == 0)
+		return (0);
+	node->value = content;
+	node->next = 0;
+	return (node);
+}
+
+t_list	*ft_lstlast(t_list *lst)
+{
+	if (lst == 0)
+		return (0);
+	while (lst->next != 0)
+	{
+		lst = lst->next;
+	}
+	return (lst);
+}
+
+void	ft_lstadd_back(t_list **lst, t_list *new)
+{
+	t_list	*prev;
+
+	if (lst == 0 || new == 0)
+		return ;
+	if (*lst == 0)
+		*lst = new;
+	else
+	{
+		prev = ft_lstlast(*lst);
+		prev->next = new;
+	}
+}
+
 //! needs addition in case of command within string
-/* void cmd_word(t_list **tlist, t_list *clist, bool *first_word_after_pipe)
+void cmd_word(t_list *tlist, t_list *clist, bool *first_word)
 {
     t_list  *new_node;
     t_token *tmp_token;
     t_command *tmp_command;
 
     //if (first_word_after_pipe == true)
-    tmp_command = (t_token *)(clist)->value;
-    tmp_token = (t_token *)(*tlist)->value;
-    new_node = ft_strdup(tmp_token->str);
-    insert_at_tail(&tmp_command->arguments, new_node); //! WHATS THE LIST???
-    first_word_after_pipe = false;
-} */
+    tmp_command = (t_command *) clist->value;
+    tmp_token = (t_token *) tlist->value;
+    printf("%s\n", tmp_token->str);
+    new_node = create_new_node(ft_strdup(tmp_token->str));
+    //! NOT WORKING
+    //insert_at_tail(tmp_command->arguments, new_node);
+    new_node = ft_lstnew((void *)ft_strdup(tmp_token->str));
+	ft_lstadd_back(&(tmp_command->arguments), new_node);
+    *first_word = false;
+}
 
 /* function that adds attributes to the command list (m.clist);
 - assign the value of a node in the token list to tmp_token
 - depending on it's type execute a subsequent function to add the attributes
 to the command list
 */
-void add_attributes_to_command_list(t_minishell m)
+static void add_attributes_to_command_list(t_minishell m)
 {
     t_list *tmp_tlist;
     t_token *tmp_token;
-    //bool    *first_word_after_pipe;
+    bool    first_word;
 
-    //first_word_after_pipe = true;
+    first_word = true;
     tmp_tlist = m.tlist;
     while (tmp_tlist != NULL)
     {
         tmp_token = (t_token *)tmp_tlist->value;
         if (tmp_token->type == PIPE)
-            cmd_pipe(m.clist); //&first_word_after_pipe
+            cmd_pipe(&m.clist, &first_word);
         else if (tmp_token->type == REDIRECT_IN ||tmp_token->type == REDIRECT_HEREDOC)
             cmd_input_redirection(&tmp_tlist, m.clist);
-       /*  else if (tmp_token->type == WORD)
-            cmd_word(&tmp_tlist, *m.clist, first_word_after_pipe); */
+        else if (tmp_token->type == WORD)
+            cmd_word(tmp_tlist, m.clist, &first_word);
+       /*  else if (tmp_token->type == REDIRECT_OUT)
+            cmd_output_redirection(&tmp_tlist, m.clist); */
         tmp_tlist = tmp_tlist->next;
     }
 }
 
-/* WORD,
-	WHITESPACE,
-    PIPE,
-    REDIRECT_HEREDOC,
-    REDIRECT_APPEND,
-    REDIRECT_IN,
-    REDIRECT_OUT,
-    DOUBLE_QUOTES,
-    SINGLE_QUOTES,
- */
 t_list *parser(t_minishell m)
 {
     //! add a check if input is valid or is this handled at the end of lexer?
     // always needs to be sth. after < & << otherwise segfault
-    *m.clist = command_list(m.clist, m.tlist);
+    m.clist = setup_command_list(&m.clist, m.tlist);
     if (!m.clist)
         return (NULL);
-    //print_command_list(m.clist); //only for testing
     add_attributes_to_command_list(m);
-    print_command_list(*m.clist); //only for testing to see if attributes changed
-    return(*m.clist);
+    print_command_list(m.clist); //only for testing to see if attributes changed
+    return(m.clist);
 }
