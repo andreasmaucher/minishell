@@ -294,18 +294,73 @@ char *single_or_double_quotes_token(char *line, int *i, t_type *token_type)
 {
 	if (line[*i] == '"')
 	{
-		*token_type = DOUBLE_QUOTES;
+		*token_type = WORD;//DOUBLE_QUOTES; //!so in my version i don't even need this?!
 		if (line[*i])
 			(*i)++;
 		return(double_quote_to_string(line, i));
 	}
 	else
 	{
-		*token_type = SINGLE_QUOTES;
+		*token_type = WORD;//SINGLE_QUOTES;
 		if (line[*i])
 			(*i)++;
 		return(single_quote_to_string(line, i));
 	}
+}
+
+t_list *find_previous_node(t_list *head, t_list *target_node)
+{
+    t_list *previous_node;
+    t_list *current_node;
+	t_token *test;
+	
+	current_node = head;
+	previous_node = NULL;
+    while (current_node != NULL && current_node != target_node)
+    {
+        previous_node = current_node;
+		test = (t_token *)previous_node->value;
+		printf("previous_token:%d\n", test->type);
+        current_node = current_node->next;
+    }
+
+    return (previous_node);
+}
+
+t_list	*merge_words(t_list *tlist)
+{
+	t_list *tmp_head;
+	t_list *previous_node;
+	t_token *token;
+	t_token *previous_token;
+
+	tmp_head = tlist;
+	while (tmp_head != NULL)
+	{	
+		token = tmp_head->value;
+		if (token->type == WORD)
+		{
+			previous_node = find_previous_node(tlist, tmp_head);
+			if (previous_node != NULL)
+			{
+				previous_token = (t_token *)previous_node->value;
+				if (previous_token->type == WORD)
+				{
+					//! JOIN AND FREE
+					printf("HI\n");
+					printf("previous_token:%d\n", previous_token->type);
+				}
+			}
+		}
+		tmp_head = tmp_head->next;
+	}
+	return (tlist);
+}
+
+t_list	*cleanup_token_list(t_list *tlist)
+{
+	tlist = merge_words(tlist);
+	return(tlist);
 }
 
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
@@ -330,10 +385,8 @@ t_list *split_line_into_tokens(t_minishell m)
 		else
 			m.str_with_all_tokens = check_for_word_token(m.line, &i, &m.token_type);
 		m.tlist = add_token_to_list(&m.tlist, m.str_with_all_tokens, m.token_type);
-		//! could I free substrings here?
-		//i++; //! this needs to go!
 	}
-	// here we could go through the full list & remove whitespace & merge or split words
+	cleanup_token_list(m.tlist);
 	return(m.tlist);
 }
 

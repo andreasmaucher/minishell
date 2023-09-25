@@ -240,19 +240,21 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->input_redir_or_heredoc = tmp_token->type; //! if not used later, delete again
     file->redirection_type = tmp_token->type; //! if not used later, delete again
+    printf("TEST1: %s\n", tmp_token->str);
     if (*tlist != NULL) //! this is to avoid segfaults, but also need to be careful of case without anything after <
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
+    printf("TEST2: %s\n", tmp_token->str); //! does not print because of whitespace!!!
     file->fd = -1;
-    if (tmp_token->type == REDIRECT_HEREDOC)
+    if (tmp_cmd->input_redir_or_heredoc == REDIRECT_HEREDOC)
     {
         file->stop_heredoc = ft_strdup(tmp_token->str);
         file->new_heredoc_file = create_heredoc_file();
         file->text_to_file = NULL;
     }
-    else if (tmp_token->type == REDIRECT_IN)
+    else if (tmp_cmd->input_redir_or_heredoc == REDIRECT_IN)
     {
-        file->text_to_file = ft_strdup(tmp_token->str);
+        file->text_to_file = tmp_token->str;//ft_strdup(tmp_token->str);
         file->stop_heredoc = NULL;
         file->new_heredoc_file = NULL;
     }
@@ -289,7 +291,7 @@ void    cmd_output_redirection(t_list **tlist, t_list *clist)
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->out_redir_type = tmp_token->type;
-    file->redirection_type = tmp_token->type; //! CHANGE FOR INPUT
+    file->redirection_type = tmp_token->type;
     if (*tlist != NULL) //! NECESSARY?
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
