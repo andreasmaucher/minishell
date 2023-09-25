@@ -186,60 +186,27 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
 }
 
-t_list	*ft_lstnew(void *content)
+void add_token_to_command_list(t_list **token_list, t_token *tmp_token)
 {
-	t_list	*node;
+	t_list *new_node;
 
-	node = malloc(sizeof(t_list));
-	if (node == 0)
-		return (0);
-	node->value = content;
-	node->next = 0;
-	return (node);
-}
-
-t_list	*ft_lstlast(t_list *lst)
-{
-	if (lst == 0)
-		return (0);
-	while (lst->next != 0)
-	{
-		lst = lst->next;
-	}
-	return (lst);
-}
-
-void	ft_lstadd_back(t_list **lst, t_list *new)
-{
-	t_list	*prev;
-
-	if (lst == 0 || new == 0)
-		return ;
-	if (*lst == 0)
-		*lst = new;
+	new_node = create_new_node(ft_strdup(tmp_token->str));
+	if (!*token_list)
+		*token_list = new_node;
 	else
-	{
-		prev = ft_lstlast(*lst);
-		prev->next = new;
-	}
+		insert_at_tail(*token_list, new_node);
 }
 
 //! needs addition in case of command within string
 void cmd_word(t_list *tlist, t_list *clist, bool *first_word)
 {
-    t_list  *new_node;
     t_token *tmp_token;
     t_command *tmp_command;
 
-    //if (first_word_after_pipe == true)
     tmp_command = (t_command *) clist->value;
     tmp_token = (t_token *) tlist->value;
     printf("%s\n", tmp_token->str);
-    new_node = create_new_node(ft_strdup(tmp_token->str));
-    //! NOT WORKING
-    //insert_at_tail(tmp_command->arguments, new_node);
-    new_node = ft_lstnew((void *)ft_strdup(tmp_token->str));
-	ft_lstadd_back(&(tmp_command->arguments), new_node);
+    add_token_to_command_list(&tmp_command->arguments, tmp_token);
     *first_word = false;
 }
 
