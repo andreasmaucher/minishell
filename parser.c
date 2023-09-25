@@ -75,17 +75,44 @@ void print_command_list(t_list *clist) {
     while (current != NULL) {
         t_command *cmd = (t_command *)current->value;
 
-        printf("Node 1:\n");
         printf("Command Type: %d\n", cmd->type);
         printf("Before Pipe: %s\n", cmd->before_pipe ? "true" : "false");
         printf("After Pipe: %s\n", cmd->after_pipe ? "true" : "false");
         printf("Input redir or heredoc: %s\n", token_type_names2[cmd->input_redir_or_heredoc]);
-        printf("Out Redir Type: %d\n", cmd->out_redir_type);
         //printf("list[%d]: %s type: %s\n", i, token->str, token_type_names[token->type]);
         
         // Check and print the inred_file and outred_file attributes
-        printf("In Redir File: %s\n", cmd->inred_file != NULL ? (char *)(cmd->inred_file) : "None");
-        printf("Out Redir File: %s\n", cmd->outred_file != NULL ? (char *)(cmd->outred_file) : "None");
+        //printf("In Redir File: %s\n", cmd->inred_file != NULL ? (char *)(cmd->inred_file) : "None");
+        /* t_list *inred_list = cmd->inred_file;
+        while (inred_list != NULL) {
+            printf("In Redir File: %s\n", (char *)(inred_list->value));
+            inred_list = inred_list->next;
+        } */
+        t_list *inred_list = cmd->inred_file;
+        while (inred_list != NULL)
+    {
+        t_file *file = (t_file *)inred_list->value;
+            printf("--- Input Redirections or Heredoc ---\n");
+            printf("File Descriptor (fd): %d\n", file->fd);
+            printf("Text to File: %s\n", file->text_to_file != NULL ? file->text_to_file : "None");
+            printf("Stop Heredoc: %s\n", file->stop_heredoc != NULL ? file->stop_heredoc : "None");
+            printf("Redirection Type: %s\n", token_type_names2[file->redirection_type]);
+            printf("New Heredoc File: %s\n", file->new_heredoc_file != NULL ? file->new_heredoc_file : "None");
+            inred_list = inred_list->next;
+    }
+        printf("Out Redir Type: %s\n", token_type_names2[cmd->out_redir_type]);
+        //printf("Out Redir File: %s\n", cmd->outred_file != NULL ? (char *)(cmd->outred_file) : "None");
+        t_list *outredir_list = cmd->outred_file;
+        while (outredir_list != NULL) {
+            t_file *file = (t_file *)outredir_list->value;
+            printf("--- Out Redirection --- \n");
+            printf("File Descriptor (fd): %d\n", file->fd);
+            printf("Text to File: %s\n", file->text_to_file != NULL ? file->text_to_file : "None");
+            printf("Stop Heredoc: %s\n", file->stop_heredoc != NULL ? file->stop_heredoc : "None");
+            printf("Redirection Type: %s\n", token_type_names2[file->redirection_type]);
+            printf("New Heredoc File: %s\n", file->new_heredoc_file != NULL ? file->new_heredoc_file : "None");
+            outredir_list = outredir_list->next;
+        }
         ///printf("Arguments: %s\n", (char *)cmd->arguments);
         t_list *arguments_list = cmd->arguments;
         while (arguments_list != NULL) {
@@ -142,8 +169,56 @@ static char *create_heredoc_file(void)
 
     str = ft_itoa(index++);
     filename = ft_strjoin("/tmp/.heredoc_", str);
-    printf("Filename heredoc: %s\n", filename);
     return(filename);
+}
+
+void add_token_to_command_list(t_list **token_list, char *token_info)
+{
+	t_list *new_node;
+
+	new_node = create_new_node(token_info);
+	if (!*token_list)
+		*token_list = new_node;
+	else
+		insert_at_tail(*token_list, new_node);
+}
+
+t_list	*ft_lstlast(t_list *lst)
+{
+	if (lst == 0)
+		return (0);
+	while (lst->next != 0)
+	{
+		lst = lst->next;
+	}
+	return (lst);
+}
+
+void	ft_lstadd_back(t_list **lst, t_list *new)
+{
+	t_list	*prev;
+
+	if (lst == 0 || new == 0)
+		return ;
+	if (*lst == 0)
+		*lst = new;
+	else
+	{
+		prev = ft_lstlast(*lst);
+		prev->next = new;
+	}
+}
+
+t_list	*ft_lstnew(void *content)
+{
+	t_list	*node;
+
+	node = malloc(sizeof(t_list));
+	if (node == 0)
+		return (0);
+	node->value = content;
+	node->next = 0;
+	return (node);
 }
 
 /* e.g. < for input redirection: wc -l < file2 returns the amount of words in one file
@@ -164,7 +239,7 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->input_redir_or_heredoc = tmp_token->type; //! if not used later, delete again
-    file->input_or_heredoc = tmp_token->type; //! if not used later, delete again
+    file->redirection_type = tmp_token->type; //! if not used later, delete again
     if (*tlist != NULL) //! this is to avoid segfaults, but also need to be careful of case without anything after <
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
@@ -183,18 +258,9 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     }
     //new_node = create_new_node((void *)file);
     //! NOT WORKING
-    insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
-}
-
-void add_token_to_command_list(t_list **token_list, t_token *tmp_token)
-{
-	t_list *new_node;
-
-	new_node = create_new_node(ft_strdup(tmp_token->str));
-	if (!*token_list)
-		*token_list = new_node;
-	else
-		insert_at_tail(*token_list, new_node);
+    add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
+    //ft_lstadd_back(&(tmp_cmd->inred_file), ft_lstnew((void *)file));
+    //insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
 }
 
 //! needs addition in case of command within string
@@ -205,9 +271,33 @@ void cmd_word(t_list *tlist, t_list *clist, bool *first_word)
 
     tmp_command = (t_command *) clist->value;
     tmp_token = (t_token *) tlist->value;
-    printf("%s\n", tmp_token->str);
-    add_token_to_command_list(&tmp_command->arguments, tmp_token);
+    add_token_to_command_list(&tmp_command->arguments, ft_strdup(tmp_token->str));
     *first_word = false;
+}
+
+/* for output redirections a new file needs to be created to store whatever is entered
+before the redirection sign; */
+void    cmd_output_redirection(t_list **tlist, t_list *clist)
+{
+    t_file  *file;
+    t_command *tmp_cmd;
+    t_token *tmp_token;
+
+    file = malloc(sizeof(t_file));
+    if (!file)
+        return;
+    tmp_cmd = (t_command *) clist->value;
+    tmp_token = (t_token *) (* tlist)->value;
+    tmp_cmd->out_redir_type = tmp_token->type;
+    file->redirection_type = tmp_token->type; //! CHANGE FOR INPUT
+    if (*tlist != NULL) //! NECESSARY?
+        *tlist = (* tlist)->next;
+    tmp_token = (t_token *)(* tlist)->value;
+    file->fd = -1;
+    file->text_to_file = ft_strdup(tmp_token->str);
+    file->stop_heredoc = NULL;
+    file->new_heredoc_file = NULL;
+    add_token_to_command_list(&tmp_cmd->outred_file, (void *)file);
 }
 
 /* function that adds attributes to the command list (m.clist);
@@ -232,8 +322,8 @@ static void add_attributes_to_command_list(t_minishell m)
             cmd_input_redirection(&tmp_tlist, m.clist);
         else if (tmp_token->type == WORD)
             cmd_word(tmp_tlist, m.clist, &first_word);
-       /*  else if (tmp_token->type == REDIRECT_OUT)
-            cmd_output_redirection(&tmp_tlist, m.clist); */
+        else if (tmp_token->type == REDIRECT_OUT || tmp_token->type == REDIRECT_APPEND)
+            cmd_output_redirection(&tmp_tlist, m.clist);
         tmp_tlist = tmp_tlist->next;
     }
 }

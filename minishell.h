@@ -60,7 +60,7 @@ typedef struct s_file
 	int		fd;
 	char	*text_to_file;
 	char	*stop_heredoc;
-	int		input_or_heredoc;
+	t_type	redirection_type;
 	char	*new_heredoc_file;
 }	t_file;
 typedef struct s_command //!
