@@ -87,13 +87,12 @@ void print_command_list(t_list *clist) {
         printf("In Redir File: %s\n", cmd->inred_file != NULL ? (char *)(cmd->inred_file) : "None");
         printf("Out Redir File: %s\n", cmd->outred_file != NULL ? (char *)(cmd->outred_file) : "None");
         ///printf("Arguments: %s\n", (char *)cmd->arguments);
-        /* t_list *arguments_list = cmd->arguments;
+        t_list *arguments_list = cmd->arguments;
         while (arguments_list != NULL) {
             printf("Argument: %s\n", (char *)(arguments_list->value));
-            printf("TEST\n");
             arguments_list = arguments_list->next;
-        } */
-        printf("Arguments: %s\n", cmd->arguments != NULL ? (char *)(cmd->arguments) : "None");
+        }
+        //printf("Arguments: %s\n", cmd->arguments != NULL ? (char *)(cmd->arguments) : "None");
 
         // Move to the next node
         current = current->next;
