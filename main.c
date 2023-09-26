@@ -327,12 +327,61 @@ t_list *find_previous_node(t_list *head, t_list *target_node)
     return (previous_node);
 }
 
+void	ft_lstdelone(t_list *lst, void (*del)(void*))
+{
+	if (lst == 0 || del == 0)
+		return ;
+	(*del)(lst->value);
+	free(lst);
+}
+
+void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))
+{
+	t_list	*prev;
+
+	if (!lst || !(*lst) || !node)
+		return ;
+	prev = find_previous_node(*lst, node);
+	if (!prev)
+		*lst = node->next;
+	else
+		prev->next = node->next;
+	ft_lstdelone(node, del);
+}
+
+void token_del(void *content) {
+    if (content == NULL) {
+        return;
+    }
+
+    t_token *token = (t_token *)content;
+    if (token->str != NULL) {
+        free(token->str); // Assuming the str field is dynamically allocated.
+    }
+    
+    free(token); // Free the token structure itself.
+}
+
+void join_and_delete(t_list *tlist, t_token *previous_token, t_list * tmp_head, t_list *previous_node)
+{
+	char	*new_joined_str;
+
+	new_joined_str = ft_strjoin(previous_token->str, ((t_token *)tmp_head->value)->str); 
+	free(((t_token *)previous_node->value)->str);
+	((t_token *)previous_node->value)->str = new_joined_str;
+	ft_lstremove(&tlist, tmp_head, token_del);
+	printf("HI\n");
+	printf("previous_token:%d\n", previous_token->type);
+}
+
 t_list	*merge_words(t_list *tlist)
 {
 	t_list *tmp_head;
 	t_list *previous_node;
 	t_token *token;
 	t_token *previous_token;
+	//char	*new_joined_str;
+	bool check = NULL;
 
 	tmp_head = tlist;
 	while (tmp_head != NULL)
@@ -346,14 +395,14 @@ t_list	*merge_words(t_list *tlist)
 				previous_token = (t_token *)previous_node->value;
 				if (previous_token->type == WORD)
 				{
-					//! JOIN AND FREE
-					printf("HI\n");
-					printf("previous_token:%d\n", previous_token->type);
+					check = true;
 				}
 			}
 		}
 		tmp_head = tmp_head->next;
 	}
+	if (check == true)
+		join_and_delete(tlist, previous_token, tmp_head, previous_node);
 	return (tlist);
 }
 
