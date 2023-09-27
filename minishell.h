@@ -35,7 +35,14 @@ typedef enum
     REDIRECT_OUT,
     DOUBLE_QUOTES,
     SINGLE_QUOTES,
+	ENV,
 }	t_type;
+
+typedef struct s_dict
+{
+	char	*key;
+	void	*value;
+}	t_dict;
 typedef struct s_list
 {
 	void *value; //value needs to be void since we want to be able to store multiple different types
@@ -80,6 +87,7 @@ typedef struct s_minishell
     int tokens;
     t_list *tlist;
     t_list *clist;
+	t_list	*env;
     char *line;
     char *string_between_quotes;
 	char 	*str_with_all_tokens;
@@ -92,6 +100,9 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strdup(const char *s);
 int	    ft_strcmp(const char *s1, const char *s2);
 char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strstr(const char *haystack, const char *needle);
+char	*ft_strnstr(const char *big, const char *little, size_t len);
+char	**ft_split(char const *s, char c);
 
 //list operators
 void	printlist(t_list *head);

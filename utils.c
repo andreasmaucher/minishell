@@ -106,6 +106,145 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (new);
 }
 
+char	*ft_strstr(const char *haystack, const char *needle)
+{
+	char	*phaystack;
+	size_t	needle_len;
+
+	phaystack = (char *)haystack;
+	needle_len = ft_strlen(needle);
+	if (needle_len == 0)
+	{
+		return (phaystack);
+	}
+	while (*phaystack)
+	{
+		if (*phaystack == *needle)
+		{
+			if (ft_strncmp(needle, phaystack, needle_len) == 0)
+			{
+				return (phaystack);
+			}
+		}
+		phaystack++;
+	}
+	return (NULL);
+}
+
+char	*ft_strnstr(const char *big, const char *little, size_t len)
+{
+	size_t	i;
+	size_t	j;
+
+	i = 0;
+	if (little[0] == '\0')
+		return ((char *)big);
+	while (big[i] != '\0' && i < len)
+	{
+		j = 0;
+		while (big[i + j] != '\0' && big[i + j] == little[j] && i + j < len)
+		{
+			if (little[j + 1] == '\0')
+			{
+				return ((char *)big + i);
+			}
+			j++;
+		}
+		i++;
+	}
+	return (0);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (s1[i] && i < n)
+	{
+		if (s1[i] != s2[i])
+		{
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		}
+		i++;
+	}
+	if (s2[i] == '\0' || i == n)
+		return (0);
+	else
+		return (-s2[i]);
+}
+
+char	**ft_free(char **strs, int j)
+{
+	while (j-- > 0)
+		free(strs[j]);
+	free(strs);
+	strs = NULL;
+	return (NULL);
+}
+
+int	ft_word_count(const char *str, char c)
+{
+	int	i;
+	int	trigger;
+
+	i = 0;
+	trigger = 0;
+	while (*str)
+	{
+		if (*str != c && trigger == 0)
+		{
+			trigger = 1;
+			i++;
+		}
+		else if (*str == c)
+			trigger = 0;
+		str++;
+	}
+	return (i);
+}
+
+int	ft_size_word(const char *s, char c, int i)
+{
+	int	word_size;
+
+	word_size = 0;
+	while (s[i] != c && s[i])
+	{
+		word_size++;
+		i++;
+	}
+	return (word_size);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char			**array;
+	int				word_count;
+	int				i;
+	unsigned int	len;
+	int				y;
+
+	word_count = ft_word_count(s, c);
+	y = -1;
+	i = 0;
+	array = (char **)malloc((word_count + 1) * sizeof(char *));
+	if (!array)
+		return (NULL);
+	while (++y < word_count)
+	{
+		while (s[i] == c)
+			i++;
+		len = ft_size_word(s, c, i);
+		array[y] = ft_substr(s, i, len);
+		if (!array[y])
+			ft_free(array, y);
+		i = i + len;
+	}
+	array[y] = 0;
+	return (array);
+}
+
 /* 
 t_list	*ft_lstnew(void *content)
 {

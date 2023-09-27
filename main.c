@@ -312,18 +312,14 @@ t_list *find_previous_node(t_list *head, t_list *target_node)
 {
     t_list *previous_node;
     t_list *current_node;
-	t_token *test;
 	
 	current_node = head;
 	previous_node = NULL;
     while (current_node != NULL && current_node != target_node)
     {
         previous_node = current_node;
-		test = (t_token *)previous_node->value;
-		printf("previous_token:%d\n", test->type);
         current_node = current_node->next;
     }
-
     return (previous_node);
 }
 
@@ -362,58 +358,157 @@ void token_del(void *content) {
     free(token); // Free the token structure itself.
 }
 
-void join_and_delete(t_list *tlist, t_token *previous_token, t_list * tmp_head, t_list *previous_node)
+/* used for joining two consecutive word tokens; the function takes in a pointer to the head of the
+list and two pointers to the current node and the previous node;
+if the token type of the previous node is WORD the string contents of the two consecutive tokens are joined 
+into one and one token is freed */
+void join_str_and_del_old_node(t_list *tlist, t_list *current_node, t_list *previous_node)
 {
 	char	*new_joined_str;
+	t_token *previous_token;
 
-	new_joined_str = ft_strjoin(previous_token->str, ((t_token *)tmp_head->value)->str); 
-	free(((t_token *)previous_node->value)->str);
-	((t_token *)previous_node->value)->str = new_joined_str;
-	ft_lstremove(&tlist, tmp_head, token_del);
-	printf("HI\n");
-	printf("previous_token:%d\n", previous_token->type);
+	previous_token = previous_node->value;
+	if (previous_token->type == WORD)
+	{
+		new_joined_str = ft_strjoin(previous_token->str, ((t_token *)current_node->value)->str); 
+		free(((t_token *)previous_node->value)->str);
+		((t_token *)previous_node->value)->str = new_joined_str;
+		ft_lstremove(&tlist, current_node, token_del);
+	}
 }
 
-t_list	*merge_words(t_list *tlist)
+/* function that merges two consecutive word tokens (without spaces in between!)
+e.g. l"s"; otherwise the parser would process this as two separate tokens */
+t_list	*merge_words(t_list **tlist, t_list *current_node)
 {
-	t_list *tmp_head;
 	t_list *previous_node;
-	t_token *token;
-	t_token *previous_token;
-	//char	*new_joined_str;
-	bool check = NULL;
+	t_token	*current_token;
 
-	tmp_head = tlist;
-	while (tmp_head != NULL)
-	{	
-		token = tmp_head->value;
-		if (token->type == WORD)
-		{
-			previous_node = find_previous_node(tlist, tmp_head);
-			if (previous_node != NULL)
-			{
-				previous_token = (t_token *)previous_node->value;
-				if (previous_token->type == WORD)
-				{
-					check = true;
-				}
-			}
-		}
-		tmp_head = tmp_head->next;
+	previous_node = NULL;
+	current_token = current_node->value;
+	if (current_token->type == WORD)
+	{
+		previous_node = find_previous_node(*tlist, current_node);
+		if (previous_node != NULL)
+			join_str_and_del_old_node(*tlist, current_node, previous_node);
 	}
-	if (check == true)
-		join_and_delete(tlist, previous_token, tmp_head, previous_node);
-	return (tlist);
+	return (*tlist);
+}
+
+t_list	*delete_whitespace(t_list **tlist, t_list *current_node)
+{
+	t_token	*tmp_token;
+
+	tmp_token = current_node->value;
+	if (tmp_token->type == WHITESPACE)
+		ft_lstremove(tlist, current_node, token_del);
+	return(*tlist);
+}
+
+t_list	*modify_list(t_list **tlist, t_list *(*f)(t_list **tlist, t_list *current_node))
+{
+	t_list	*current_node;
+	t_list	*next;
+
+	current_node = *tlist;
+	while (current_node)
+	{
+		next = current_node->next;
+		*tlist = (*f)(tlist, current_node);
+		current_node = next;
+	}
+	return (*tlist);
 }
 
 t_list	*cleanup_token_list(t_list *tlist)
 {
-	tlist = merge_words(tlist);
+	tlist = modify_list(&tlist, merge_words);
+	tlist = modify_list(&tlist, delete_whitespace);
 	return(tlist);
 }
 
+//! does not work because dict list is not set!!!
+char	*get_env_value(t_list *dict, char *key, char **envp)
+{
+	///t_dict	*item;
+	int	i;
+	(void)dict;
+	i = 0;
+	if (!key)
+		return (NULL);
+/* 	while (dict)
+	{
+		//item = (t_dict *)dict->value;
+ 		if (!ft_strcmp(item->key, key))
+			return (item->value);
+		dict = dict->next;
+	} */
+	while (envp[i] != NULL)
+	{
+		if (envp[i] == key)
+			return(envp[i]);
+		i++;
+	}
+	return (NULL);
+}
+
+char	**find_path(char **envp, char *search_str)
+{
+	int		i;
+	char	*path;
+	char	**path_buf;
+
+	(void)search_str;
+	i = 0;
+	while (ft_strnstr(envp[i], search_str, 5) == NULL)
+		i++;
+	path = ft_strstr(envp[i], "\0");
+	if (path == NULL)
+		return (NULL);
+	path_buf = ft_split(path, ':');
+	return (path_buf);
+}
+
+/* search_str is the string that needs to be found */
+char	*extract_env_name(char *line, int *i, t_list *env, char **envp)
+{
+	int	start;
+	int length;
+	char	*search_str;
+	char	*env_str = NULL; //!
+
+	(void)env; //!
+	start = *i;
+	if (!line[*i] || line[*i] == '"')
+		return(ft_strdup("$"));
+	//! add g exit code
+	while(line[*i] != '\0' && check_for_metacharacter(line[*i]) == false &&
+	check_for_quotes(line[*i]) == false && line[*i] != '$')
+		(*i)++;
+	length = *i - start;
+	search_str = ft_substr(line, start, length);
+	env_str = *find_path(envp, search_str);
+	//env_str = get_env_value(env, search_str, envp);
+	free(search_str);
+	return (ft_strdup(env_str));
+}
+
+/* extract the env_str from the input */
+char	*env_token(char *line, int *i, t_type *token_type, t_list *env, char **envp)
+{
+	char	*env_name;
+
+	//(void)envp;
+	(*i)++;
+	*token_type = ENV;
+	env_name = extract_env_name(line, i, env, envp);
+	/* if (!ft_strcmp(env_str, "$"))
+		*token_type = WORD; */
+	return (env_name);
+}
+
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
-t_list *split_line_into_tokens(t_minishell m)
+t_list *split_line_into_tokens(t_minishell m, char **envp)
 {
 	int 	i;
 
@@ -425,8 +520,8 @@ t_list *split_line_into_tokens(t_minishell m)
 			m.str_with_all_tokens = pipe_token(&i, &m.token_type);
 		else if (m.line[i] == '<' || m.line[i] == '>')
 			m.str_with_all_tokens = redirection_token(m.line, &i, &m.token_type);
-		//else if (m.line[i] == '$')
-		//	str_with_all_tokens = env_token(m.line, &i, &token_type);
+		else if (m.line[i] == '$')
+			m.str_with_all_tokens = env_token(m.line, &i, &m.token_type, m.env, envp);
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.str_with_all_tokens = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')
@@ -459,19 +554,20 @@ int main(int ac, char **av, char **envp)
 	t_minishell m;
 
 	(void)av;
-	(void)envp;
+	//(void)envp;
 	if (ac == 1)
 	{
 		while(1)
 		{
 			m.line = readline("Myshell: ");
+			//m.env = envp;
 			// Check for end-of-input or Ctrl+D
 			if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) {
 				printf("\nExiting...\n");
 				freememory(m);
 				exit(1);
 			}
-			m.tlist = split_line_into_tokens(m); // line that holds all the tokens
+			m.tlist = split_line_into_tokens(m, envp); // line that holds all the tokens
 			printlist(m.tlist); //only for testing
 			m.clist = parser(m);
 			add_history(m.line);
