@@ -452,6 +452,43 @@ char	*get_env_value(t_list *dict, char *key, char **envp)
 	return (NULL);
 }
 
+char **create_env_library(char **envp)
+{
+    char **buf = NULL;
+    char target = '=';
+    int len = 0;
+    int substr_len;
+
+    while (envp[len] != NULL)
+        len++;
+    buf = malloc(sizeof(char *) * (len + 1));
+    if (!buf)
+        return (NULL);
+    len = 0; //! Don't get that logic fully 
+    while (envp[len] != NULL)
+    {
+        char *target_pos = strchr(envp[len], target); //! LIBFT
+        if (target_pos != NULL)
+        {
+            substr_len = target_pos - envp[len];
+            buf[len] = malloc(substr_len + 1);
+            if (!buf[len])
+                return (NULL);
+            strncpy(buf[len], envp[len], substr_len); //! LIBFT
+            buf[len][substr_len] = '\0';
+            printf("SUBSTR: %s\n", buf[len]);
+        }
+        else
+        {
+            buf[len] = NULL;
+        }
+        len++;
+    }
+    buf[len] = NULL;
+    return (buf);
+}
+
+
 /* searches for the corresponding env to search_str within envp;
 when assigning to the buffer path is iterated by one to skip the equal sign*/
 char	**find_path(char **envp, char *search_str)
@@ -459,8 +496,11 @@ char	**find_path(char **envp, char *search_str)
 	int		i;
 	char	*path;
 	char	**path_buf;
+	char	**env_lib;
 
 	//(void)search_str;
+	env_lib = create_env_library(envp);
+	(void)env_lib;
 	i = 0;
 	while (ft_strnstr(envp[i], search_str, ft_strlen(search_str)) == NULL)
 		i++;
