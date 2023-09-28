@@ -452,20 +452,22 @@ char	*get_env_value(t_list *dict, char *key, char **envp)
 	return (NULL);
 }
 
+/* searches for the corresponding env to search_str within envp;
+when assigning to the buffer path is iterated by one to skip the equal sign*/
 char	**find_path(char **envp, char *search_str)
 {
 	int		i;
 	char	*path;
 	char	**path_buf;
 
-	(void)search_str;
+	//(void)search_str;
 	i = 0;
-	while (ft_strnstr(envp[i], search_str, 5) == NULL)
+	while (ft_strnstr(envp[i], search_str, ft_strlen(search_str)) == NULL)
 		i++;
-	path = ft_strstr(envp[i], "\0");
+	path = ft_strstr(envp[i], "=");
 	if (path == NULL)
 		return (NULL);
-	path_buf = ft_split(path, ':');
+	path_buf = ft_split(++path, '\0');
 	return (path_buf);
 }
 
@@ -477,7 +479,7 @@ char	*extract_env_name(char *line, int *i, t_list *env, char **envp)
 	char	*search_str;
 	char	*env_str = NULL; //!
 
-	(void)env; //!
+	(void)env;
 	start = *i;
 	if (!line[*i] || line[*i] == '"')
 		return(ft_strdup("$"));
@@ -488,7 +490,6 @@ char	*extract_env_name(char *line, int *i, t_list *env, char **envp)
 	length = *i - start;
 	search_str = ft_substr(line, start, length);
 	env_str = *find_path(envp, search_str);
-	//env_str = get_env_value(env, search_str, envp);
 	free(search_str);
 	return (ft_strdup(env_str));
 }
@@ -498,12 +499,11 @@ char	*env_token(char *line, int *i, t_type *token_type, t_list *env, char **envp
 {
 	char	*env_name;
 
-	//(void)envp;
 	(*i)++;
 	*token_type = ENV;
 	env_name = extract_env_name(line, i, env, envp);
-	/* if (!ft_strcmp(env_str, "$"))
-		*token_type = WORD; */
+	if (!ft_strcmp(env_name, "$"))
+		*token_type = WORD;
 	return (env_name);
 }
 
