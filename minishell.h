@@ -36,6 +36,7 @@ typedef enum
     DOUBLE_QUOTES,
     SINGLE_QUOTES,
 	ENV,
+	ENV_FAIL,
 }	t_type;
 
 typedef struct s_dict

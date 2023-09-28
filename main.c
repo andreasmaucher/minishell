@@ -23,7 +23,9 @@ const char *token_type_names[] =
     "REDIRECT_IN",
     "REDIRECT_OUT",
 	"DOUBLE_QUOTES",
-    "SINGLE_QUOTES"
+    "SINGLE_QUOTES",
+	"ENV",
+	"ENV_FAIL",
 };
 
 //only for testing purposes, prints a list
@@ -488,6 +490,20 @@ char **create_env_library(char **envp)
     return (buf);
 }
 
+bool check_if_part_of_library(char **env_lib, char *search_str)
+{
+	int	i;
+
+	i = 0;
+	while (env_lib[i] != NULL)
+	{
+		if (ft_strcmp(env_lib[i], search_str) == 0)
+			return(true);
+		i++;
+	}
+	return(false);
+}
+
 
 /* searches for the corresponding env to search_str within envp;
 when assigning to the buffer path is iterated by one to skip the equal sign*/
@@ -496,11 +512,7 @@ char	**find_path(char **envp, char *search_str)
 	int		i;
 	char	*path;
 	char	**path_buf;
-	char	**env_lib;
-
-	//(void)search_str;
-	env_lib = create_env_library(envp);
-	(void)env_lib;
+	
 	i = 0;
 	while (ft_strnstr(envp[i], search_str, ft_strlen(search_str)) == NULL)
 		i++;
@@ -512,12 +524,11 @@ char	**find_path(char **envp, char *search_str)
 }
 
 /* search_str is the string that needs to be found */
-char	*extract_env_name(char *line, int *i, t_list *env, char **envp)
+char	*extract_env_name(char *line, int *i, t_list *env)
 {
 	int	start;
 	int length;
 	char	*search_str;
-	char	*env_str = NULL; //!
 
 	(void)env;
 	start = *i;
@@ -529,22 +540,35 @@ char	*extract_env_name(char *line, int *i, t_list *env, char **envp)
 		(*i)++;
 	length = *i - start;
 	search_str = ft_substr(line, start, length);
-	env_str = *find_path(envp, search_str);
-	free(search_str);
-	return (ft_strdup(env_str));
+	return (search_str);
 }
 
 /* extract the env_str from the input */
 char	*env_token(char *line, int *i, t_type *token_type, t_list *env, char **envp)
 {
-	char	*env_name;
+	char	*search_str;
+	char	*env_final;
+	char	**env_lib;
 
 	(*i)++;
 	*token_type = ENV;
-	env_name = extract_env_name(line, i, env, envp);
-	if (!ft_strcmp(env_name, "$"))
-		*token_type = WORD;
-	return (env_name);
+	search_str = extract_env_name(line, i, env);
+	env_lib = create_env_library(envp);
+	// in case of no match
+	if (check_if_part_of_library(env_lib, search_str) == false)
+	{
+		*token_type = ENV_FAIL;
+		free(search_str);
+		return (NULL); //! does this make sense? how should I process it?
+	}
+	else 
+	{
+		env_final = *find_path(envp, search_str);
+		free(search_str);
+	}
+	printf("ENV %s\n", env_final);
+	*token_type = WORD;
+	return (env_final);
 }
 
 // add multiple checks for all kind of delimiters e.g. parameter, quotes, whitespaces
