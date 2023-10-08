@@ -478,7 +478,7 @@ char **create_env_library(char **envp)
                 return (NULL);
             strncpy(buf[len], envp[len], substr_len); //! LIBFT
             buf[len][substr_len] = '\0';
-            printf("SUBSTR: %s\n", buf[len]);
+            //printf("SUBSTR: %s\n", buf[len]);
         }
         else
         {
@@ -554,20 +554,24 @@ char	*env_token(char *line, int *i, t_type *token_type, t_list *env, char **envp
 	*token_type = ENV;
 	search_str = extract_env_name(line, i, env);
 	env_lib = create_env_library(envp);
-	// in case of no match
 	if (check_if_part_of_library(env_lib, search_str) == false)
 	{
 		*token_type = ENV_FAIL;
+		if (ft_strcmp(search_str, "$") == 0) // if theres a single dollar sign it's supposed to be printed
+		{
+			*token_type = WORD;
+			free(search_str);
+			return(ft_substr("$", 0, 1));
+		}
 		free(search_str);
 		return (NULL); //! does this make sense? how should I process it?
+		//! if no matching ENV nothing happens, meaning I could do if type ENV_FAIL = skip that command
 	}
 	else 
 	{
 		env_final = *find_path(envp, search_str);
 		free(search_str);
 	}
-	printf("ENV %s\n", env_final);
-	*token_type = WORD;
 	return (env_final);
 }
 
@@ -613,29 +617,38 @@ void	freememory(t_minishell m)
 	free(m.line);
 }
 
+//! DO WE NEED TO REPLICATE BASH EXIT CODES?
+int	exit_shell(t_minishell m)
+{
+	printf("\nExiting...\n");
+	freememory(m);
+	exit(1);
+}
+
+/* shell is only created if there is exactly one argument (name of the executable);
+m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
+tlist = tokenlist, meaning the list that holds all tokens,
+clist = commandlist, meaning the list that holds all commands */
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
 
 	(void)av;
-	//(void)envp;
-	if (ac == 1)
+	if (ac != 1)
+		return (1);
+	//! TODO: INITIALIZE M + SIGNAL + ENVP LIB?
+	while(1)
 	{
-		while(1)
-		{
-			m.line = readline("Myshell: ");
-			//m.env = envp;
-			// Check for end-of-input or Ctrl+D
-			if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) {
-				printf("\nExiting...\n");
-				freememory(m);
-				exit(1);
-			}
-			m.tlist = split_line_into_tokens(m, envp); // line that holds all the tokens
-			printlist(m.tlist); //only for testing
-			m.clist = parser(m);
-			add_history(m.line);
-		}
+		m.line = readline("Myshell: ");
+		if (!m.line)
+			exit_shell(m);
+		add_history(m.line);
+		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
+			exit_shell(m);
+		m.tlist = split_line_into_tokens(m, envp);
+		printlist(m.tlist); //! only for testing
+		m.clist = parser(m);
+		//! TODO: FREE TOKEN & COMMAND LIST
+		free(m.line);
 	}
-	//! if ac != 1 terminate program immediately, we don't want any command line arguments except executable name
 }
