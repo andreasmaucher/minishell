@@ -90,6 +90,7 @@ typedef struct s_minishell
     t_list *clist;
 	t_list	*env; // not used?
 	char **env_lib;
+	char	**envp_lib;
     char *line;
     char *string_between_quotes;
 	char 	*str_with_all_tokens;
@@ -116,5 +117,10 @@ t_list *parser(t_minishell m);
 
 //itoa
 char	*ft_itoa(int n);
+
+//env
+char	*extract_env_name(char *line, int *i);
+bool check_if_part_of_library(char **env_lib, char *search_str);
+char	**find_path(char **envp, char *search_str);
 
 #endif

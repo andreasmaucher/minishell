@@ -248,27 +248,8 @@ char	*append_str(char *str, char *appendix)
 		return(appendix);
 	appended_str = ft_strjoin(str, appendix);
 	//free(str);
-	///free(appendix);
+	//free(appendix);
 	return(appended_str);
-}
-
-/* search_str is the string that needs to be found */
-char	*extract_env_name2(char *line, int *i)
-{
-	int	start;
-	int length;
-	char	*search_str;
-
-	start = *i;
-	if (!line[*i] || line[*i] == '"')
-		return(ft_strdup("$"));
-	//! add g exit code
-	while(line[*i] != '\0' && check_for_metacharacter(line[*i]) == false &&
-	check_for_quotes(line[*i]) == false && line[*i] != '$')
-		(*i)++;
-	length = *i - start;
-	search_str = ft_substr(line, start, length);
-	return (search_str);
 }
 
 char	*char_to_str(char c)
@@ -285,21 +266,25 @@ char	*char_to_str(char c)
 	return(str);
 }
 
-//! case if env is within double quote string
-//! i need to have it in the same loop, but how do I get the lenght?!
-//! cant use same logic with strncpy need to use append 
-char *double_quote_to_string(char *line, int *i)
+char *double_quote_to_string(char *line, int *i, t_minishell m)
 {
 	char *str_between_quotes;
+	char	*search_str;
 	char	*env_expanded;
 
+	str_between_quotes = NULL;
 	while (line[*i] != '"' && line[*i] != '\0')
 	{
 		if (line[*i] == '$')
 		{	
-			//(*i)++;
-			env_expanded = extract_env_name2(line, i);///env_within_double_quotes(line, i);
+			(*i)++;
+			search_str = extract_env_name(line, i);
+			if (check_if_part_of_library(m.env_lib, search_str) == true)
+				env_expanded = *find_path(m.envp_lib, search_str);
+			else if (check_if_part_of_library(m.env_lib, search_str) == false)
+				env_expanded = "";
 			str_between_quotes = append_str(str_between_quotes, env_expanded);
+			free(search_str);
 		}
 		else
 			str_between_quotes = append_str(str_between_quotes, char_to_str(line[*i]));
@@ -331,14 +316,14 @@ char *single_quote_to_string(char *line, int *i)
 	return(str_between_quotes);
 }
 
-char *single_or_double_quotes_token(char *line, int *i, t_type *token_type, char **env_lib)
+char *single_or_double_quotes_token(char *line, int *i, t_type *token_type, t_minishell m)
 {
 	if (line[*i] == '"')
 	{
 		*token_type = WORD;//DOUBLE_QUOTES; //!so in my version i don't even need this?!
 		if (line[*i])
 			(*i)++;
-		return(double_quote_to_string(line, i));
+		return(double_quote_to_string(line, i, m));
 	}
 	else
 	{
@@ -529,6 +514,42 @@ char **create_env_library(char **envp)
     return (buf);
 }
 
+char **create_envp_library(char **envp)
+{
+    char **buf = NULL;
+    char target = '\0';
+    int len = 0;
+    int substr_len;
+
+    while (envp[len] != NULL)
+        len++;
+    buf = malloc(sizeof(char *) * (len + 1));
+    if (!buf)
+        return (NULL);
+    len = 0; //! Don't get that logic fully 
+    while (envp[len] != NULL)
+    {
+        char *target_pos = strchr(envp[len], target); //! LIBFT
+        if (target_pos != NULL)
+        {
+            substr_len = target_pos - envp[len];
+            buf[len] = malloc(substr_len + 1);
+            if (!buf[len])
+                return (NULL);
+            strncpy(buf[len], envp[len], substr_len); //! LIBFT
+            buf[len][substr_len] = '\0';
+            //printf("SUBSTR: %s\n", buf[len]);
+        }
+        else
+        {
+            buf[len] = NULL;
+        }
+        len++;
+    }
+    buf[len] = NULL;
+    return (buf);
+}
+
 bool check_if_part_of_library(char **env_lib, char *search_str)
 {
 	int	i;
@@ -631,7 +652,7 @@ t_list *split_line_into_tokens(t_minishell m, char **envp)
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.str_with_all_tokens = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')
-			m.str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &m.token_type, m.env_lib);
+			m.str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &m.token_type, m);
 		else
 			m.str_with_all_tokens = check_for_word_token(m.line, &i, &m.token_type);
 		m.tlist = add_token_to_list(&m.tlist, m.str_with_all_tokens, m.token_type);
@@ -676,6 +697,7 @@ int main(int ac, char **av, char **envp)
 		return (1);
 	//! TODO: INITIALIZE M + SIGNAL + ENVP LIB?
 	m.env_lib = create_env_library(envp);
+	m.envp_lib = create_envp_library(envp);
 	while(1)
 	{
 		m.line = readline("Myshell: ");
