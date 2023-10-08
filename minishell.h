@@ -88,7 +88,8 @@ typedef struct s_minishell
     int tokens;
     t_list *tlist;
     t_list *clist;
-	t_list	*env;
+	t_list	*env; // not used?
+	char **env_lib;
     char *line;
     char *string_between_quotes;
 	char 	*str_with_all_tokens;

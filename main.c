@@ -236,8 +236,53 @@ char *env_within_double_quotes(char *line, int *i)
 		return (NULL);
 	strncpy(env_string, &line[start], length);
 	env_string[length] = '\0';
-	printf("%s", env_string);
+	//printf("%s", env_string);
 	return(env_string);
+}
+
+char	*append_str(char *str, char *appendix)
+{
+	char	*appended_str;
+
+	if (!str)
+		return(appendix);
+	appended_str = ft_strjoin(str, appendix);
+	//free(str);
+	///free(appendix);
+	return(appended_str);
+}
+
+/* search_str is the string that needs to be found */
+char	*extract_env_name2(char *line, int *i)
+{
+	int	start;
+	int length;
+	char	*search_str;
+
+	start = *i;
+	if (!line[*i] || line[*i] == '"')
+		return(ft_strdup("$"));
+	//! add g exit code
+	while(line[*i] != '\0' && check_for_metacharacter(line[*i]) == false &&
+	check_for_quotes(line[*i]) == false && line[*i] != '$')
+		(*i)++;
+	length = *i - start;
+	search_str = ft_substr(line, start, length);
+	return (search_str);
+}
+
+char	*char_to_str(char c)
+{
+	char	*str;
+	int		i;
+
+	str = malloc(sizeof(char) * 2); //!MALLOC
+	if (str == NULL)
+		return (NULL);
+	i = 0;
+	str[i] = c;
+	str[++i] = '\0';
+	return(str);
 }
 
 //! case if env is within double quote string
@@ -246,26 +291,20 @@ char *env_within_double_quotes(char *line, int *i)
 char *double_quote_to_string(char *line, int *i)
 {
 	char *str_between_quotes;
-	char *env;
-	int start;
-	int length;
+	char	*env_expanded;
 
-	start = *i;
 	while (line[*i] != '"' && line[*i] != '\0')
 	{
 		if (line[*i] == '$')
 		{	
-			env = env_within_double_quotes(line, i);
-			printf("%s", env);
+			//(*i)++;
+			env_expanded = extract_env_name2(line, i);///env_within_double_quotes(line, i);
+			str_between_quotes = append_str(str_between_quotes, env_expanded);
 		}
+		else
+			str_between_quotes = append_str(str_between_quotes, char_to_str(line[*i]));
 		(*i)++;
 	}
-	length = *i - start;
-	str_between_quotes = malloc(sizeof(char) * (length + 1)); //! MALLOC
-	if (!str_between_quotes)
-		return (NULL);
-	strncpy(str_between_quotes, &line[start], length);
-	str_between_quotes[length] = '\0';
 	if (line[*i])
 		(*i)++;
 	return(str_between_quotes);
@@ -292,7 +331,7 @@ char *single_quote_to_string(char *line, int *i)
 	return(str_between_quotes);
 }
 
-char *single_or_double_quotes_token(char *line, int *i, t_type *token_type)
+char *single_or_double_quotes_token(char *line, int *i, t_type *token_type, char **env_lib)
 {
 	if (line[*i] == '"')
 	{
@@ -524,13 +563,12 @@ char	**find_path(char **envp, char *search_str)
 }
 
 /* search_str is the string that needs to be found */
-char	*extract_env_name(char *line, int *i, t_list *env)
+char	*extract_env_name(char *line, int *i)
 {
 	int	start;
 	int length;
 	char	*search_str;
 
-	(void)env;
 	start = *i;
 	if (!line[*i] || line[*i] == '"')
 		return(ft_strdup("$"));
@@ -544,16 +582,16 @@ char	*extract_env_name(char *line, int *i, t_list *env)
 }
 
 /* extract the env_str from the input */
-char	*env_token(char *line, int *i, t_type *token_type, t_list *env, char **envp)
+char	*env_token(char *line, int *i, t_type *token_type, char **env_lib, char **envp)
 {
 	char	*search_str;
 	char	*env_final;
-	char	**env_lib;
+	//char	**env_lib;
 
 	(*i)++;
 	*token_type = ENV;
-	search_str = extract_env_name(line, i, env);
-	env_lib = create_env_library(envp);
+	search_str = extract_env_name(line, i);
+	//env_lib = create_env_library(envp);
 	if (check_if_part_of_library(env_lib, search_str) == false)
 	{
 		*token_type = ENV_FAIL;
@@ -589,11 +627,11 @@ t_list *split_line_into_tokens(t_minishell m, char **envp)
 		else if (m.line[i] == '<' || m.line[i] == '>')
 			m.str_with_all_tokens = redirection_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '$')
-			m.str_with_all_tokens = env_token(m.line, &i, &m.token_type, m.env, envp);
+			m.str_with_all_tokens = env_token(m.line, &i, &m.token_type, m.env_lib, envp);
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.str_with_all_tokens = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')
-			m.str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &m.token_type);
+			m.str_with_all_tokens = single_or_double_quotes_token(m.line, &i, &m.token_type, m.env_lib);
 		else
 			m.str_with_all_tokens = check_for_word_token(m.line, &i, &m.token_type);
 		m.tlist = add_token_to_list(&m.tlist, m.str_with_all_tokens, m.token_type);
@@ -637,6 +675,7 @@ int main(int ac, char **av, char **envp)
 	if (ac != 1)
 		return (1);
 	//! TODO: INITIALIZE M + SIGNAL + ENVP LIB?
+	m.env_lib = create_env_library(envp);
 	while(1)
 	{
 		m.line = readline("Myshell: ");
