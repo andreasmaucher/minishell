@@ -287,8 +287,7 @@ char *double_quote_to_string(char *line, int *i, t_minishell m)
 			free(search_str);
 		}
 		else
-			str_between_quotes = append_str(str_between_quotes, char_to_str(line[*i]));
-		(*i)++;
+			str_between_quotes = append_str(str_between_quotes, char_to_str(line[(*i)++]));
 	}
 	if (line[*i])
 		(*i)++;
@@ -610,15 +609,16 @@ char	*env_token(char *line, int *i, t_type *token_type, char **env_lib, char **e
 	//char	**env_lib;
 
 	(*i)++;
-	*token_type = ENV;
+	*token_type = WORD;//ENV;
 	search_str = extract_env_name(line, i);
+	printf("SEARCH: %s", search_str);
 	//env_lib = create_env_library(envp);
 	if (check_if_part_of_library(env_lib, search_str) == false)
 	{
 		*token_type = ENV_FAIL;
 		if (ft_strcmp(search_str, "$") == 0) // if theres a single dollar sign it's supposed to be printed
 		{
-			*token_type = WORD;
+			*token_type = WORD;//not needed anymore
 			free(search_str);
 			return(ft_substr("$", 0, 1));
 		}
@@ -684,6 +684,34 @@ int	exit_shell(t_minishell m)
 	exit(1);
 }
 
+void	handle_signals(int signal)
+{
+	if (signal == SIGINT)
+	{
+		//g_exit_code = 130;
+		printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+}
+
+void	init_signals(t_minishell	*m, void (*handle)(int))
+{
+	m->sa.sa_handler = handle;
+	m->sa.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &m->sa, NULL);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void	init_minishell_struct(t_minishell m, char **envp)
+{
+	ft_memset(m, 0, sizeof(t_minishell));
+	m.env_lib = create_env_library(envp);
+	m.envp_lib = create_envp_library(envp);
+	init_signals(m, handle_signals);
+}
+
 /* shell is only created if there is exactly one argument (name of the executable);
 m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
 tlist = tokenlist, meaning the list that holds all tokens,
@@ -696,8 +724,7 @@ int main(int ac, char **av, char **envp)
 	if (ac != 1)
 		return (1);
 	//! TODO: INITIALIZE M + SIGNAL + ENVP LIB?
-	m.env_lib = create_env_library(envp);
-	m.envp_lib = create_envp_library(envp);
+	init_minishell_struct(m, envp);
 	while(1)
 	{
 		m.line = readline("Myshell: ");

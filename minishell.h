@@ -22,6 +22,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "pipex/pipex.h"
+#include <signal.h>
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
@@ -96,6 +97,7 @@ typedef struct s_minishell
 	char 	*str_with_all_tokens;
     t_type token_type;
     t_token token;
+	struct sigaction sa;
 }   t_minishell;
 
 //utils
@@ -106,6 +108,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strstr(const char *haystack, const char *needle);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char c);
+void	*ft_memset(void *s, int c, size_t n);
 
 //list operators
 void	printlist(t_list *head);

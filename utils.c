@@ -12,6 +12,20 @@
 
 #include "minishell.h"
 
+void	*ft_memset(void *s, int c, size_t n)
+{
+	unsigned char	*p;
+
+	p = s;
+	while (n > 0)
+	{
+		*p = c;
+		p++;
+		n--;
+	}
+	return (s);
+}
+
 size_t	ft_strlen(const char *s)
 {
 	int	i;
