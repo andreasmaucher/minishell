@@ -348,14 +348,6 @@ t_list *find_previous_node(t_list *head, t_list *target_node)
     return (previous_node);
 }
 
-void	ft_lstdelone(t_list *lst, void (*del)(void*))
-{
-	if (lst == 0 || del == 0)
-		return ;
-	(*del)(lst->value);
-	free(lst);
-}
-
 void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))
 {
 	t_list	*prev;
@@ -370,6 +362,7 @@ void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))
 	ft_lstdelone(node, del);
 }
 
+/* helper function for deleting a token and freeing its memory */
 void token_del(void *content) {
     if (content == NULL) {
         return;
@@ -676,11 +669,25 @@ void	freememory(t_minishell m)
 	free(m.line);
 }
 
+void	*ft_free_set_null(void *ptr)
+{
+	if (ptr)
+		free(ptr);
+	return (NULL);
+}
+
 //! DO WE NEED TO REPLICATE BASH EXIT CODES?
 int	exit_shell(t_minishell m)
 {
 	printf("\nExiting...\n");
-	freememory(m);
+	if (m.line)
+		m.line = ft_free_set_null(m.line);
+	if (m.tlist)
+		ft_lstclear(&m.tlist, token_del);
+	/* if (m.clist)
+		ft_lstclear(&m.clist, command_del);
+	 */
+	//freememory(m);
 	exit(1);
 }
 

@@ -110,6 +110,8 @@ char	*ft_strstr(const char *haystack, const char *needle);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	**ft_split(char const *s, char c);
 void	*ft_memset(void *s, int c, size_t n);
+void	ft_lstclear(t_list **lst, void (*del)(void*));
+void	ft_lstdelone(t_list *lst, void (*del)(void*));
 
 //list operators
 void	printlist(t_list *head);
