@@ -21,7 +21,6 @@
 #include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "pipex/pipex.h"
 #include <signal.h>
 #include <sys/ioctl.h>
 
@@ -112,6 +111,8 @@ char	**ft_split(char const *s, char c);
 void	*ft_memset(void *s, int c, size_t n);
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstdelone(t_list *lst, void (*del)(void*));
+size_t	ft_strlen(const char *s);
+int	ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //list operators
 void	printlist(t_list *head);

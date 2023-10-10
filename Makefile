@@ -13,9 +13,7 @@
 NAME = minishell
 SOURCES = main.c utils.c list_operators.c parser.c itoa.c
 
-PIPEX = pipex/pipex.o
 OBJS = $(SOURCES:.c=.o)
-INCLUDES = -I pipex/includes
 
 CC = cc -g
 RM = rm -f
@@ -24,18 +22,13 @@ MLXFLAGS = -lreadline
 
 all: $(NAME)	
 
-$(NAME): $(PIPEX) $(OBJS)
+$(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(MLXFLAGS)
 
-$(PIPEX):
-	make -C pipex
-
 clean:
-	make -C pipex clean
 	$(RM) $(OBJS)
 
 fclean: clean
-	make -C pipex fclean
 	$(RM) $(NAME)
 
 re: fclean $(NAME)
