@@ -10,33 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+/* modifies the attributes of the command node in the list that m.clist points to */
+void cmd_pipe(t_list **clist, bool *first_word)
 {
-	t_minishell m;
+    t_command *tmp_cmd;
+    t_list *tmp_head;
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
-		add_history(m.line);
-		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		free(m.line);
-	}
+    tmp_head = *clist;
+    tmp_cmd = (t_command *) tmp_head->value;
+    tmp_cmd->before_pipe = true;
+    tmp_head = tmp_head->next;
+    tmp_cmd = (t_command *) tmp_head->value;
+    tmp_cmd->after_pipe = true;
+    *first_word = true;
+}
+
+//! needs addition in case of command within string
+void cmd_word(t_list *tlist, t_list *clist, bool *first_word)
+{
+    t_token *tmp_token;
+    t_command *tmp_command;
+
+    tmp_command = (t_command *) clist->value;
+    tmp_token = (t_token *) tlist->value;
+    add_token_to_command_list(&tmp_command->arguments, ft_strdup(tmp_token->str));
+    *first_word = false;
 }

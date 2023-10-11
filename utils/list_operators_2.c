@@ -10,33 +10,45 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
 {
-	t_minishell m;
+	t_token *token;
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
-		add_history(m.line);
-		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		free(m.line);
-	}
+	token = malloc(sizeof(t_token));
+	if (!token)
+		return(NULL);
+	token->str = str_with_all_tokens;
+	token->type = token_type;
+	return(token);
+}
+
+t_list *find_previous_node(t_list *head, t_list *target_node)
+{
+    t_list *previous_node;
+    t_list *current_node;
+	
+	current_node = head;
+	previous_node = NULL;
+    while (current_node != NULL && current_node != target_node)
+    {
+        previous_node = current_node;
+        current_node = current_node->next;
+    }
+    return (previous_node);
+}
+
+void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))
+{
+	t_list	*prev;
+
+	if (!lst || !(*lst) || !node)
+		return ;
+	prev = find_previous_node(*lst, node);
+	if (!prev)
+		*lst = node->next;
+	else
+		prev->next = node->next;
+	ft_lstdelone(node, del);
 }
