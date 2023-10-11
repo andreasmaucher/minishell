@@ -59,6 +59,19 @@ void	command_del(void *arg)
 	command = ft_free_set_null(command);
 }
 
+void	free_env(char **env)
+{
+	int i;
+
+	i = 0;
+	while (env[i] != NULL)
+	{
+		free(env[i]);
+		i++;
+	}
+	free(env);
+}
+
 //! DO WE NEED TO REPLICATE BASH EXIT CODES?
 /* to free up all memory in the end, including memory automatically allocated by readline function */
 int	exit_shell(t_minishell m)
@@ -69,6 +82,16 @@ int	exit_shell(t_minishell m)
 		ft_lstclear(&m.tlist, token_del);
 	if (m.clist)
 		ft_lstclear(&m.clist, command_del);
+	if (m.env_lib)
+	{
+		free_env(m.env_lib);
+		//free(m.env_lib);
+	}
+	if (m.envp_lib)
+	{
+		free_env(m.envp_lib);
+		//free(m.envp_lib);
+	}
 	printf("\nExiting...\n");
 	exit(1);
 }
