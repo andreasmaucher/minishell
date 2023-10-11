@@ -64,6 +64,46 @@ t_list *create_command_list(t_list **clist, t_command *tmp_cmd)
 	return (*clist);
 }
 
+t_command	*ft_create_cmd(void)
+{
+	t_command	*cmd;
+
+	cmd = malloc(sizeof(t_command));
+	if (!cmd)
+		return (NULL);
+	cmd->arguments = NULL;
+	cmd->type = PATH;
+	cmd->before_pipe = false;
+	cmd->after_pipe = false;
+	cmd->input_redir_or_heredoc = 0;
+	cmd->out_redir_type = 0;
+	cmd->inred_file = NULL;
+	cmd->outred_file = NULL;
+	return (cmd);
+}
+
+/* counts the amount of commands (len) in a token list, determined by the amount of PIPES;
+iteration by 1 at the end to account for the fact, that a PIPE is always splitting two parts */
+int command_count(t_list *tlist) 
+{
+    t_list *tmp_head;
+    t_token *token;
+    int len;
+    
+    tmp_head = tlist;
+    len = 0;
+    while (tmp_head != NULL) 
+    {
+        token = (t_token *)tmp_head->value;
+        if (token->type == PIPE)
+            len++;
+        tmp_head = tmp_head->next;
+    }
+    len++;
+    printf("CMD Count: %d\n", len); //!TESTING
+    return(len);
+}
+
 /* initialization of clist to NULL, to ensure that it starts as an empty list */
 t_list *setup_command_list(t_list **clist, t_list *tlist)
 {

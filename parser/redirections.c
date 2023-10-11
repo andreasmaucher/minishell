@@ -28,8 +28,6 @@ static char *create_heredoc_file(void)
 }
 
 /* e.g. < for input redirection: wc -l < file2 returns the amount of words in one file
-e.g. > for output redirection: wc -l < file2 > file1 creates a new file1 and writes the wordcount in it
-e.g. >> append: echo "hello again" >> file2 this adds hello again to file 2 
 e.g. << redirect heredoc: cat <<EOF >> output.txt in this case the heredoc allows to write directly in the terminal
 until 'EOF' is typed; in a 2nd step it is then appended to the output.txt file;
 it's necessary to have a separate structure for file to be able to create as many structures as needed */
@@ -72,7 +70,14 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
-before the redirection sign; */
+before the redirection sign;
+e.g. > for output redirection: wc -l < file2 > file1 creates a new file1 and writes the wordcount of file2 in file1
+e.g. > for output redirection: ls -al > listings creates a new file listings with the ls -al information
+e.g. >> append: echo "hello again" >> file2 this adds hello again to file 2 
+> is used to create or replace a file with new output.
+>> is used to append output to an existing file or create a new file and add output to it without overwriting existing content.
+Overwriting is the main differentiation between > & >>;
+*/
 void    cmd_output_redirection(t_list **tlist, t_list *clist)
 {
     t_file  *file;
