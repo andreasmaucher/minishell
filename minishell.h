@@ -196,5 +196,6 @@ t_list	*ft_lstnew(void *content);
 int command_count(t_list *tlist);
 t_command	*ft_create_cmd(void);
 void add_token_to_command_list(t_list **token_list, char *token_info);
+bool check_parser_input(t_list *tlist);
 
 #endif

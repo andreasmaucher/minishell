@@ -51,16 +51,9 @@ static void add_attributes_to_command_list(t_minishell m)
     }
 }
 
-/* int check_parser_input(t_list *tlist)
-{
-
-} */
-
 t_list *parser(t_minishell m)
 {
-    //! add a check if input is valid or is this handled at the end of lexer?
-    // always needs to be sth. after < & << otherwise segfault
-    //if (check_parser_input(m.tlist) && m.tlist)
+    if (check_parser_input(m.tlist) == true && m.tlist != NULL)
     {
         m.clist = setup_command_list(&m.clist, m.tlist);
         if (!m.clist)
@@ -69,6 +62,9 @@ t_list *parser(t_minishell m)
         print_command_list(m.clist); //!only for testing
         return(m.clist);
     }
-   /*  else   
+   else
+   {
+        exit_shell(m);
         return (NULL); //!exit code? */
+   }
 }
