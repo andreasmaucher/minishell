@@ -104,6 +104,7 @@ int command_count(t_list *tlist)
     return(len);
 }
 
+//! CHECK
 /* initialization of clist to NULL, to ensure that it starts as an empty list */
 t_list *setup_command_list(t_list **clist, t_list *tlist)
 {
@@ -115,6 +116,8 @@ t_list *setup_command_list(t_list **clist, t_list *tlist)
     while (len--)
     {
         tmp_cmd = ft_create_cmd();
+        if (tmp_cmd == NULL)
+            return (NULL);
         *clist = create_command_list(clist, tmp_cmd);
     }
     return(*clist);

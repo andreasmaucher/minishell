@@ -15,7 +15,6 @@
 /* generates a unique filename for a heredoc file by using a static index that increments with each call;
 converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename */
-//! MALLOC
 static char *create_heredoc_file(void)
 {
     static int index = 0;
@@ -44,11 +43,9 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->input_redir_or_heredoc = tmp_token->type; //! if not used later, delete again
     file->redirection_type = tmp_token->type; //! if not used later, delete again
-    printf("TEST1: %s\n", tmp_token->str);
     if (*tlist != NULL) //! this is to avoid segfaults, but also need to be careful of case without anything after <
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
-    printf("TEST2: %s\n", tmp_token->str); //! does not print because of whitespace!!!
     file->fd = -1;
     if (tmp_cmd->input_redir_or_heredoc == REDIRECT_HEREDOC)
     {
@@ -58,15 +55,11 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     }
     else if (tmp_cmd->input_redir_or_heredoc == REDIRECT_IN)
     {
-        file->text_to_file = tmp_token->str;//ft_strdup(tmp_token->str);
+        file->text_to_file = ft_strdup(tmp_token->str);
         file->stop_heredoc = NULL;
         file->new_heredoc_file = NULL;
     }
-    //new_node = create_new_node((void *)file);
-    //! NOT WORKING
     add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
-    //ft_lstadd_back(&(tmp_cmd->inred_file), ft_lstnew((void *)file));
-    //insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
