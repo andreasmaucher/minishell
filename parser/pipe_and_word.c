@@ -43,6 +43,5 @@ void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd)
             tmp_command->type = PATH;
     }
     *new_cmd = false;
-    //! its storing everything which it should def not!!!!
-    add_token_to_command_list(&tmp_command->arguments, ft_strdup(tmp_token->str));
+    //tmp_command->args = ft_strdup((tmp_token->str));
 }

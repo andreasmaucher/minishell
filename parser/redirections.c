@@ -32,13 +32,9 @@ until 'EOF' is typed; in a 2nd step it is then appended to the output.txt file;
 it's necessary to have a separate structure for file to be able to create as many structures as needed */
 void cmd_input_redirection(t_list **tlist, t_list *clist)
 {
-    t_file  *file;
     t_command *tmp_cmd;
     t_token *tmp_token;
 
-    file = malloc(sizeof(t_file));
-    if (!file)
-        return;
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->redir_type = tmp_token->type;
@@ -58,7 +54,6 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
         tmp_cmd->in_redirects.stop_heredoc = NULL;
         tmp_cmd->in_redirects.new_heredoc_file = NULL;
     }
-    //add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
@@ -72,13 +67,9 @@ Overwriting is the main differentiation between > & >>;
 */
 void    cmd_output_redirection(t_list **tlist, t_list *clist)
 {
-    t_file  *file; //! delete file ?!
     t_command *tmp_cmd;
     t_token *tmp_token;
 
-    file = malloc(sizeof(t_file));
-    if (!file)
-        return;
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->redir_type = tmp_token->type;

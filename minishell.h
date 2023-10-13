@@ -82,14 +82,12 @@ typedef struct s_file
 }	t_file;
 typedef struct s_command //!
 {
-	t_list			*arguments;
 	t_cmd_type		type; // BUILTIN OR PATH
 	bool			before_pipe;
 	bool			after_pipe;
 	t_type	        redir_type;
-	t_list			*inred_file;
-	t_list			*outred_file;
-	t_file			out_redirects; //! maybe delete
+	char			*args;
+	t_file			out_redirects;
 	t_file			in_redirects;
 }					t_command;
 

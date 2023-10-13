@@ -65,14 +65,7 @@ void print_command_list(t_list *clist)
             printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
         }
 
-        printf("Arguments: %s\n", (char *)cmd->arguments);
-        t_list *arguments_list = cmd->arguments;
-        while (arguments_list != NULL) {
-            printf("Argument: %s\n", (char *)(arguments_list->value));
-            arguments_list = arguments_list->next;
-        }
-        //printf("Arguments: %s\n", cmd->arguments != NULL ? (char *)(cmd->arguments) : "None");
-
+        //printf("Arguments: %s\n", (char *)cmd->args);
         // Move to the next node
         current = current->next;
         i++;

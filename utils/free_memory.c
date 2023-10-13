@@ -20,20 +20,6 @@ void	*ft_free_set_null(void *ptr)
 	return (NULL);
 }
 
-static void	file_del(void *arg)
-{
-	t_file	*file;
-
-	file = (t_file *)arg;
-	//! need to linkage since struct member changed!
-	//if (file->redirection_type == REDIRECT_HEREDOC)
-		//unlink(file->new_heredoc_file);
-	//! also free text to file
-	file->new_heredoc_file = ft_free_set_null(file->new_heredoc_file);
-	file->stop_heredoc = ft_free_set_null(file->stop_heredoc);
-	file = ft_free_set_null(file);
-}
-
 /* helper function for deleting a token and freeing its memory */
 void token_del(void *content) 
 {
@@ -54,9 +40,9 @@ void	command_del(void *arg)
 	t_command	*command;
 
 	command = (t_command *)arg;
-	ft_lstclear(&command->arguments, free);
+	/* ft_lstclear(&command->arguments, free);
 	ft_lstclear(&command->outred_file, file_del);
-	ft_lstclear(&command->inred_file, file_del);
+	ft_lstclear(&command->inred_file, file_del); */
 	command = ft_free_set_null(command);
 }
 
