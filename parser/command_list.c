@@ -75,8 +75,8 @@ t_command	*ft_create_cmd(void)
 	cmd->type = PATH;
 	cmd->before_pipe = false;
 	cmd->after_pipe = false;
-	cmd->input_redir_or_heredoc = 0;
-	cmd->out_redir_type = 0;
+	cmd->redir_type = 0;
+	cmd->redir_type = 0;
 	cmd->inred_file = NULL;
 	cmd->outred_file = NULL;
 	return (cmd);
@@ -100,7 +100,6 @@ int command_count(t_list *tlist)
         tmp_head = tmp_head->next;
     }
     len++;
-    printf("CMD Count: %d\n", len); //!TESTING
     return(len);
 }
 

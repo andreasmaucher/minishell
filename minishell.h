@@ -64,10 +64,18 @@ typedef enum cmd_type
 	PATH,
 }	t_cmd_type; //!
 
+/*
+- fd: to indicate whether a file is open
+- file_name: name of the new file e.g. hello > friend -> friend would be the file name
+in thie output redirection
+- stop_heredoc: after typing this word the heredoc writing process stops
+- redirection_type: stores the tyype of redirection e.g. heredoc, append etc.
+- new_heredoc_file: name of the newly created heredoc file (stores the full path)
+*/
 typedef struct s_file
 {
 	int		fd;
-	char	*text_to_file;
+	char	*file_name;
 	char	*stop_heredoc;
 	t_type	redirection_type;
 	char	*new_heredoc_file;
@@ -75,11 +83,10 @@ typedef struct s_file
 typedef struct s_command //!
 {
 	t_list			*arguments;
-	t_cmd_type		type;
+	t_cmd_type		type; // BUILTIN OR PATH
 	bool			before_pipe;
 	bool			after_pipe;
-	t_type	        input_redir_or_heredoc;
-	t_type	        out_redir_type;
+	t_type	        redir_type;
 	t_list			*inred_file;
 	t_list			*outred_file;
 }					t_command;
@@ -87,8 +94,8 @@ typedef struct s_command //!
 typedef struct s_minishell
 {
     int tokens;
-    t_list *tlist;
-    t_list *clist;
+    t_list *tlist; // for lexer, token list
+    t_list *clist; // for parser, command list
 	t_list	*env; // not used?
 	char **env_lib;
 	char	**envp_lib;
@@ -186,8 +193,8 @@ char	**ft_split(char const *s, char c);
 //parser
 void cmd_input_redirection(t_list **tlist, t_list *clist);
 void    cmd_output_redirection(t_list **tlist, t_list *clist);
-void cmd_pipe(t_list **clist, bool *first_word);
-void cmd_word(t_list *tlist, t_list *clist, bool *first_word);
+void cmd_pipe(t_list **clist, bool *new_cmd);
+void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd);
 t_list *create_command_list(t_list **clist, t_command *tmp_cmd);
 t_list *setup_command_list(t_list **clist, t_list *tlist);
 t_list	*ft_lstlast(t_list *lst);
