@@ -45,20 +45,20 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
-    file->fd = -1;
+    tmp_cmd->in_redirects.fd = -1;
     if (tmp_cmd->redir_type == REDIRECT_HEREDOC)
     {
-        file->stop_heredoc = ft_strdup(tmp_token->str);
-        file->new_heredoc_file = create_heredoc_file();
-        file->file_name = NULL;
+        tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
+        tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
+        tmp_cmd->in_redirects.file_name = NULL;
     }
     else if (tmp_cmd->redir_type == REDIRECT_IN)
     {
-        file->file_name = ft_strdup(tmp_token->str);
-        file->stop_heredoc = NULL;
-        file->new_heredoc_file = NULL;
+        tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
+        tmp_cmd->in_redirects.stop_heredoc = NULL;
+        tmp_cmd->in_redirects.new_heredoc_file = NULL;
     }
-    add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
+    //add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
@@ -72,7 +72,7 @@ Overwriting is the main differentiation between > & >>;
 */
 void    cmd_output_redirection(t_list **tlist, t_list *clist)
 {
-    t_file  *file;
+    t_file  *file; //! delete file ?!
     t_command *tmp_cmd;
     t_token *tmp_token;
 
@@ -82,9 +82,9 @@ void    cmd_output_redirection(t_list **tlist, t_list *clist)
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->redir_type = tmp_token->type;
-    tmp_cmd->redirects.fd = -1;
+    tmp_cmd->out_redirects.fd = -1;
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->redirects.file_name = ft_strdup(tmp_token->str);
+    tmp_cmd->out_redirects.file_name = ft_strdup(tmp_token->str);
 }

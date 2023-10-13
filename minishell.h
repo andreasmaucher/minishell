@@ -89,7 +89,8 @@ typedef struct s_command //!
 	t_type	        redir_type;
 	t_list			*inred_file;
 	t_list			*outred_file;
-	t_file			redirects; //! maybe delete
+	t_file			out_redirects; //! maybe delete
+	t_file			in_redirects;
 }					t_command;
 
 typedef struct s_minishell
