@@ -71,14 +71,20 @@ t_command	*ft_create_cmd(void)
 	cmd = malloc(sizeof(t_command));
 	if (!cmd)
 		return (NULL);
-	cmd->arguments = NULL;
 	cmd->type = PATH;
 	cmd->before_pipe = false;
 	cmd->after_pipe = false;
 	cmd->redir_type = 0;
 	cmd->redir_type = 0;
-	cmd->inred_file = NULL;
-	cmd->outred_file = NULL;
+	cmd->args = NULL; //! not really correct?
+	cmd->out_redirects.fd = -1;
+	cmd->out_redirects.file_name = NULL;
+	cmd->out_redirects.stop_heredoc = NULL;
+	cmd->out_redirects.new_heredoc_file = NULL;
+	cmd->in_redirects.fd = -1;
+	cmd->in_redirects.file_name = NULL;
+	cmd->in_redirects.stop_heredoc = NULL;
+	cmd->in_redirects.new_heredoc_file = NULL;
 	return (cmd);
 }
 

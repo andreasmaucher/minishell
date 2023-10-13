@@ -59,6 +59,7 @@ t_list *parser(t_minishell m)
         if (m.clist == NULL)
             return (NULL);
         add_attributes_to_command_list(m);
+        m.n_pipes = command_count(m.tlist);
         print_command_list(m.clist); //!only for testing
         return(m.clist);
     }

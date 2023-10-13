@@ -80,13 +80,13 @@ typedef struct s_file
 	char	*stop_heredoc;
 	char	*new_heredoc_file;
 }	t_file;
-typedef struct s_command //!
+typedef struct s_command
 {
 	t_cmd_type		type; // BUILTIN OR PATH
 	bool			before_pipe;
 	bool			after_pipe;
 	t_type	        redir_type;
-	char			*args;
+	char			**args;
 	t_file			out_redirects;
 	t_file			in_redirects;
 }					t_command;
@@ -105,6 +105,7 @@ typedef struct s_minishell
     t_type token_type;
     t_token token;
 	struct sigaction sa;
+	int	n_pipes;
 }   t_minishell;
 
 //str_utils
