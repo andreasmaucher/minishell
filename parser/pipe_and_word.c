@@ -16,13 +16,11 @@
 void cmd_pipe(t_list **clist, bool *new_cmd)
 {
     t_command *tmp_cmd;
-    t_list *tmp_head;
 
-    tmp_head = *clist;
-    tmp_cmd = (t_command *) tmp_head->value;
+    tmp_cmd = (t_command *) (*clist)->value;
     tmp_cmd->before_pipe = true;
-    tmp_head = tmp_head->next;
-    tmp_cmd = (t_command *) tmp_head->value;
+    *clist = (*clist)->next;
+    tmp_cmd = (t_command *) (*clist)->value;
     tmp_cmd->after_pipe = true;
     *new_cmd = true;
 }
@@ -34,8 +32,6 @@ void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd)
 
     tmp_command = (t_command *) clist->value;
     tmp_token = (t_token *) tlist->value;
-    printf("TMP TOKEN STR %s\n", tmp_token->str);
-    printf("NEW CMD %s \n", new_cmd ? "true" : "false");
     if (*new_cmd == true)
     {
         if (!ft_strcmp(tmp_token->str, "echo") || !ft_strcmp(tmp_token->str, "cd")
@@ -45,9 +41,8 @@ void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd)
         tmp_command->type = BUILTIN;
         else
             tmp_command->type = PATH;
-        printf("ONE LOOP \n");
     }
     *new_cmd = false;
-    printf("NEW CMD AFTER %s \n", new_cmd ? "true" : "false");
+    //! its storing everything which it should def not!!!!
     add_token_to_command_list(&tmp_command->arguments, ft_strdup(tmp_token->str));
 }

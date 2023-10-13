@@ -48,7 +48,6 @@ static void add_attributes_to_command_list(t_minishell m)
         else if (tmp_token->type == REDIRECT_OUT || tmp_token->type == REDIRECT_APPEND)
             cmd_output_redirection(&tmp_tlist, m.clist);
         tmp_tlist = tmp_tlist->next;
-        printf("NEW CMD AFTER IN %s \n", new_cmd ? "true" : "false");
     }
 }
 

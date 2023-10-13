@@ -25,8 +25,9 @@ static void	file_del(void *arg)
 	t_file	*file;
 
 	file = (t_file *)arg;
-	if (file->redirection_type == REDIRECT_HEREDOC)
-		unlink(file->new_heredoc_file);
+	//! need to linkage since struct member changed!
+	//if (file->redirection_type == REDIRECT_HEREDOC)
+		//unlink(file->new_heredoc_file);
 	//! also free text to file
 	file->new_heredoc_file = ft_free_set_null(file->new_heredoc_file);
 	file->stop_heredoc = ft_free_set_null(file->stop_heredoc);

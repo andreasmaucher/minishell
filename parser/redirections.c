@@ -41,9 +41,8 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
         return;
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->redir_type = tmp_token->type; //! if not used later, delete again
-    file->redirection_type = tmp_token->type; //! if not used later, delete again
-    if (*tlist != NULL) //! this is to avoid segfaults, but also need to be careful of case without anything after <
+    tmp_cmd->redir_type = tmp_token->type;
+    if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
     file->fd = -1;
@@ -83,13 +82,9 @@ void    cmd_output_redirection(t_list **tlist, t_list *clist)
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->redir_type = tmp_token->type;
-    file->redirection_type = tmp_token->type;
-    if (*tlist != NULL) //! NECESSARY?
+    tmp_cmd->redirects.fd = -1;
+    if (*tlist != NULL)
         *tlist = (* tlist)->next;
-    tmp_token = (t_token *)(* tlist)->value;
-    file->fd = -1;
-    file->file_name = ft_strdup(tmp_token->str);
-    file->stop_heredoc = NULL;
-    file->new_heredoc_file = NULL;
-    add_token_to_command_list(&tmp_cmd->outred_file, (void *)file);
+    tmp_token = (t_token *) (* tlist)->value;
+    tmp_cmd->redirects.file_name = ft_strdup(tmp_token->str);
 }

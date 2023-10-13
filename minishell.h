@@ -27,6 +27,7 @@
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
 {
+	NOT_SET,
 	WORD,
 	WHITESPACE,
     PIPE,
@@ -77,7 +78,6 @@ typedef struct s_file
 	int		fd;
 	char	*file_name;
 	char	*stop_heredoc;
-	t_type	redirection_type;
 	char	*new_heredoc_file;
 }	t_file;
 typedef struct s_command //!
@@ -89,6 +89,7 @@ typedef struct s_command //!
 	t_type	        redir_type;
 	t_list			*inred_file;
 	t_list			*outred_file;
+	t_file			redirects; //! maybe delete
 }					t_command;
 
 typedef struct s_minishell
