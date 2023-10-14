@@ -53,9 +53,17 @@ void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
          i = 0;
         while (tmp_token->type != PIPE && i <= tlist_len && tmp_tlist != NULL)
         {
-            tmp_command->args[i] = ft_strdup((tmp_token->str));
-            printf("Arg allocatio : %s\n",  tmp_command->args[i]);
-            i++;
+            if (tmp_token->type != REDIRECT_IN && tmp_token->type != REDIRECT_OUT &&
+            tmp_token->type != REDIRECT_APPEND && tmp_token->type != REDIRECT_HEREDOC)
+            {
+                tmp_command->args[i] = ft_strdup((tmp_token->str));
+                printf("Arg allocatio : %s\n",  tmp_command->args[i]);
+                i++;
+            }
+            // we don't want the file name to be in args, so move one forward
+            if (tmp_token->type == REDIRECT_OUT || tmp_token->type == REDIRECT_APPEND ||
+                tmp_token->type == REDIRECT_IN || tmp_token->type == REDIRECT_HEREDOC)
+                tmp_tlist = tmp_tlist->next;
             tmp_tlist = tmp_tlist->next;
             if (tmp_tlist != NULL)
              tmp_token = (t_token *) tmp_tlist->value;

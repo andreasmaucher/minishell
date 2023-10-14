@@ -74,8 +74,8 @@ t_command	*ft_create_cmd(void)
 	cmd->type = PATH;
 	cmd->before_pipe = false;
 	cmd->after_pipe = false;
-	cmd->redir_type = 0;
-	cmd->redir_type = 0;
+	cmd->input_redir_type = 0;
+	cmd->input_redir_type = 0;
 	cmd->args = NULL; //! not really correct?
 	cmd->out_redirects.fd = -1;
 	cmd->out_redirects.file_name = NULL;

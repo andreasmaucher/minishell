@@ -85,7 +85,8 @@ typedef struct s_command
 	t_cmd_type		type; // BUILTIN OR PATH
 	bool			before_pipe;
 	bool			after_pipe;
-	t_type	        redir_type;
+	t_type	        input_redir_type;
+	t_type			output_redir_type;
 	char			**args;
 	t_file			out_redirects;
 	t_file			in_redirects;

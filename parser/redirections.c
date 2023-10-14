@@ -37,18 +37,18 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
 
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->redir_type = tmp_token->type;
+    tmp_cmd->input_redir_type = tmp_token->type;
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
     tmp_cmd->in_redirects.fd = -1;
-    if (tmp_cmd->redir_type == REDIRECT_HEREDOC)
+    if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
     {
         tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
         tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
         tmp_cmd->in_redirects.file_name = NULL;
     }
-    else if (tmp_cmd->redir_type == REDIRECT_IN)
+    else if (tmp_cmd->input_redir_type == REDIRECT_IN)
     {
         tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
         tmp_cmd->in_redirects.stop_heredoc = NULL;
@@ -72,7 +72,7 @@ void    cmd_output_redirection(t_list **tlist, t_list *clist)
 
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->redir_type = tmp_token->type;
+    tmp_cmd->output_redir_type = tmp_token->type;
     tmp_cmd->out_redirects.fd = -1;
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
