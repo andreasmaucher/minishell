@@ -37,6 +37,7 @@ int main(int ac, char **av, char **envp)
 		m.clist = parser(m);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
+		//! if execve -1 free **args of command_list
 		free(m.line);
 	}
 }

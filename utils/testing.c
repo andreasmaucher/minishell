@@ -37,12 +37,13 @@ void print_command_list(t_list *clist)
 {
     t_list *current = clist;
     int i = 0;
+    int command_count = 0;
 
     printf("\n--- Command List after Parser ---\n");
     while (current != NULL) 
     {
         t_command *cmd = (t_command *)current->value;
-        printf("[%d]\n", i);
+        printf("[%d]\n", command_count++);
         printf("Command Type: %s\n", command_name_types_parser[cmd->type]);
         printf("Before Pipe: %s\n", cmd->before_pipe ? "true" : "false");
         printf("After Pipe: %s\n", cmd->after_pipe ? "true" : "false");
@@ -64,8 +65,12 @@ void print_command_list(t_list *clist)
             printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd);
             printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
         }
-
-        //printf("Arguments: %s\n", (char *)cmd->args);
+        i = 0;
+        while (cmd->args[i] != NULL)
+        {
+            printf("Arguments: %s\n", cmd->args[i]);
+            i++;
+        }
         // Move to the next node
         current = current->next;
         i++;
@@ -75,6 +80,7 @@ void print_command_list(t_list *clist)
 //used to print out the token types (only for testing purposes)
 const char *token_type_names[] = 
 {
+    "NOT SET",
 	"WORD",
 	"WHITESPACE",
     "PIPE",

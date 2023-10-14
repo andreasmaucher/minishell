@@ -25,13 +25,18 @@ void cmd_pipe(t_list **clist, bool *new_cmd)
     *new_cmd = true;
 }
 
-void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd)
+void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
 {
     t_token *tmp_token;
     t_command *tmp_command;
+    int i = 0;
+    int tlist_len;
+    t_list *tmp_tlist;
 
+    tmp_tlist = NULL;
+    tmp_tlist = *tlist;
     tmp_command = (t_command *) clist->value;
-    tmp_token = (t_token *) tlist->value;
+    tmp_token = (t_token *) tmp_tlist->value;
     if (*new_cmd == true)
     {
         if (!ft_strcmp(tmp_token->str, "echo") || !ft_strcmp(tmp_token->str, "cd")
@@ -41,7 +46,21 @@ void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd)
         tmp_command->type = BUILTIN;
         else
             tmp_command->type = PATH;
+        tlist_len = token_count_tlist(tmp_tlist);
+        tmp_command->args = malloc(sizeof(char *) * (tlist_len +1 ));
+        if (!tmp_command->args)
+          return;
+         i = 0;
+        while (tmp_token->type != PIPE && i <= tlist_len && tmp_tlist != NULL)
+        {
+            tmp_command->args[i] = ft_strdup((tmp_token->str));
+            printf("Arg allocatio : %s\n",  tmp_command->args[i]);
+            i++;
+            tmp_tlist = tmp_tlist->next;
+            if (tmp_tlist != NULL)
+             tmp_token = (t_token *) tmp_tlist->value;
+        }
+        tmp_command->args[i] = NULL;
     }
     *new_cmd = false;
-    //tmp_command->args = ft_strdup((tmp_token->str));
 }

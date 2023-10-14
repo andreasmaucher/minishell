@@ -44,7 +44,7 @@ static void add_attributes_to_command_list(t_minishell m)
         else if (tmp_token->type == REDIRECT_IN ||tmp_token->type == REDIRECT_HEREDOC)
             cmd_input_redirection(&tmp_tlist, m.clist);
         else if (tmp_token->type == WORD)
-            cmd_word(tmp_tlist, m.clist, &new_cmd);
+            cmd_word(&tmp_tlist, m.clist, &new_cmd);
         else if (tmp_token->type == REDIRECT_OUT || tmp_token->type == REDIRECT_APPEND)
             cmd_output_redirection(&tmp_tlist, m.clist);
         tmp_tlist = tmp_tlist->next;

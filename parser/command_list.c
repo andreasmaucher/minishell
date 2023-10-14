@@ -109,6 +109,23 @@ int command_count(t_list *tlist)
     return(len);
 }
 
+/* counts the total amount of token in the token list returned by the lexer;
+this result is used to determine the size of **args in the command structure */
+int token_count_tlist(t_list *tlist) 
+{
+    t_list *tmp_head;
+    int len;
+    
+    tmp_head = tlist;
+    len = 0;
+    while (tmp_head != NULL) 
+    {
+    	len++;
+        tmp_head = tmp_head->next;
+    }
+    return(len);
+}
+
 //! CHECK
 /* initialization of clist to NULL, to ensure that it starts as an empty list */
 t_list *setup_command_list(t_list **clist, t_list *tlist)

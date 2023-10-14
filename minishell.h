@@ -195,7 +195,7 @@ char	**ft_split(char const *s, char c);
 void cmd_input_redirection(t_list **tlist, t_list *clist);
 void    cmd_output_redirection(t_list **tlist, t_list *clist);
 void cmd_pipe(t_list **clist, bool *new_cmd);
-void cmd_word(t_list *tlist, t_list *clist, bool *new_cmd);
+void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd);
 t_list *create_command_list(t_list **clist, t_command *tmp_cmd);
 t_list *setup_command_list(t_list **clist, t_list *tlist);
 t_list	*ft_lstlast(t_list *lst);
@@ -205,5 +205,6 @@ int command_count(t_list *tlist);
 t_command	*ft_create_cmd(void);
 void add_token_to_command_list(t_list **token_list, char *token_info);
 bool check_parser_input(t_list *tlist);
+int token_count_tlist(t_list *tlist);
 
 #endif
