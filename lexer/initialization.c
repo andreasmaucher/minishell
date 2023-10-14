@@ -59,7 +59,8 @@ void	init_signals(t_minishell	*m, void (*handle)(int))
 {
 	m->sa.sa_handler = handle;
 	m->sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &m->sa, NULL);
+	//sigaction(SIGINT, &m->sa, NULL);
+	//signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 }
 
