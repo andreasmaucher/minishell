@@ -35,11 +35,30 @@ void token_del(void *content)
     free(token); // Free the token structure itself.
 }
 
+/*
+free args element of command list
+*/
+void	free_args(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i] != NULL)
+	{
+		//free (args[i]);
+		printf("FREE\n");
+		i++;
+	}
+	free(args);
+}
+
 void	command_del(void *arg)
 {
 	t_command	*command;
 
 	command = (t_command *)arg;
+	if (command->args)
+		free_args(command->args);
 	/* ft_lstclear(&command->arguments, free);
 	ft_lstclear(&command->outred_file, file_del);
 	ft_lstclear(&command->inred_file, file_del); */
@@ -70,15 +89,9 @@ int	exit_shell(t_minishell m)
 	if (m.clist)
 		ft_lstclear(&m.clist, command_del);
 	if (m.env_lib)
-	{
 		free_env(m.env_lib);
-		//free(m.env_lib);
-	}
 	if (m.envp_lib)
-	{
 		free_env(m.envp_lib);
-		//free(m.envp_lib);
-	}
 	printf("\nExiting...\n");
 	exit(1);
 }

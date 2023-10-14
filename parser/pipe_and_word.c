@@ -51,7 +51,7 @@ void    cmd_word_move_forward(t_token **tmp_token, t_command *tmp_command, int *
     if ((* tmp_token)->type != REDIRECT_IN && (* tmp_token)->type != REDIRECT_OUT &&
         (* tmp_token)->type != REDIRECT_APPEND && (* tmp_token)->type != REDIRECT_HEREDOC)
         {
-            tmp_command->args[(*i)] = ft_strdup(((* tmp_token)->str));
+            tmp_command->args[(*i)] = (* tmp_token)->str;
             (*i)++;
         }
     if ((* tmp_token)->type == REDIRECT_OUT || (* tmp_token)->type == REDIRECT_APPEND ||
@@ -60,6 +60,33 @@ void    cmd_word_move_forward(t_token **tmp_token, t_command *tmp_command, int *
     *tmp_tlist = (* tmp_tlist)->next;
     if (* tmp_tlist != NULL)
             *tmp_token = (t_token *) (* tmp_tlist)->value;
+}
+
+/* counts the total amount of token in the token list returned by the lexer;
+this result is used to determine the size of **args in the command structure */
+int token_count_tlist(t_list *tlist) 
+{
+    t_list *tmp_head;
+    t_token *tmp_token;
+    int len;
+    
+    tmp_head = tlist;
+    len = 0;
+    tmp_token = NULL;
+    while (tmp_head != NULL) 
+    {
+        tmp_token = (t_token *) tmp_head->value;
+        if (tmp_token->type == PIPE)
+            break;
+        if (tmp_token->type != REDIRECT_IN && tmp_token->type != REDIRECT_OUT &&
+            tmp_token->type != REDIRECT_APPEND && tmp_token->type != REDIRECT_HEREDOC)
+    	        len++;
+        if (tmp_token->type == REDIRECT_IN || tmp_token->type == REDIRECT_OUT ||
+            tmp_token->type == REDIRECT_APPEND || tmp_token->type == REDIRECT_HEREDOC)
+                tmp_head = tmp_head->next;
+        tmp_head = tmp_head->next;
+    }
+    return(len);
 }
 
 void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
@@ -78,13 +105,14 @@ void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
         tmp_token = (t_token *) tmp_tlist->value;
         check_if_builtin(tmp_token, tmp_command);
         tlist_len = token_count_tlist(tmp_tlist);
-        tmp_command->args = malloc(sizeof(char *) * (tlist_len +1 ));
+        printf("TLIST LEN: %d", tlist_len);
+        tmp_command->args = malloc(sizeof(char *) * (tlist_len) +1);
         if (!tmp_command->args)
           return;
         i = 0;
         while (tmp_token->type != PIPE && i <= tlist_len && tmp_tlist != NULL)
             cmd_word_move_forward(&tmp_token, tmp_command, &i, &tmp_tlist);
-        tmp_command->args[i] = NULL;
+        tmp_command->args[tlist_len] = NULL;
     }
     *new_cmd = false;
 }
