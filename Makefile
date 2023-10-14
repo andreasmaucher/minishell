@@ -11,7 +11,14 @@
 # **************************************************************************** #
 
 NAME = minishell
-SOURCES = main.c parser_utils.c list_operators.c
+SOURCES = main.c utils/list_operators.c utils/itoa.c \
+		lexer/initialization.c lexer/env_lib.c utils/free_memory.c \
+		lexer/lexer_cleanup.c lexer/lexer_env.c lexer/lexer_quotes.c \
+		lexer/lexer_tokens.c lexer/lexer_word_token.c lexer/lexer.c \
+		utils/str_utils_2.c utils/list_operators_2.c utils/testing.c \
+		utils/free_memory_2.c utils/ft_split.c utils/str_utils.c \
+		parser/parser.c parser/command_list.c parser/pipe_and_word.c \
+		parser/redirections.c executor/executor.c \
 
 OBJS = $(SOURCES:.c=.o)
 

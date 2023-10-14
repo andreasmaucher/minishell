@@ -10,34 +10,35 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+bool	check_for_metacharacter(char c)
 {
-	t_minishell m;
+	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>')
+		return (true);
+	else
+		return (false);
+}
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
-		add_history(m.line);
-		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-        executor(m, envp);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		free(m.line);
-	}
+/* checks if c is a double or single quote */
+bool	check_for_quotes(char c)
+{
+	if (c == '"' || c == '\'')
+		return (true);
+	else
+		return (false);
+}
+
+/* each substring is malloced! */
+char *check_for_word_token(char *line, int *i, t_type *token_type)
+{
+	int start_index;
+	int end_index;
+
+	*token_type = WORD;
+	start_index = *i;
+	while (check_for_metacharacter(line[*i]) == false && check_for_quotes(line[*i]) == false && line[*i] != '$' && line[*i])
+		(*i)++;
+	end_index = *i - start_index;
+	return(ft_substr(line, start_index, end_index));
 }

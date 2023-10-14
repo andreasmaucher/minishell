@@ -10,34 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+void	ft_lstdelone(t_list *lst, void (*del)(void*))
 {
-	t_minishell m;
+	if (lst == 0 || del == 0)
+		return ;
+	(*del)(lst->value);
+	free(lst);
+}
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
+void	ft_lstclear(t_list **lst, void (*del)(void*))
+{
+	t_list	*temp;
+
+	if (lst == 0 || del == 0)
+		return ;
+	while (*lst != 0)
 	{
-		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
-		add_history(m.line);
-		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-        executor(m, envp);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		free(m.line);
+		temp = (*lst)->next;
+		ft_lstdelone(*lst, del);
+		*lst = temp;
 	}
+	*lst = 0;
 }
