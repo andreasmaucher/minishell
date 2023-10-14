@@ -90,6 +90,7 @@ typedef struct s_command
 	char			**args;
 	t_file			out_redirects;
 	t_file			in_redirects;
+	char            *path;
 }					t_command;
 
 typedef struct s_minishell
@@ -106,7 +107,11 @@ typedef struct s_minishell
     t_type token_type;
     t_token token;
 	struct sigaction sa;
-	int	n_pipes;
+	int	pipe_n;
+	int *child_id;
+    int **pipes;
+	char **path_to_check;
+    char **path_buf;
 }   t_minishell;
 
 //str_utils
@@ -207,5 +212,9 @@ t_command	*ft_create_cmd(void);
 void add_token_to_command_list(t_list **token_list, char *token_info);
 bool check_parser_input(t_list *tlist);
 int token_count_tlist(t_list *tlist);
+
+//execution
+void executor(t_minishell m, char **envp);
+int	execute_program(char **arg_vec, char *path);
 
 #endif

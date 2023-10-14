@@ -46,7 +46,7 @@ void	free_args(char **args)
 	while (args[i] != NULL)
 	{
 		//free (args[i]);
-		printf("FREE\n");
+		//printf("FREE\n");
 		i++;
 	}
 	free(args);
