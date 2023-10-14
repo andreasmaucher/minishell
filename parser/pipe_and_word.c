@@ -105,14 +105,14 @@ void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
         tmp_token = (t_token *) tmp_tlist->value;
         check_if_builtin(tmp_token, tmp_command);
         tlist_len = token_count_tlist(tmp_tlist);
-        printf("TLIST LEN: %d", tlist_len);
+        printf("TLIST LEN: %d\n", tlist_len);
         tmp_command->args = malloc(sizeof(char *) * (tlist_len) +1);
         if (!tmp_command->args)
           return;
         i = 0;
         while (tmp_token->type != PIPE && i <= tlist_len && tmp_tlist != NULL)
             cmd_word_move_forward(&tmp_token, tmp_command, &i, &tmp_tlist);
-        tmp_command->args[tlist_len] = NULL;
+        tmp_command->args[i] = NULL;
     }
     *new_cmd = false;
 }
