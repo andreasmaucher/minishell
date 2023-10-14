@@ -35,6 +35,7 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m, envp);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
+        executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
 		free(m.line);

@@ -23,6 +23,8 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
@@ -72,16 +74,19 @@ typedef struct s_file
 	t_type	redirection_type;
 	char	*new_heredoc_file;
 }	t_file;
+
 typedef struct s_command //!
 {
-	t_list			*arguments;
-	t_cmd_type		type;
-	bool			before_pipe;
-	bool			after_pipe;
-	t_type	        input_redir_or_heredoc;
-	t_type	        out_redir_type;
-	t_list			*inred_file;
-	t_list			*outred_file;
+    t_cmd_type		type; // BUILTIN OR PATH
+    bool			before_pipe;
+    bool			after_pipe;
+    t_type	        redir_type;
+    char			**args;
+    t_file			out_redirects;
+    t_file			in_redirects;
+    // MR added
+    char            *path;
+    // MR added
 }					t_command;
 
 typedef struct s_minishell
@@ -98,6 +103,15 @@ typedef struct s_minishell
     t_type token_type;
     t_token token;
 	struct sigaction sa;
+    char **path_to_check;
+    char **path_buf;
+
+    // MR added
+    int pipe_n;
+    int *child_id;
+    int **pipes;
+    // MR added
+
 }   t_minishell;
 
 //str_utils
@@ -196,5 +210,17 @@ t_list	*ft_lstnew(void *content);
 int command_count(t_list *tlist);
 t_command	*ft_create_cmd(void);
 void add_token_to_command_list(t_list **token_list, char *token_info);
+void executor(t_minishell m, char **envp);
+char	**find_path_executor(char **envp);
+char	*valid_path(char **path, char *argv);
+int	execute_program(char **arg_vec, char *path);
+char	*join_strings(const char *str1, const char *str2, const char *str3);
+size_t	ft_strlcat(char *dst, const char *src, size_t size);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
+int     single_cmd(t_minishell *m);
+
+
+
 
 #endif
