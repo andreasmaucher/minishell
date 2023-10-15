@@ -58,14 +58,13 @@ t_list *parser(t_minishell m)
         m.clist = setup_command_list(&m.clist, m.tlist);
         if (m.clist == NULL)
             return (NULL);
-        m.pipe_n = command_count(m.tlist);
         add_attributes_to_command_list(m);
         print_command_list(m.clist); //!only for testing
         return(m.clist);
     }
    else
    {
-        exit_shell(m);
+        //exit_shell(m);
         return (NULL); //!exit code? */
    }
 }

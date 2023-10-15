@@ -23,6 +23,8 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <sys/ioctl.h>
+#include <limits.h>
+#include <sys/syslimits.h>
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum

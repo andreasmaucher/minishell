@@ -146,9 +146,10 @@ int multiple_cmd(t_minishell *m)
 
     current_process_id = 0;
 
-    t_command *cmd = (t_command *)m->clist->value;
-    while(current_process_id <= m->pipe_n)
+    t_command *cmd = NULL;
+    while(current_process_id <= m->pipe_n && m->clist != NULL)
     {
+        cmd = (t_command *)m->clist->value;
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {

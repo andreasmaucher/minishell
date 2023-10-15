@@ -13,7 +13,7 @@
 # include "../minishell.h"
 
 /* modifies the attributes of the command node in the list that m.clist points to */
-void cmd_pipe(t_list **clist, bool *new_cmd)
+void cmd_pipe(t_list    **clist, bool *new_cmd)
 {
     t_command *tmp_cmd;
 

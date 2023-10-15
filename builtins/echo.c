@@ -10,33 +10,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+/*
+Expected behavior:
+- 'echo': prints the provided text to the terminal followed by a newline
+- 'echo -n': prints the provided text to the terminal but suppresses newline, -n
+needs to be the first word after echo, if not it's simply 'echoed'
+*/
+
+bool check_for_n_flag(char *arg)
 {
-	t_minishell m;
+    int i,
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		add_history(m.line);
-		if (ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-		executor(m, envp);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		//! if execve -1 free **args of command_list
-		free(m.line);
-	}
+    i = 0;
+    if (arg[i] != '-')
+        return (false);
+    i++;
+    while (arg[i])
+    {
+        if (arg[i] != 'n')
+            return (false);
+        i++;
+    }
+    return (true);
+}
+
+
+int echo(t_minishell m)
+{
+   
 }

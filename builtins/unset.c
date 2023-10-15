@@ -10,33 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "../minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
-m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
-tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
-int main(int ac, char **av, char **envp)
+/*
+unset function is used to unset or remove environment variables or
+shell variables
+Syntax: 'unset variable_name'
+Exit Status: The unset command typically returns a status of 0 if the variable
+is successfully unset. If the variable does not exist, it still returns 0.
+*/
+
+int unset(const char **argv, t_minishell m)
 {
-	t_minishell m;
+    int i,
 
-	(void)av;
-	if (ac != 1)
-		return (1);
-	init_minishell_struct_and_signals(&m, envp);
-	while(1)
-	{
-		m.line = readline("Myshell: ");
-		add_history(m.line);
-		if (ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-		executor(m, envp);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
-		//! if execve -1 free **args of command_list
-		free(m.line);
-	}
+    i = 0;
+    while(argv[i] != NULL)
+    {
+        //!needs a function that removes env from my lib
+    }
 }
