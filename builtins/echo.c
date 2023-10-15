@@ -39,5 +39,5 @@ bool check_for_n_flag(char *arg)
 
 int echo(t_minishell m)
 {
-   
+   // loop through my clist node after node
 }
