@@ -15,6 +15,7 @@
 //used to print out the token types (only for testing purposes)
 const char *token_type_names_parser[] = 
 {
+    "NOT SET",
 	"WORD",
 	"WHITESPACE",
     "PIPE",
@@ -26,67 +27,60 @@ const char *token_type_names_parser[] =
     "SINGLE_QUOTES"
 };
 
+const char *command_name_types_parser[] = 
+{
+	"BUILTIN",
+	"PATH",
+};
+
 void print_command_list(t_list *clist) 
 {
     t_list *current = clist;
+    int i = 0;
+    int command_count = 0;
 
-    while (current != NULL) {
+    printf("\n--- Command List after Parser ---\n");
+    while (current != NULL) 
+    {
         t_command *cmd = (t_command *)current->value;
-
-        printf("Command Type: %d\n", cmd->type);
+        printf("[%d]\n", command_count++);
+        printf("Command Type: %s\n", command_name_types_parser[cmd->type]);
         printf("Before Pipe: %s\n", cmd->before_pipe ? "true" : "false");
         printf("After Pipe: %s\n", cmd->after_pipe ? "true" : "false");
-        printf("Input redir or heredoc: %s\n", token_type_names_parser[cmd->input_redir_or_heredoc]);
-        //printf("list[%d]: %s type: %s\n", i, token->str, token_type_names[token->type]);
-        
-        // Check and print the inred_file and outred_file attributes
-        //printf("In Redir File: %s\n", cmd->inred_file != NULL ? (char *)(cmd->inred_file) : "None");
-        /* t_list *inred_list = cmd->inred_file;
-        while (inred_list != NULL) {
-            printf("In Redir File: %s\n", (char *)(inred_list->value));
-            inred_list = inred_list->next;
-        } */
-        t_list *inred_list = cmd->inred_file;
-        while (inred_list != NULL)
-    {
-        t_file *file = (t_file *)inred_list->value;
-            printf("--- Input Redirections or Heredoc ---\n");
-            printf("File Descriptor (fd): %d\n", file->fd);
-            printf("Text to File: %s\n", file->text_to_file != NULL ? file->text_to_file : "None");
-            printf("Stop Heredoc: %s\n", file->stop_heredoc != NULL ? file->stop_heredoc : "None");
-            printf("Redirection Type: %s\n", token_type_names_parser[file->redirection_type]);
-            printf("New Heredoc File: %s\n", file->new_heredoc_file != NULL ? file->new_heredoc_file : "None");
-            inred_list = inred_list->next;
-    }
-        printf("Out Redir Type: %s\n", token_type_names_parser[cmd->out_redir_type]);
-        //printf("Out Redir File: %s\n", cmd->outred_file != NULL ? (char *)(cmd->outred_file) : "None");
-        t_list *outredir_list = cmd->outred_file;
-        while (outredir_list != NULL) {
-            t_file *file = (t_file *)outredir_list->value;
-            printf("--- Out Redirection --- \n");
-            printf("File Descriptor (fd): %d\n", file->fd);
-            printf("Text to File: %s\n", file->text_to_file != NULL ? file->text_to_file : "None");
-            printf("Stop Heredoc: %s\n", file->stop_heredoc != NULL ? file->stop_heredoc : "None");
-            printf("Redirection Type: %s\n", token_type_names_parser[file->redirection_type]);
-            printf("New Heredoc File: %s\n", file->new_heredoc_file != NULL ? file->new_heredoc_file : "None");
-            outredir_list = outredir_list->next;
-        }
-        ///printf("Arguments: %s\n", (char *)cmd->arguments);
-        t_list *arguments_list = cmd->arguments;
-        while (arguments_list != NULL) {
-            printf("Argument: %s\n", (char *)(arguments_list->value));
-            arguments_list = arguments_list->next;
-        }
-        //printf("Arguments: %s\n", cmd->arguments != NULL ? (char *)(cmd->arguments) : "None");
 
+        if (cmd->input_redir_type == 4 || cmd->input_redir_type == 6)
+        {
+            printf("--- Input Redirections or Heredoc ---\n");
+            printf("Input redirection type: %s\n", token_type_names_parser[cmd->input_redir_type]);
+            printf("File Descriptor (fd): %d\n", cmd->in_redirects.fd);
+            printf("File Name: %s\n", cmd->in_redirects.file_name != NULL ? cmd->in_redirects.file_name : "None");
+            printf("Stop Heredoc: %s\n", cmd->in_redirects.stop_heredoc != NULL ? cmd->in_redirects.stop_heredoc : "None");
+            printf("New Heredoc File: %s\n", cmd->in_redirects.new_heredoc_file != NULL ? cmd->in_redirects.new_heredoc_file : "None");
+        }
+       
+        if (cmd->output_redir_type == 5 || cmd->output_redir_type == 7)
+        {
+            printf("--- Out Redirection --- \n");
+            printf("Output redirection type: %s\n", token_type_names_parser[cmd->output_redir_type]);
+            printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd);
+            printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
+        }
+        i = 0;
+        while (cmd->args[i] != NULL)
+        {
+            printf("Arguments: %s\n", cmd->args[i]);
+            i++;
+        }
         // Move to the next node
         current = current->next;
+        i++;
     }
 }
 
 //used to print out the token types (only for testing purposes)
 const char *token_type_names[] = 
 {
+    "NOT SET",
 	"WORD",
 	"WHITESPACE",
     "PIPE",
@@ -109,10 +103,11 @@ void	printlist(t_list *head)
 
 	i = 0;
 	temporary = head;
+    printf("\n--- Token List after Lexer ---\n");
 	while (temporary != NULL)
 	{
 		token = (t_token *)temporary->value;
-		printf("list[%d]: %s type: %s\n", i, token->str, token_type_names[token->type]); // casted to char since in the first test we want to print a word
+		printf("[%d]: %s type: %s\n", i, token->str, token_type_names[token->type]); // casted to char since in the first test we want to print a word
 		temporary = temporary->next;
 		i++;
 	}

@@ -1,32 +1,0 @@
-[?2004hMyshell: ^Z[?2004l[?2004h^C[?2004l
-Myshell: [?2004h^C[?2004l
-Myshell: [?2004h^Z[?2004l[?2004h^Z[?2004l[?2004hzcc^C[?2004l
-Myshell: zcc[?2004hs^C[?2004l
-Myshell: zccs[?2004hxcd
-[?2004llist[0]: zccsxcd type: WORD
-CMD Count: 1
-Command Type: 1
-Before Pipe: false
-After Pipe: false
-Input redir or heredoc: WORD
-Out Redir Type: WORD
-Argument: zccsxcd
-[?2004hMyshell: 
-[?2004lCMD Count: 1
-Command Type: 1
-Before Pipe: false
-After Pipe: false
-Input redir or heredoc: WORD
-Out Redir Type: WORD
-[?2004hMyshell: 
-[?2004lCMD Count: 1
-Command Type: 1
-Before Pipe: false
-After Pipe: false
-Input redir or heredoc: WORD
-Out Redir Type: WORD
-[?2004hMyshell: z^C[?2004l
-Myshell: z[?2004h^C[?2004l
-Myshell: z[?2004h^Z[?2004l[?2004h^C[?2004l
-Myshell: z[?2004h^C[?2004l
-Myshell: z[?2004h[?2004l

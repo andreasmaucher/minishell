@@ -115,7 +115,8 @@ int wait_processes(t_minishell *m)
     i = 0;
     while (i <= m->pipe_n)
     {
-        waitpid(-1, &status, 0);
+        //waitpid(-1, &status, 0);
+        wait(&status);
         i++;
     }
     return(0);
@@ -129,10 +130,10 @@ int single_cmd(t_minishell *m)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
         //manually filling args to test how a single cmd works
-        cmd->args = malloc(sizeof(char *) * 3);
-        cmd->args[0] = ft_strdup("ls");
-        cmd->args[1] = ft_strdup("-la");
-        cmd->args[2] = '\0';
+//        cmd->args = malloc(sizeof(char *) * 3);
+//        cmd->args[0] = ft_strdup("ls");
+//        cmd->args[1] = ft_strdup("-la");
+//        cmd->args[2] = '\0';
         //manually filling args to test how a single cmd works
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
         execute_program(cmd->args, cmd->path);
@@ -145,30 +146,51 @@ int multiple_cmd(t_minishell *m)
     int current_process_id;
 
     current_process_id = 0;
-
-    t_command *cmd = (t_command *)m->clist->value;
-    while(current_process_id <= m->pipe_n)
-    {
-        m->child_id[current_process_id] = fork();
-        if (m->child_id[current_process_id] == 0)
+    t_command *cmd = NULL;
+    //while(current_process_id <= m->pipe_n && m->clist)
+    while(m->clist)
         {
-            printf("------Child process N %d running---------\n", current_process_id);
-            //manually filling args to test how a single cmd works
-            cmd->args = malloc(sizeof(char *) * 3);
-            cmd->args[0] = ft_strdup("ls");
-            cmd->args[1] = ft_strdup("-la");
-            cmd->args[2] = '\0';
-            //manually filling args to test how a single cmd works
-            cmd->path = valid_path(m->path_buf, cmd->args[0]);
-            execute_program(cmd->args, cmd->path);
-            current_process_id++;
-            printf("------Child process N %d finished---------\n", current_process_id);
+          //wait_processes(m); // Either here or in the executor in the end. Placing wait here helped the processes to run in the right sequence
+//        while (m->clist)
+//        {
+            cmd = (t_command *) m->clist->value;
+            m->child_id[current_process_id] = fork();
+            if (m->child_id[current_process_id] == 0)
+            {
+                if (current_process_id == 0)
+                {
+                    dup2(m->pipes[0][1], STDOUT_FILENO);
+                    close_pipes(m);
+                }
+                if (current_process_id == m->pipe_n)
+                {
+                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+                    close_pipes(m);
+                }
+                else
+                {
+                    dup2(m->pipes[current_process_id][0], STDIN_FILENO);
+                    dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
+                    close_pipes(m);
+                }
+                printf("------Child process N %d running---------\n", current_process_id);
+                //manually filling args to test how a single cmd works
+//                cmd->args = malloc(sizeof(char *) * 3);
+//                cmd->args[0] = ft_strdup("ls");
+//                cmd->args[1] = ft_strdup("-la");
+//                cmd->args[2] = '\0';
+                //manually filling args to test how a single cmd works
+                cmd->path = valid_path(m->path_buf, cmd->args[0]);
+                execute_program(cmd->args, cmd->path);
+                current_process_id++; //? can i delete this since it just runs in the child who already finished
+           // }
+            }
 
-        }
-
-
+        printf("------Child process N %d finished---------\n", current_process_id);
+        m->clist= m->clist->next;
         current_process_id++;
     }
+    close_pipes(m);
 
 //    int current_process_id;
 //    current_process_id = 0;
@@ -200,6 +222,9 @@ int multiple_cmd(t_minishell *m)
 
 int	execute_program(char **arg_vec, char *path)
 {
+
+    printf("Command to run is: %s\n", path);
+
     if (execve(path, arg_vec, NULL) == -1)
     {
         perror("Could not execute");
@@ -208,15 +233,53 @@ int	execute_program(char **arg_vec, char *path)
     return (0);
 }
 
-void executor(t_minishell m, char **envp)
+int initialize_pipes(t_minishell *m)
+{
+    int i;
+
+    i = 0;
+    m->pipes = malloc(sizeof (int *) * m->pipe_n * 2);
+    while(i <= m->pipe_n)
+    {
+        m->pipes[i] = malloc(sizeof(int) * 2);
+        if (pipe(m->pipes[i]) < 0)
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+
+int close_pipes(t_minishell *m)
+{
+    int i;
+
+    i = 0;
+    while(i <= m->pipe_n)
+    {
+        close(m->pipes[i][0]);
+        close(m->pipes[i][1]);
+        i++;
+    }
+    return (0);
+}
+
+
+int executor(t_minishell m, char **envp)
 {
     //t_list *current = m.clist;
-    m.pipe_n = 1; // hardcoding to run with a single command
+    m.pipe_n = command_count(m.tlist) - 1;
+    //m.pipe_n = 1; // hardcoding to run with a single command
     m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
+    printf("M.pipe_n is %i\n", m.pipe_n);
+
     m.path_buf = find_path_executor(envp);
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
     //t_command *cmd = (t_command *)m.clist->value;
+//    if (initialize_pipes(m) == 1)
+//        return (1);
+
     if (m.pipe_n == 0)
     {
         single_cmd(&m);
@@ -226,6 +289,7 @@ void executor(t_minishell m, char **envp)
     }
     if (m.pipe_n > 0)
     {
+        initialize_pipes(&m);
         multiple_cmd(&m);
 //        cmd->path = valid_path(m.path_buf, cmd->args[0]);
 //        execute_program(cmd->args, cmd->path);
@@ -255,8 +319,9 @@ void executor(t_minishell m, char **envp)
 //    pipex.path1 = valid_path(m.path_to_check, pipex.arg_vec1[ls 0]);
 //m.clist
      */
-    wait_processes(&m);
+    wait_processes(&m); // Here is a traditional way to place wait
     printf("------End---------\n");
+    return (0);
 }
 
 // MR added end

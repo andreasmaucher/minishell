@@ -15,7 +15,6 @@
 /* generates a unique filename for a heredoc file by using a static index that increments with each call;
 converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename */
-//! MALLOC
 static char *create_heredoc_file(void)
 {
     static int index = 0;
@@ -33,40 +32,28 @@ until 'EOF' is typed; in a 2nd step it is then appended to the output.txt file;
 it's necessary to have a separate structure for file to be able to create as many structures as needed */
 void cmd_input_redirection(t_list **tlist, t_list *clist)
 {
-    t_file  *file;
     t_command *tmp_cmd;
     t_token *tmp_token;
 
-    file = malloc(sizeof(t_file));
-    if (!file)
-        return;
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->input_redir_or_heredoc = tmp_token->type; //! if not used later, delete again
-    file->redirection_type = tmp_token->type; //! if not used later, delete again
-    printf("TEST1: %s\n", tmp_token->str);
-    if (*tlist != NULL) //! this is to avoid segfaults, but also need to be careful of case without anything after <
+    tmp_cmd->input_redir_type = tmp_token->type;
+    if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
-    printf("TEST2: %s\n", tmp_token->str); //! does not print because of whitespace!!!
-    file->fd = -1;
-    if (tmp_cmd->input_redir_or_heredoc == REDIRECT_HEREDOC)
+    tmp_cmd->in_redirects.fd = -1;
+    if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
     {
-        file->stop_heredoc = ft_strdup(tmp_token->str);
-        file->new_heredoc_file = create_heredoc_file();
-        file->text_to_file = NULL;
+        tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
+        tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
+        tmp_cmd->in_redirects.file_name = NULL;
     }
-    else if (tmp_cmd->input_redir_or_heredoc == REDIRECT_IN)
+    else if (tmp_cmd->input_redir_type == REDIRECT_IN)
     {
-        file->text_to_file = tmp_token->str;//ft_strdup(tmp_token->str);
-        file->stop_heredoc = NULL;
-        file->new_heredoc_file = NULL;
+        tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
+        tmp_cmd->in_redirects.stop_heredoc = NULL;
+        tmp_cmd->in_redirects.new_heredoc_file = NULL;
     }
-    //new_node = create_new_node((void *)file);
-    //! NOT WORKING
-    add_token_to_command_list(&tmp_cmd->inred_file, (void *)file);
-    //ft_lstadd_back(&(tmp_cmd->inred_file), ft_lstnew((void *)file));
-    //insert_at_tail(tmp_cmd->inred_file, create_new_node((void *)file)); //! WHATS THE LIST???
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
@@ -80,23 +67,15 @@ Overwriting is the main differentiation between > & >>;
 */
 void    cmd_output_redirection(t_list **tlist, t_list *clist)
 {
-    t_file  *file;
     t_command *tmp_cmd;
     t_token *tmp_token;
 
-    file = malloc(sizeof(t_file));
-    if (!file)
-        return;
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
-    tmp_cmd->out_redir_type = tmp_token->type;
-    file->redirection_type = tmp_token->type;
-    if (*tlist != NULL) //! NECESSARY?
+    tmp_cmd->output_redir_type = tmp_token->type;
+    tmp_cmd->out_redirects.fd = -1;
+    if (*tlist != NULL)
         *tlist = (* tlist)->next;
-    tmp_token = (t_token *)(* tlist)->value;
-    file->fd = -1;
-    file->text_to_file = ft_strdup(tmp_token->str);
-    file->stop_heredoc = NULL;
-    file->new_heredoc_file = NULL;
-    add_token_to_command_list(&tmp_cmd->outred_file, (void *)file);
+    tmp_token = (t_token *) (* tlist)->value;
+    tmp_cmd->out_redirects.file_name = ft_strdup(tmp_token->str);
 }

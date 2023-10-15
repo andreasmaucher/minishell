@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -24,7 +25,7 @@ int main(int ac, char **av, char **envp)
 	if (ac != 1)
 		return (1);
 	init_minishell_struct_and_signals(&m, envp);
-	while(1)
+	while (1)
 	{
 		m.line = readline("Myshell: ");
 		if (!m.line)
@@ -35,9 +36,10 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m, envp);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-        executor(m, envp);
+		executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
+		//! if execve -1 free **args of command_list
 		free(m.line);
 	}
 }

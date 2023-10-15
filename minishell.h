@@ -23,12 +23,13 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <sys/ioctl.h>
-#include <sys/types.h>
 #include <sys/wait.h>
+
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
 {
+	NOT_SET,
 	WORD,
 	WHITESPACE,
     PIPE,
@@ -66,34 +67,39 @@ typedef enum cmd_type
 	PATH,
 }	t_cmd_type; //!
 
+/*
+- fd: to indicate whether a file is open
+- file_name: name of the new file e.g. hello > friend -> friend would be the file name
+in thie output redirection
+- stop_heredoc: after typing this word the heredoc writing process stops
+- redirection_type: stores the tyype of redirection e.g. heredoc, append etc.
+- new_heredoc_file: name of the newly created heredoc file (stores the full path)
+*/
 typedef struct s_file
 {
 	int		fd;
-	char	*text_to_file;
+	char	*file_name;
 	char	*stop_heredoc;
-	t_type	redirection_type;
 	char	*new_heredoc_file;
 }	t_file;
-
-typedef struct s_command //!
+typedef struct s_command
 {
-    t_cmd_type		type; // BUILTIN OR PATH
-    bool			before_pipe;
-    bool			after_pipe;
-    t_type	        redir_type;
-    char			**args;
-    t_file			out_redirects;
-    t_file			in_redirects;
-    // MR added
-    char            *path;
-    // MR added
+	t_cmd_type		type; // BUILTIN OR PATH
+	bool			before_pipe;
+	bool			after_pipe;
+	t_type	        input_redir_type;
+	t_type			output_redir_type;
+	char			**args;
+	t_file			out_redirects;
+	t_file			in_redirects;
+	char            *path;
 }					t_command;
 
 typedef struct s_minishell
 {
     int tokens;
-    t_list *tlist;
-    t_list *clist;
+    t_list *tlist; // for lexer, token list
+    t_list *clist; // for parser, command list
 	t_list	*env; // not used?
 	char **env_lib;
 	char	**envp_lib;
@@ -103,15 +109,11 @@ typedef struct s_minishell
     t_type token_type;
     t_token token;
 	struct sigaction sa;
-    char **path_to_check;
-    char **path_buf;
-
-    // MR added
-    int pipe_n;
-    int *child_id;
+	int	pipe_n;
+	int *child_id;
     int **pipes;
-    // MR added
-
+	char **path_to_check;
+    char **path_buf;
 }   t_minishell;
 
 //str_utils
@@ -200,8 +202,8 @@ char	**ft_split(char const *s, char c);
 //parser
 void cmd_input_redirection(t_list **tlist, t_list *clist);
 void    cmd_output_redirection(t_list **tlist, t_list *clist);
-void cmd_pipe(t_list **clist, bool *first_word);
-void cmd_word(t_list *tlist, t_list *clist, bool *first_word);
+void cmd_pipe(t_list **clist, bool *new_cmd);
+void cmd_word(t_list **tlist, t_list *clist, bool *new_cmd);
 t_list *create_command_list(t_list **clist, t_command *tmp_cmd);
 t_list *setup_command_list(t_list **clist, t_list *tlist);
 t_list	*ft_lstlast(t_list *lst);
@@ -210,17 +212,14 @@ t_list	*ft_lstnew(void *content);
 int command_count(t_list *tlist);
 t_command	*ft_create_cmd(void);
 void add_token_to_command_list(t_list **token_list, char *token_info);
-void executor(t_minishell m, char **envp);
-char	**find_path_executor(char **envp);
-char	*valid_path(char **path, char *argv);
+bool check_parser_input(t_list *tlist);
+int token_count_tlist(t_list *tlist);
+
+//execution
+int executor(t_minishell m, char **envp);
 int	execute_program(char **arg_vec, char *path);
-char	*join_strings(const char *str1, const char *str2, const char *str3);
-size_t	ft_strlcat(char *dst, const char *src, size_t size);
-void	*ft_memcpy(void *dest, const void *src, size_t n);
-size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
-int     single_cmd(t_minishell *m);
-
-
+int initialize_pipes(t_minishell *m);
+int close_pipes(t_minishell *m);
 
 
 #endif

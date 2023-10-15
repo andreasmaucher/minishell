@@ -20,19 +20,6 @@ void	*ft_free_set_null(void *ptr)
 	return (NULL);
 }
 
-static void	file_del(void *arg)
-{
-	t_file	*file;
-
-	file = (t_file *)arg;
-	if (file->redirection_type == REDIRECT_HEREDOC)
-		unlink(file->new_heredoc_file);
-	//! also free text to file
-	file->new_heredoc_file = ft_free_set_null(file->new_heredoc_file);
-	file->stop_heredoc = ft_free_set_null(file->stop_heredoc);
-	file = ft_free_set_null(file);
-}
-
 /* helper function for deleting a token and freeing its memory */
 void token_del(void *content) 
 {
@@ -48,14 +35,33 @@ void token_del(void *content)
     free(token); // Free the token structure itself.
 }
 
+/*
+free args element of command list
+*/
+void	free_args(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i] != NULL)
+	{
+		//free (args[i]);
+		//printf("FREE\n");
+		i++;
+	}
+	free(args);
+}
+
 void	command_del(void *arg)
 {
 	t_command	*command;
 
 	command = (t_command *)arg;
-	ft_lstclear(&command->arguments, free);
+	if (command->args)
+		free_args(command->args);
+	/* ft_lstclear(&command->arguments, free);
 	ft_lstclear(&command->outred_file, file_del);
-	ft_lstclear(&command->inred_file, file_del);
+	ft_lstclear(&command->inred_file, file_del); */
 	command = ft_free_set_null(command);
 }
 
@@ -83,15 +89,9 @@ int	exit_shell(t_minishell m)
 	if (m.clist)
 		ft_lstclear(&m.clist, command_del);
 	if (m.env_lib)
-	{
 		free_env(m.env_lib);
-		//free(m.env_lib);
-	}
 	if (m.envp_lib)
-	{
 		free_env(m.envp_lib);
-		//free(m.envp_lib);
-	}
 	printf("\nExiting...\n");
 	exit(1);
 }

@@ -59,7 +59,8 @@ void	init_signals(t_minishell	*m, void (*handle)(int))
 {
 	m->sa.sa_handler = handle;
 	m->sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &m->sa, NULL);
+	//sigaction(SIGINT, &m->sa, NULL);
+	//signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 }
 
@@ -72,8 +73,4 @@ void	init_minishell_struct_and_signals(t_minishell *m, char **envp)
 	m->env_lib = create_env_library(envp);
 	m->envp_lib = create_envp_library(envp);
 	init_signals(m, handle_signals);
-    //MR Added
-   // m->path_buf = find_path_executor(envp);
-    //MR Added
-
 }
