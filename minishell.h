@@ -19,6 +19,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
+#include <string.h>
+#include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
@@ -39,6 +41,10 @@ typedef enum
     REDIRECT_APPEND,
     REDIRECT_IN,
     REDIRECT_OUT,
+    DOUBLE_QUOTES,
+    SINGLE_QUOTES,
+	ENV,
+	ENV_FAIL,
     DOUBLE_QUOTES,
     SINGLE_QUOTES,
 	ENV,
@@ -128,8 +134,35 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 void	*ft_memset(void *s, int c, size_t n);
 size_t	ft_strlen(const char *s);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int	    ft_strcmp(const char *s1, const char *s2);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strstr(const char *haystack, const char *needle);
+char	*ft_strnstr(const char *big, const char *little, size_t len);
+void	*ft_memset(void *s, int c, size_t n);
+size_t	ft_strlen(const char *s);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //list operators
+int	lst_size(t_list *head);
+t_list	*create_new_node(void *value);
+void	insert_at_tail(t_list *head, t_list *new_value);
+t_list	*return_tail_value(t_list *head);
+t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type token_type);
+t_list *find_previous_node(t_list *head, t_list *target_node);
+void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *));
+t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type);
+
+//parser
+t_list *parser(t_minishell m);
+
+//itoa
+char	*ft_itoa(int n);
+
+//initialization
+void	init_minishell_struct_and_signals(t_minishell *m, char **envp);
+void	*ft_memset(void *s, int c, size_t n);
+
+//testing
 int	lst_size(t_list *head);
 t_list	*create_new_node(void *value);
 void	insert_at_tail(t_list *head, t_list *new_value);

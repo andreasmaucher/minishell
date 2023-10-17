@@ -132,7 +132,7 @@ int single_cmd(t_minishell *m)
         cmd->args = malloc(sizeof(char *) * 3);
         cmd->args[0] = ft_strdup("ls");
         cmd->args[1] = ft_strdup("-la");
-        cmd->args[2] = "\0";
+        cmd->args[2] = '\0';
         //manually filling args to test how a single cmd works
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
         execute_program(cmd->args, cmd->path);
@@ -146,10 +146,9 @@ int multiple_cmd(t_minishell *m)
 
     current_process_id = 0;
 
-    t_command *cmd = NULL;
-    while(current_process_id <= m->pipe_n && m->clist != NULL)
+    t_command *cmd = (t_command *)m->clist->value;
+    while(current_process_id <= m->pipe_n)
     {
-        cmd = (t_command *)m->clist->value;
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
@@ -158,7 +157,7 @@ int multiple_cmd(t_minishell *m)
             cmd->args = malloc(sizeof(char *) * 3);
             cmd->args[0] = ft_strdup("ls");
             cmd->args[1] = ft_strdup("-la");
-            cmd->args[2] = "\0";
+            cmd->args[2] = '\0';
             //manually filling args to test how a single cmd works
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
             execute_program(cmd->args, cmd->path);

@@ -17,9 +17,19 @@ m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
 tlist = tokenlist, meaning the list that holds all tokens,
 clist = commandlist, meaning the list that holds all commands */
 int main(int ac, char **av, char **envp)
+/* shell is only created if there is exactly one argument (name of the executable);
+m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
+tlist = tokenlist, meaning the list that holds all tokens,
+clist = commandlist, meaning the list that holds all commands */
+int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
+	t_minishell m;
 
+	(void)av;
+	if (ac != 1)
+		return (1);
+	init_minishell_struct_and_signals(&m, envp);
 	(void)av;
 	if (ac != 1)
 		return (1);
