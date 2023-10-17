@@ -43,10 +43,9 @@ void	free_args(char **args)
 	int	i;
 
 	i = 0;
-	while (args[i] != NULL)
+	while (args[i])
 	{
 		//free (args[i]);
-		//printf("FREE\n");
 		i++;
 	}
 	free(args);

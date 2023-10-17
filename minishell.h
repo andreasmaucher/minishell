@@ -217,9 +217,13 @@ int token_count_tlist(t_list *tlist);
 
 //execution
 int executor(t_minishell m, char **envp);
-int	execute_program(char **arg_vec, char *path);
+int	execute_program(char **arg_vec, char *path, t_minishell *m, int process_n);
 int initialize_pipes(t_minishell *m);
 int close_pipes(t_minishell *m);
+void kill_process(t_minishell *m, int process_id);
+void	free_env(char **env);
+int     free_execve_fail(t_minishell *m);
+
 
 
 #endif

@@ -22,9 +22,9 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 
 OBJS = $(SOURCES:.c=.o)
 
-CC = cc -g
+CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3
 MLXFLAGS = -lreadline
 
 all: $(NAME)	

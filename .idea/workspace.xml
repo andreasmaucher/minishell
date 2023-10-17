@@ -8,10 +8,10 @@
 }</component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="minishell_executor" targetName="fclean" />
-      <config projectName="minishell_executor" targetName="minishell" />
-      <config projectName="minishell_executor" targetName="re" />
-      <config projectName="minishell_executor" targetName="all" />
+      <config projectName="minishell_pipes" targetName="minishell" />
+      <config projectName="minishell_pipes" targetName="fclean" />
+      <config projectName="minishell_pipes" targetName="re" />
+      <config projectName="minishell_pipes" targetName="all" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -21,9 +21,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f3b01a49-75c3-4165-8937-63422938ed17" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executor/executor.c" beforeDir="false" afterPath="$PROJECT_DIR$/executor/executor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/minishell.h" beforeDir="false" afterPath="$PROJECT_DIR$/minishell.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/free_memory.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils/free_memory.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,14 +49,14 @@
         <entry>
           <key>
             <ExternalProjectPojo>
-              <option name="name" value="minishell_executor" />
+              <option name="name" value="minishell_pipes" />
               <option name="path" value="$PROJECT_DIR$" />
             </ExternalProjectPojo>
           </key>
           <value>
             <list>
               <ExternalProjectPojo>
-                <option name="name" value="minishell_executor" />
+                <option name="name" value="minishell_pipes" />
                 <option name="path" value="$PROJECT_DIR$" />
               </ExternalProjectPojo>
             </list>
@@ -89,32 +91,38 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/HP/Documents/GitHub/minishell_executor&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/HP/Documents/GitHub/minishell_pipes&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CLionExternalConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Makefile Application.all">
-    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_executor" TARGET_NAME="all" CONFIG_NAME="all" version="1">
+  <component name="RunManager" selected="Makefile Application.debug">
+    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_pipes" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration name="fclean" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_executor" TARGET_NAME="fclean" CONFIG_NAME="fclean" version="1">
+    <configuration name="debug" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_pipes" TARGET_NAME="target" CONFIG_NAME="target" version="1" RUN_PATH="$PROJECT_DIR$/minishell">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration name="minishell" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_executor" TARGET_NAME="minishell" CONFIG_NAME="minishell" version="1">
+    <configuration name="fclean" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_pipes" TARGET_NAME="fclean" CONFIG_NAME="fclean" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration name="re" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_executor" TARGET_NAME="re" CONFIG_NAME="re" version="1">
+    <configuration name="minishell" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_pipes" TARGET_NAME="minishell" CONFIG_NAME="minishell" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="re" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="minishell_pipes" TARGET_NAME="re" CONFIG_NAME="re" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
@@ -125,6 +133,7 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Makefile Application.debug" />
       <item itemvalue="Makefile Application.all" />
       <item itemvalue="Makefile Application.fclean" />
       <item itemvalue="Makefile Application.minishell" />
@@ -141,21 +150,21 @@
       <updated>1697296677752</updated>
       <workItem from="1697296678798" duration="15339000" />
       <workItem from="1697370001307" duration="3735000" />
+      <workItem from="1697374731230" duration="9880000" />
+      <workItem from="1697405174372" duration="1210000" />
+      <workItem from="1697485414370" duration="5541000" />
+      <workItem from="1697543620945" duration="2816000" />
+      <workItem from="1697550762600" duration="1965000" />
+      <workItem from="1697555585474" duration="1452000" />
+      <workItem from="1697562136309" duration="2289000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/executor/executor.c</url>
-          <line>263</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

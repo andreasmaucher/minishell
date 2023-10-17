@@ -1,6 +1,5 @@
+#include "../minishell.h"
 
-# include "../minishell.h"
-// MR added
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 {
     size_t	src_len;
@@ -122,25 +121,44 @@ int wait_processes(t_minishell *m)
     return(0);
 }
 
+void kill_process(t_minishell *m, int process_id)
+{
+    int i;
+    i = 0;
+    while (i <= process_id)
+    {
+        kill(m->child_id[i], SIGTERM);
+        i++;
+    }
+}
+
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
     m->child_id[0] = fork();
+//    if (m->child_id[0] != 0)
+//    {
+//        printf("Child PID is :%d\n", getpid() )
+//    }
     if (m->child_id[0] == 0)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
-        //manually filling args to test how a single cmd works
-//        cmd->args = malloc(sizeof(char *) * 3);
-//        cmd->args[0] = ft_strdup("ls");
-//        cmd->args[1] = ft_strdup("-la");
-//        cmd->args[2] = '\0';
-        //manually filling args to test how a single cmd works
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
-        execute_program(cmd->args, cmd->path);
+        if (cmd->path == NULL)
+        {
+//            printf("Going to kill process PID, %d", getpid());
+//            kill(getpid(), SIGUSR1); // Luiz suggestion
+//              free_env(m->path_buf);
+        }
+        execute_program(cmd->args, cmd->path, m, 0);
     }
+//    if (m->child_id[0] != 0)
+//    {
+//        waitpid(m->child_id[0], NULL, 0);
+//        printf("Child PID is :%d\n", m->child_id[0]);
+//    }
     return (0);
 }
-
 int multiple_cmd(t_minishell *m)
 {
     int current_process_id;
@@ -159,76 +177,59 @@ int multiple_cmd(t_minishell *m)
             {
                 if (current_process_id == 0)
                 {
-                    dup2(m->pipes[0][1], STDOUT_FILENO);
+                    dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
                     close_pipes(m);
                 }
-                if (current_process_id == m->pipe_n)
+                else if (current_process_id == m->pipe_n)
                 {
                     dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
                     close_pipes(m);
                 }
                 else
                 {
-                    dup2(m->pipes[current_process_id][0], STDIN_FILENO);
+                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
                     dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
                     close_pipes(m);
                 }
                 printf("------Child process N %d running---------\n", current_process_id);
-                //manually filling args to test how a single cmd works
-//                cmd->args = malloc(sizeof(char *) * 3);
-//                cmd->args[0] = ft_strdup("ls");
-//                cmd->args[1] = ft_strdup("-la");
-//                cmd->args[2] = '\0';
-                //manually filling args to test how a single cmd works
                 cmd->path = valid_path(m->path_buf, cmd->args[0]);
-                execute_program(cmd->args, cmd->path);
+                free_env(m->path_buf);
+                execute_program(cmd->args, cmd->path, m, current_process_id);
                 current_process_id++; //? can i delete this since it just runs in the child who already finished
-           // }
             }
+//        if (m->child_id[current_process_id] != 0)
+//        {
+//            waitpid(m->child_id[0], NULL, 0);
+//            printf("Child PID is :%d\n", m->child_id[0]);
+//        }
 
         printf("------Child process N %d finished---------\n", current_process_id);
-        m->clist= m->clist->next;
+        m->clist = m->clist->next;
         current_process_id++;
     }
     close_pipes(m);
-
-//    int current_process_id;
-//    current_process_id = 0;
-//    m->child_id = malloc(sizeof(int*) * m->pipe_n + 2);
-//    m->child_id[m->pipe_n + 2] = '\0';
-//    while(current_process_id != m->pipe_n + 1 )
-//    {
-//        t_command *cmd = (t_command *)m->clist->value;
-//        m->child_id[current_process_id] = fork();
-//        printf("------ERROR HERE---------\n");
-//        //manually filling args to test how a single cmd works
-//        cmd->args = malloc(sizeof(char *) * 3);
-//        cmd->args[0] = ft_strdup("ls");
-//        cmd->args[1] = ft_strdup("-la");
-//        cmd->args[2] = '\0';
-//        //manually filling args to test how a single cmd works
-//        if (m->child_id[current_process_id] == 0)
-//        {
-//            cmd->path = valid_path(m->path_buf, cmd->args[0]);
-//            execute_program(cmd->args, cmd->path);
-//        }
-//       // waitpid(m->child_id[current_process_id], NULL, 0);
-//        m->clist->value = m->clist->next;
-//        current_process_id++;
-//    }
     return (0);
 }
 
-
-int	execute_program(char **arg_vec, char *path)
+int free_execve_fail(t_minishell *m)
 {
+    free_env(m->path_buf);
+    free_env(m->env_lib);
+    free_env(m->envp_lib);
+    free(m->line);
+    return(0);
+}
 
+int	execute_program(char **arg_vec, char *path, t_minishell *m, int process_n)
+{
     printf("Command to run is: %s\n", path);
 
     if (execve(path, arg_vec, NULL) == -1)
     {
         perror("Could not execute");
-        return (1);
+        (void)m;
+        (void)process_n;
+        exit(1);
     }
     return (0);
 }
@@ -249,7 +250,6 @@ int initialize_pipes(t_minishell *m)
     return (0);
 }
 
-
 int close_pipes(t_minishell *m)
 {
     int i;
@@ -264,64 +264,25 @@ int close_pipes(t_minishell *m)
     return (0);
 }
 
-
 int executor(t_minishell m, char **envp)
 {
-    //t_list *current = m.clist;
     m.pipe_n = command_count(m.tlist) - 1;
-    //m.pipe_n = 1; // hardcoding to run with a single command
     m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
-    printf("M.pipe_n is %i\n", m.pipe_n);
-
     m.path_buf = find_path_executor(envp);
+
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
-    //t_command *cmd = (t_command *)m.clist->value;
-//    if (initialize_pipes(m) == 1)
-//        return (1);
-
     if (m.pipe_n == 0)
     {
         single_cmd(&m);
         //waitpid(m.child_id[0], NULL, 0);
-//        cmd->path = valid_path(m.path_buf, cmd->args[0]);
-//        execute_program(cmd->args, cmd->path);
     }
     if (m.pipe_n > 0)
     {
         initialize_pipes(&m);
         multiple_cmd(&m);
-//        cmd->path = valid_path(m.path_buf, cmd->args[0]);
-//        execute_program(cmd->args, cmd->path);
     }
-//    free(cmd->args[0]);
-//    free(cmd->args[1]);
-//    free(cmd->args[2]);
-//    free(cmd->args);
-    /*
-    while (current != NULL) {
-        t_command *cmd = (t_command *)current->value;
-        t_list *arguments_list = cmd->arguments;
-
-        printf("This line is to silence a warning - line was -, %s\n", m.line);
-        //m.path_to_check = find_path_executor(envp);
-
-        printf("Is this before pipe : %s\n", cmd->before_pipe ? "true" : "false");
-
-        while (arguments_list != NULL)
-        {
-            printf("Argument is : %s\n", (char *)arguments_list->value);
-
-            arguments_list = arguments_list->next;
-        }
-        current = current->next;
-    }
-//    pipex.path1 = valid_path(m.path_to_check, pipex.arg_vec1[ls 0]);
-//m.clist
-     */
     wait_processes(&m); // Here is a traditional way to place wait
     printf("------End---------\n");
     return (0);
 }
-
-// MR added end
