@@ -28,7 +28,7 @@ int main(int ac, char **av, char **envp)
 	{
 		m.line = readline("Myshell: ");
 		add_history(m.line);
-		if (ft_strcmp(m.line, "exit") == 0) 
+		if (ft_strcmp(m.line, "exit") == 0) //! DELETE AT END
 			exit_shell(m);
 		m.tlist = split_line_into_tokens(m, envp);
 		printlist(m.tlist); //! only for testing

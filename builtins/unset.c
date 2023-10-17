@@ -23,7 +23,6 @@ is successfully unset. If the variable does not exist, it still returns 0.
 If multiple variable names are entered after unset, all will be checked and
 unset even if incorrect variable names are included.
 */
-
 int unset(t_minishell m, t_command *cmd)
 {
     int i;

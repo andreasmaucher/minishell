@@ -26,6 +26,8 @@
 #include <limits.h>
 #include <sys/syslimits.h>
 
+int g_exit_code = 0;
+
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
 {
