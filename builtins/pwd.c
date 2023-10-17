@@ -12,6 +12,8 @@
 
 # include "../minishell.h"
 
+//DONE
+
 /*
 memory management is handled by getcwd function, which returns the path of
 the current directory

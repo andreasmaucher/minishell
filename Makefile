@@ -19,6 +19,7 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 		utils/free_memory_2.c utils/ft_split.c utils/str_utils.c \
 		parser/parser.c parser/command_list.c parser/pipe_and_word.c \
 		parser/redirections.c parser/input_check.c executor/executor.c \
+		builtins/builtins.c builtins/echo.c builtins/pwd.c builtins/unset.c \
 
 OBJS = $(SOURCES:.c=.o)
 
