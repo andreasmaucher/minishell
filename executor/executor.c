@@ -135,11 +135,15 @@ void kill_process(t_minishell *m, int process_id)
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
+    printf("error here4\n");
+
     m->child_id[0] = fork();
 //    if (m->child_id[0] != 0)
 //    {
 //        printf("Child PID is :%d\n", getpid() )
 //    }
+    printf("error here5\n");
+
     if (m->child_id[0] == 0)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
@@ -149,6 +153,18 @@ int single_cmd(t_minishell *m)
 //            printf("Going to kill process PID, %d", getpid());
 //            kill(getpid(), SIGUSR1); // Luiz suggestion
 //              free_env(m->path_buf);
+        }
+
+        if (cmd->output_redir_type == REDIRECT_OUT)
+        {
+            //dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+            write(1, "is output redirection working for a single command?\n", 52);
+            cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
+            if (cmd->out_redirects.fd_write == -1)
+                write(1, "Could not open output file\n", 25);
+            dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+            //close_pipes(m);
+            close(cmd->out_redirects.fd_write);
         }
         execute_program(cmd->args, cmd->path, m, 0);
     }
@@ -180,8 +196,23 @@ int multiple_cmd(t_minishell *m)
                     dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
                     close_pipes(m);
                 }
-                else if (current_process_id == m->pipe_n)
+
+                else if (current_process_id == m->pipe_n && cmd->output_redir_type == REDIRECT_OUT)
                 {
+                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+                    write(1, "is output redirection working?\n", 32);
+                    cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
+                    if (cmd->out_redirects.fd_write == -1)
+                            write(1, "Could not open output file\n", 25);
+                    dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+                    close_pipes(m);
+                    close(cmd->out_redirects.fd_write);
+                }
+
+                else if (current_process_id == m->pipe_n && cmd->output_redir_type != REDIRECT_OUT)
+                {
+                    write(1, "WHat about this?\n", 18);
+
                     dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
                     close_pipes(m);
                 }
@@ -211,6 +242,56 @@ int multiple_cmd(t_minishell *m)
     return (0);
 }
 
+//
+//// redirects in parser
+//cmd = (t_command *) m->clist->value;
+//cmd->input_redir_type == REDIRECT_IN; // check to see if this is in redirect or
+//cmd->input_redir_type == REDIRECT_HEREDOC; // check to see if this is in redirect
+//
+//cmd->output_redir_type == REDIRECT_OUT; // check to see if this is in redirect
+//cmd->output_redir_type == REDIRECT_APPEND; // check to see if this is in redirect
+//cmd->in_redirects.file_name = "infile.txt";
+//cmd->out_redirects.file_name = "outfile.txt";
+//cmd->out_redirects.fd= 1;
+//
+//
+//
+//if (cmd->input_redir_type == 4 || cmd->input_redir_type == 6)
+//{
+//printf("--- Input Redirections or Heredoc ---\n");
+//printf("Input redirection type: %s\n", token_type_names_parser[cmd->input_redir_type]);
+//printf("File Descriptor (fd): %d\n", cmd->in_redirects.fd);
+//printf("File Name: %s\n", cmd->in_redirects.file_name != NULL ? cmd->in_redirects.file_name : "None");
+//printf("Stop Heredoc: %s\n", cmd->in_redirects.stop_heredoc != NULL ? cmd->in_redirects.stop_heredoc : "None");
+//printf("New Heredoc File: %s\n", cmd->in_redirects.new_heredoc_file != NULL ? cmd->in_redirects.new_heredoc_file : "None");
+//}
+//
+//if (cmd->output_redir_type == 5 || cmd->output_redir_type == 7)
+//{
+//printf("--- Out Redirection --- \n");
+//printf("Output redirection type: %s\n", token_type_names_parser[cmd->output_redir_type]);
+//printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd);
+//printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
+//}
+//
+////redirects  in lexor for precheck if file exists
+//t_token *token;
+//t_list	*m.tlist;
+//
+//token = (t_token *)m.tlist->value;
+//
+//while (m.tlist != NULL)
+//{
+//token = (t_token *)m.tlist->value;
+//printf("[%d]: filename %s type: %s\n", i, token->str, token_type_names[token->type]); // casted to char since in the first test we want to print a word
+//m.tlist = m.tlist->next;
+//i++;
+//}
+//// if token->str == REDIRECT_IN then check access for next token->str
+//path is at pwd_path()
+
+
+
 int free_execve_fail(t_minishell *m)
 {
     free_env(m->path_buf);
@@ -223,6 +304,20 @@ int free_execve_fail(t_minishell *m)
 int	execute_program(char **arg_vec, char *path, t_minishell *m, int process_n)
 {
     printf("Command to run is: %s\n", path);
+ // maybe builtins go here?
+ // if (builtins == true)
+ //   {
+ // find correct builtin and run and free
+//    }
+// else -> run execve
+    int i;
+    i = 0;
+    while (arg_vec[i])
+    {
+        printf("Arg_vec : %s\n", arg_vec[i]);
+
+       i++;
+    }
 
     if (execve(path, arg_vec, NULL) == -1)
     {
@@ -264,6 +359,85 @@ int close_pipes(t_minishell *m)
     return (0);
 }
 
+//int check_file_rights(char *filename)
+//{
+//    char *filename_path;
+//
+//    filename_path = ft_strjoin(pwd_path(), filename);
+//    if (access(filename_path, R_OK) != 0)
+//    {
+//        free(filename_path);
+//        return(1);
+//    }
+//    free(filename_path);
+//    return(0);
+//    //Should i also free filename?
+//}
+
+int in_redirections(t_minishell *m)
+{
+    t_command *cmd;
+    t_list *temp;
+
+    temp = m->clist;
+    while(temp)
+    {
+        printf("error here2\n");
+
+        cmd = (t_command *) temp->value;
+        (void)cmd;
+        if (cmd->input_redir_type == REDIRECT_IN)
+        {
+            printf("error here3\n");
+            // check for access
+//            if (check_file_rights(cmd->in_redirects.file_name) != 0)
+//                perror("Cant read from input file, permission denied\n");
+            cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+            if (cmd->in_redirects.fd_write == -1)
+                perror("Cant open the file\n");
+            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+                perror("Input IN-redirection isn't working\n");
+            close(cmd->in_redirects.fd_write);
+        }
+        temp = temp->next;
+        printf("error here\n");
+    }
+    return (0);
+}
+
+int out_redirections(t_minishell *m)
+{
+    t_command *cmd;
+    t_list *temp;
+
+    temp = m->clist;
+    while(temp)
+    {
+        printf("error here2\n");
+
+        cmd = (t_command *) temp->value;
+        (void)cmd;
+        if (cmd->output_redir_type == REDIRECT_OUT)
+        {
+            write(1, "Issue here\n", 11);
+            printf("error here3\n");
+            // check for access
+//            if (check_file_rights(cmd->in_redirects.file_name) != 0)
+//                perror("Cant read from input file, permission denied\n");
+            cmd->out_redirects.fd_read = open(cmd->out_redirects.file_name, O_CREAT | O_WRONLY, 0777);
+            if (cmd->out_redirects.fd_read == -1)
+                perror("Cant open the output file\n");
+            if (dup2(cmd->out_redirects.fd_read, STDIN_FILENO) == -1)
+                perror("Output redirection isn't working\n");
+            close(cmd->out_redirects.fd_read);
+        }
+        temp = temp->next;
+        printf("error here\n");
+    }
+    return (0);
+}
+
+
 int executor(t_minishell m, char **envp)
 {
     m.pipe_n = command_count(m.tlist) - 1;
@@ -272,8 +446,13 @@ int executor(t_minishell m, char **envp)
 
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
+    in_redirections(&m);
+    printf("error here3\n");
+
     if (m.pipe_n == 0)
     {
+        printf("error here 0 pipes\n");
+
         single_cmd(&m);
         //waitpid(m.child_id[0], NULL, 0);
     }
@@ -282,6 +461,8 @@ int executor(t_minishell m, char **envp)
         initialize_pipes(&m);
         multiple_cmd(&m);
     }
+//    out_redirections(&m);
+
     wait_processes(&m); // Here is a traditional way to place wait
     printf("------End---------\n");
     return (0);

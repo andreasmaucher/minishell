@@ -1,0 +1,4 @@
+Command to run is: /usr/bin/grep
+Arg_vec : grep
+Arg_vec : mini
+# minishell

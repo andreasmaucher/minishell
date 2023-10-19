@@ -22,10 +22,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f3b01a49-75c3-4165-8937-63422938ed17" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executor/executor.c" beforeDir="false" afterPath="$PROJECT_DIR$/executor/executor.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/minishell.h" beforeDir="false" afterPath="$PROJECT_DIR$/minishell.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/free_memory.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils/free_memory.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,11 +125,6 @@
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Makefile Application.debug" />
       <item itemvalue="Makefile Application.all" />
@@ -156,7 +149,9 @@
       <workItem from="1697543620945" duration="2816000" />
       <workItem from="1697550762600" duration="1965000" />
       <workItem from="1697555585474" duration="1452000" />
-      <workItem from="1697562136309" duration="2289000" />
+      <workItem from="1697562136309" duration="5444000" />
+      <workItem from="1697630391923" duration="12775000" />
+      <workItem from="1697717854753" duration="15449000" />
     </task>
     <servers />
   </component>

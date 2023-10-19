@@ -24,6 +24,8 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+
 
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
@@ -77,8 +79,9 @@ in thie output redirection
 */
 typedef struct s_file
 {
-	int		fd;
-	char	*file_name;
+	int		fd_read;
+    int		fd_write;
+    char	*file_name;
 	char	*stop_heredoc;
 	char	*new_heredoc_file;
 }	t_file;
