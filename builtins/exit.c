@@ -12,6 +12,8 @@
 
 # include "../minishell.h"
 
+//DONE
+
 /*
 returns the number of arguments within one command
 */
@@ -24,18 +26,6 @@ int arg_count(char **args)
         i++;
     return(i);
 }
-
-/*
-mimics the behavior of the 'exit' command;
-if more than one argument is given it does not exit the shell, but prints a 
-warning (exit_code 1) and 'exit';
-a standalone 'exit' command will have exit code 0;
-Example behvaior:
-exit 1: prints exit, but does not actually exit
-exit 1 2: 'exit: too many arguments'
-exit hi: 'exit: hi: numeric argument required'
-exit hi man: 'exit: too many arguments'
-*/
 
 int	ft_isdigit(int c)
 {
@@ -58,34 +48,54 @@ bool    check_if_str_is_numeric(char *arg_str)
     return(true);
 }
 
+/*
+mimics the behavior of the 'exit' command;
+if more than one argument is given it does not exit the shell, but prints a 
+warning (exit_code 1) and 'exit';
+a standalone 'exit' command will have exit code 0;
+Example behvaior:
+exit 1: prints exit, but does not actually exit
+exit 1 2: 'exit: too many arguments'
+exit hi: 'exit: hi: numeric argument required'
+exit hi man: 'exit: too many arguments'
 
-int exit(t_minishell m, t_command *cmd)
+function starts at index one to skip the actual command name;
+- (if ac == 1) -> case for only 'echo'
+*/
+
+int exit_builtin(t_minishell m, t_command *cmd)
 {
     int ac;
     int i;
 
     ac = arg_count(cmd->args);
-    i = 0;
-    if (ac == 1)
+    i = 1; // start after echo
+    if (ac == 1) //case for only echo
     {
-         exit_shell(m); //! or should this go to execution?
-         g_exit_code = 0;
+        global_exit_code = 0;
+        exit_shell(m); //! or should this go to execution?
     }
-    if (ac != 1)
+    else if (ac != 1) // case for min. one more arg next to echo
     {
         while (cmd->args[i] != NULL)
         {
-            if (check_if_str_is_numeric(cmd->args[i]) == false)
+            if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == true) // case for echo + int
+            {
+                printf("exit");
+                return(global_exit_code = 1);
+            }
+            else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false) // echo + word
+            {
+                printf("exit: %s: numeric argument required", cmd->args[1]);
+                return(global_exit_code = 2);
+            }
+            else
             {
                 printf("exit: too many arguments");
-                return(g_exit_code = 1);
+                return(global_exit_code = 1);
             }
             i++;
         }
-        else
-        {
-            printf("exit: %s: numeric argument required", cmd->args); //! DOES prob not work should be args[i]
-        }
     }
-    //! exit_shell
+    return (0);
 }

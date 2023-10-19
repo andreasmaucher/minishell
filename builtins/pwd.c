@@ -12,7 +12,7 @@
 
 # include "../minishell.h"
 
-//DONE
+//CHECK AGAIN WHEN CD WORKS; BUT SHOULD BE GOOD
 
 /*
 memory management is handled by getcwd function, which returns the path of
@@ -26,4 +26,16 @@ int    pwd(void)
         return (1);
     printf("%s\n", current_dir);
     return(0);
+}
+
+//! NEED TO FREE IN EXECUTION
+char    *pwd_path(void)
+{
+    char    current_dir[PATH_MAX];
+    char    *return_str;
+
+    if (getcwd(current_dir, PATH_MAX) == NULL)
+        return (NULL);
+    return_str = ft_strdup(current_dir);
+    return(return_str);
 }

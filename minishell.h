@@ -25,8 +25,10 @@
 #include <sys/ioctl.h>
 #include <limits.h>
 #include <sys/syslimits.h>
+#include <sys/ioctl.h>
+#include <sys/wait.h>
 
-int g_exit_code = 0;
+int global_exit_code;
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
@@ -217,8 +219,28 @@ void add_token_to_command_list(t_list **token_list, char *token_info);
 bool check_parser_input(t_list *tlist);
 int token_count_tlist(t_list *tlist);
 
+//builtins
+int arg_count(char **args);
+char    *pwd_path(void);
+int    pwd(void);
+int unset(t_minishell m, t_command *cmd);
+int export(t_minishell *m, t_command *cmd);
+int	execute_program(t_minishell *m, t_command *cmd, int process_n);
+int env(t_minishell *m);
+int echo(t_minishell m, t_command *cmd);
+int    execute_builtins(t_minishell *m, t_command *cmd);
+char *extract_search_str(t_command *cmd, int i);
+bool    check_if_existing_env(t_minishell *m, t_command *cmd, int len);
+int calc_length_of_new_env_arr(t_minishell *m, t_command *cmd);
+void    update_env_lib(t_minishell *m, t_command *cmd);
+
 //execution
-void executor(t_minishell m, char **envp);
-int	execute_program(char **arg_vec, char *path);
+int executor(t_minishell m, char **envp);
+
+int initialize_pipes(t_minishell *m);
+int close_pipes(t_minishell *m);
+void kill_process(t_minishell *m, int process_id);
+void	free_env(char **env);
+int     free_execve_fail(t_minishell *m);
 
 #endif

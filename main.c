@@ -19,6 +19,7 @@ clist = commandlist, meaning the list that holds all commands */
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
+	t_command *cmd = NULL;
 
 	(void)av;
 	if (ac != 1)
@@ -28,12 +29,12 @@ int main(int ac, char **av, char **envp)
 	{
 		m.line = readline("Myshell: ");
 		add_history(m.line);
-		if (ft_strcmp(m.line, "exit") == 0) //! DELETE AT END
-			exit_shell(m);
 		m.tlist = split_line_into_tokens(m, envp);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		executor(m, envp);
+		cmd = (t_command *) m.clist->value;
+		execute_builtins(&m, cmd);
+		//executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
 		//! if execve -1 free **args of command_list

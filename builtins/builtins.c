@@ -12,10 +12,21 @@
 
 # include "../minishell.h"
 
-//! when calling this function always first: cmd = (t_command *)clist->value;
-//! this will ensure that we are accessing the args of the right command!
-/* void    execute_builtins(t_minishell *m, t_command *cmd)
+int    execute_builtins(t_minishell *m, t_command *cmd)
 {
+    int exit_code;
+
+    printf("WITHIN BUILTINS \n");
+    exit_code = 0;
     if (ft_strcmp(cmd->args[0], "echo") == 0)
-        echo(m, cmd);
-} */
+        exit_code = echo(*m, cmd);
+    else if (ft_strcmp(cmd->args[0], "pwd") == 0)
+        exit_code = pwd();
+    else if (ft_strcmp(cmd->args[0], "unset") == 0)
+        exit_code = unset(*m, cmd);
+    else if (ft_strcmp(cmd->args[0], "env") == 0)
+        exit_code = env(m);
+    else if (ft_strcmp(cmd->args[0], "export") == 0)
+        exit_code = export(m, cmd);
+    return(exit_code);
+}

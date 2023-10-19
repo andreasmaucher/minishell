@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        
+        {
+            "name": "C/C++: gcc Aktive Datei erstellen und debuggen",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "C/C++: gcc Aktive Datei kompilieren"
+        }
+    ],
+    "version": "2.0.0"
+}

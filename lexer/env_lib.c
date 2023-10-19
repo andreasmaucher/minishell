@@ -60,7 +60,7 @@ char **create_envp_library(char **envp)
     buf = malloc(sizeof(char *) * (len + 1));
     if (!buf)
         return (NULL);
-    len = 0; //! Don't get that logic fully 
+    len = 0;
     while (envp[len] != NULL)
     {
         char *target_pos = strchr(envp[len], target); //! LIBFT
@@ -74,10 +74,11 @@ char **create_envp_library(char **envp)
             buf[len][substr_len] = '\0';
             //printf("SUBSTR: %s\n", buf[len]);
         }
-        else
+        //! not needed?!?!??!?!?!?
+        /* else
         {
             buf[len] = NULL;
-        }
+        } */
         len++;
     }
     buf[len] = NULL;

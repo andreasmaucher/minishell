@@ -18,14 +18,15 @@
 imitates the behavior of the command 'env' and prints the env library incl.
 the relevant path for each variable
 */
-int env(t_minishell m)
+int env(t_minishell *m)
 {
     int i;
 
     i = 0;
-    while (m.envp_lib[i] != NULL)
+    while (m->envp_lib[i] != NULL)
     {
-        printf("%s\n", m.envp_lib[i]);
+        printf("%s\n", m->envp_lib[i]);
+        //printf("%s\n", m->env_lib[i]);  //! only test
         i++;
     }
     return (0); //! exit_code
