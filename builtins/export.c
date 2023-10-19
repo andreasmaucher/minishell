@@ -202,10 +202,41 @@ char    **add_args_to_env_lib(t_minishell *m, char **tmp_envp, t_command *cmd, i
         full_len++;
     }
     return(tmp_envp);
-}   
+}
 
 //! EVEN WORKS FOR ADDITIONS ITS ALL IN TMP_ENVP ONLY PRINTING IS WRONG!!!!!!!!!!!!!!!
 char **copy_existing_env_lib(t_minishell *m, char **tmp_envp, t_command *cmd, int full_len)
+{
+    int len;
+    char *tmp_str;
+    int i;
+
+    i = 0;
+    len = 0;
+    (void)cmd;
+    tmp_str = NULL;
+    while (len <= full_len && m->envp_lib[len] != NULL)
+    {
+        i = 0;
+        tmp_str = malloc(sizeof(char) * ft_strlen(m->envp_lib[len]) + 1);
+        if (!tmp_str)
+            return (NULL);
+        while (m->envp_lib[len][i] != '\0' && m->envp_lib[len][i] != '=')
+        {
+            tmp_str[i] = m->envp_lib[len][i];
+            i++;
+        }
+        tmp_str[i] = '\0';
+        tmp_envp[len] = ft_strdup(tmp_str);
+        free(tmp_str);
+        len++;
+    }
+    tmp_envp[len] = NULL;
+    return(tmp_envp);
+}
+
+//! EVEN WORKS FOR ADDITIONS ITS ALL IN TMP_ENVP ONLY PRINTING IS WRONG!!!!!!!!!!!!!!!
+char **copy_existing_envp_lib(t_minishell *m, char **tmp_envp, t_command *cmd, int full_len)
 {
     int len;
     /* int substr_len;
@@ -276,8 +307,7 @@ int calc_length_of_new_env_arr(t_minishell *m, t_command *cmd)
     return (full_len);
 }
 
-//! DO THE SAME FOR ENV LIB!!!!!!!!!!!!!!!!!!!!!!!!! need to cut at '='
-void    update_env_lib(t_minishell *m, t_command *cmd)
+void    update_env_lib(t_minishell  *m, t_command *cmd)
 {
     char   **tmp_envp;
     int    len;
@@ -290,6 +320,54 @@ void    update_env_lib(t_minishell *m, t_command *cmd)
         return ;
     ///tmp_envp[full_len + 1] = NULL;
     tmp_envp = copy_existing_env_lib(m, tmp_envp, cmd, full_len);
+    //tmp_envp = add_args_to_env_lib(m, tmp_envp, cmd, full_len);
+    //! testing
+    len = 0;
+    while (tmp_envp[len])
+    {
+        printf("ENV AFTER UPDATE: %s\n", tmp_envp[len]);
+        len++;
+    }
+    free_env(m->env_lib);
+    m->env_lib = malloc(sizeof(char *) * (full_len + 1));
+    if (!m->env_lib)
+        return ;
+    len = 0;
+    while (len <= full_len)
+    {
+        m->env_lib[len] = ft_strdup(tmp_envp[len]);
+        len++;
+    }
+    m->env_lib[len] = NULL;
+    len = 0;
+    while (m->env_lib[len])
+    {
+        printf("ENV NEW LIST: %s\n", m->env_lib[len]);
+        len++;
+    }
+    len = 0;
+    while (tmp_envp[len] != NULL) {
+        free(tmp_envp[len]); // Free each string
+        len++;
+    }
+    free(tmp_envp); // Free the array of strings
+	//free_env(tmp_envp);
+}
+
+//! DO THE SAME FOR ENV LIB!!!!!!!!!!!!!!!!!!!!!!!!! need to cut at '='
+void    update_envp_lib(t_minishell *m, t_command *cmd)
+{
+    char   **tmp_envp;
+    int    len;
+    int full_len;
+
+    tmp_envp = NULL;
+    full_len = calc_length_of_new_env_arr(m, cmd);
+    tmp_envp = malloc(sizeof(char *) * (full_len + 1)); // without +1?
+    if (!tmp_envp)
+        return ;
+    ///tmp_envp[full_len + 1] = NULL;
+    tmp_envp = copy_existing_envp_lib(m, tmp_envp, cmd, full_len);
     //tmp_envp = add_args_to_env_lib(m, tmp_envp, cmd, full_len);
     //! testing
     len = 0;
@@ -336,7 +414,8 @@ int export(t_minishell *m, t_command *cmd)
             printf("ENVP BEFORE UDPATE: %s\n", m->envp_lib[len]);
             len++;
         }
-        update_env_lib(m, cmd);
+        update_envp_lib(m, cmd);
+        //update_env_lib(m, cmd);
         return (0); //! exit_codes
     }
     //return (1); //! exit_codes
