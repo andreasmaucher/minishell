@@ -135,12 +135,12 @@ bool    check_if_existing_env(t_minishell *m, t_command *cmd, int len)
         {
             printf("SEARCH STR IF FOUND: %s\n", search_str);
             printf("M.env-lib found: %s\n", search_str);
-            free(search_str);
+            //free(search_str);
             return(true);
         }
         i++;
     }
-    free(search_str);
+    //free(search_str);
     return (false);
 }
 
@@ -350,8 +350,8 @@ void    update_env_lib(t_minishell  *m, t_command *cmd)
         free(tmp_envp[len]); // Free each string
         len++;
     }
-    free(tmp_envp); // Free the array of strings
-	//free_env(tmp_envp);
+    free(tmp_envp); //  the array of strings
+	//_env(tmp_envp);
 }
 
 //! DO THE SAME FOR ENV LIB!!!!!!!!!!!!!!!!!!!!!!!!! need to cut at '='
@@ -376,7 +376,7 @@ void    update_envp_lib(t_minishell *m, t_command *cmd)
         printf("ENVP AFTER UPDATE: %s\n", tmp_envp[len]);
         len++;
     }
-    free_env(m->envp_lib);
+    //free_env(m->envp_lib);
     m->envp_lib = malloc(sizeof(char *) * (full_len + 1));
     if (!m->envp_lib)
         return ;
@@ -394,12 +394,11 @@ void    update_envp_lib(t_minishell *m, t_command *cmd)
         len++;
     }
     len = 0;
-    while (tmp_envp[len] != NULL) {
+  /*   while (tmp_envp[len] != NULL) {
         free(tmp_envp[len]); // Free each string
         len++;
     }
-    free(tmp_envp); // Free the array of strings
-	//free_env(tmp_envp);
+    free(tmp_envp); */ // Free the array of strings
 }
 
 //! does not cover case where = is missing, so they will be added currently
