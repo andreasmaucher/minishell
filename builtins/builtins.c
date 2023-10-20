@@ -23,7 +23,7 @@ int    execute_builtins(t_minishell *m, t_command *cmd)
     else if (ft_strcmp(cmd->args[0], "pwd") == 0)
         exit_code = pwd();
     else if (ft_strcmp(cmd->args[0], "unset") == 0)
-        exit_code = unset(*m, cmd);
+        exit_code = unset(m, cmd);
     else if (ft_strcmp(cmd->args[0], "env") == 0)
         exit_code = env(m);
     else if (ft_strcmp(cmd->args[0], "export") == 0)

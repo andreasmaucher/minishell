@@ -26,7 +26,7 @@ t_list *split_line_into_tokens(t_minishell m, char **envp)
 		else if (m.line[i] == '<' || m.line[i] == '>')
 			m.str_with_all_tokens = redirection_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '$')
-			m.str_with_all_tokens = env_token(m.line, &i, &m.token_type, m.env_lib, envp);
+			m.str_with_all_tokens = env_token(m.line, &i, &m.token_type, m.envp, envp);
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.str_with_all_tokens = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')

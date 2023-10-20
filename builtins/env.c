@@ -20,14 +20,18 @@ the relevant path for each variable
 */
 int env(t_minishell *m)
 {
-    int i;
+    t_list *tmp;
+    t_dict *dict;
 
-    i = 0;
-    while (m->envp_lib[i] != NULL)
+    tmp = m->envp;
+    dict = (t_dict *)tmp->value;
+    while (tmp != NULL)
     {
-        printf("%s\n", m->envp_lib[i]);
+        dict = (t_dict *)tmp->value;
+        printf("%s\n", (char *)dict->value);
+        printf("%s\n", dict->key);
         //printf("%s\n", m->env_lib[i]);  //! only test
-        i++;
+        tmp = tmp->next;
     }
     return (0); //! exit_code
 }

@@ -51,9 +51,9 @@ char *double_quote_to_string(char *line, int *i, t_minishell m)
 		{	
 			(*i)++;
 			search_str = extract_env_name(line, i);
-			if (check_if_part_of_library(m.env_lib, search_str) == true)
-				env_expanded = *find_path(m.envp_lib, search_str);
-			else if (check_if_part_of_library(m.env_lib, search_str) == false)
+			if (check_if_part_of_library(m.envp, search_str) == true)
+				env_expanded = *find_path_after_key(m.envp, search_str);
+			else if (check_if_part_of_library(m.envp, search_str) == false)
 				env_expanded = "";
 			str_between_quotes = append_str(str_between_quotes, env_expanded);
 			free(search_str);

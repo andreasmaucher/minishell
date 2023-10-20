@@ -63,15 +63,15 @@ bool    check_valid_export_input(char **args)
         {
             if (args[i][0] != '_' && ft_isalpha(args[i][0]) == false) // first letter needs to be _ or character
             {
-                printf("export '%s' : not a valid identifier", args[i]);
+                printf("export '%s' : not a valid identifier\n", args[i]);
                 return(false);
             }
-            if (args[i][j] == '=') // stop at equal sign, more characters allowed  afterwards
+            else if (args[i][j] == '=') // stop at equal sign, more characters allowed  afterwards
                 break;
             // if not character, digit or _ its invalid input
-            if ((ft_isalpha(args[i][j]) == false && ft_is_digit(args[i][j] == false && args[i][j] != '_')))
+            else if ((ft_isalpha(args[i][j]) == false && ft_is_digit(args[i][j] == false && args[i][j] != '_')))
             {
-                printf("export '%s' : not a valid identifier", args[i]);
+                printf("export '%s' : not a valid identifier\n", args[i]);
                 return(false);
             }
             j++;
@@ -403,7 +403,7 @@ void    update_envp_lib(t_minishell *m, t_command *cmd)
 
 //! does not cover case where = is missing, so they will be added currently
 //! do all builtins need to return a value?
-int export(t_minishell *m, t_command *cmd)
+/* int export(t_minishell *m, t_command *cmd)
 {
     //if (check_valid_export_input(cmd->args) == true)
     {
@@ -418,4 +418,111 @@ int export(t_minishell *m, t_command *cmd)
         return (0); //! exit_codes
     }
     //return (1); //! exit_codes
+} */
+
+bool    check_equal_sign(char *str)
+{
+    int i;
+
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == '=')
+            return (true);
+        i++;
+    }
+    return (false);
+}
+
+void add_new_envs(t_minishell *m, t_command *cmd)
+{
+    int i;
+    t_list *new;
+    t_dict *dict;
+
+    i = 0;
+    new = NULL;
+    dict = NULL;
+    while (cmd->args[i])
+    {
+        if (check_equal_sign(cmd->args[i]) == true)
+        {
+            new = create_new_node(NULL);
+            dict = malloc(sizeof(t_dict));
+            dict->value = ft_strdup(cmd->args[i]);
+            dict->key = extract_key_from_envp(cmd->args[i]);
+            new->value = dict;
+            insert_at_tail(m->envp, new);
+        }
+        i++;
+    }
+}
+
+/* 
+checks if the current key matches with the key in the user input;
+if true the corresponding node is deleted and free 
+*/
+bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp)
+{
+    t_dict *dict;
+
+    dict = (t_dict *)tmp->value;
+    printf("DICT KEY %s\n", dict->key);
+    printf("CMD->ARGS %s\n", search_str);
+    if (ft_strcmp(dict->key, search_str) == 0)
+    {
+        ft_lstremove(&m->envp, tmp, del_envp);
+        return (true);
+    }
+    return (false);
+}
+
+/* char *extract_key_from_args(char *arg)
+{
+    int i;
+
+    i = 0;
+    while (arg[i] != '=')
+    {
+
+    }
+} */
+
+t_list *delete_double_envs(t_minishell *m, t_command *cmd)
+{
+    int i;
+    t_list *tmp;
+    char *search_str;
+
+    i = 0;
+    tmp = m->envp;
+    search_str = NULL;
+    while(cmd->args[i] != NULL)
+    {
+        tmp = m->envp;
+        //if (check_equal_sign(cmd->args[i]) == true)
+        search_str = extract_key_from_envp(cmd->args[i]);
+        if (check_if_part_of_library(m->envp, search_str) == true)
+        {
+            while (tmp != NULL)
+	        {
+                if (check_for_key_doubles(m, search_str, tmp) == true)
+                    break;
+                tmp = tmp->next;
+	        }
+        }
+        free(search_str);
+        i++;
+    }
+    return (tmp);
+}
+
+int export(t_minishell *m, t_command *cmd)
+{
+    if (check_valid_export_input(cmd->args) ==false)
+        return (1);
+    delete_double_envs(m, cmd);
+    add_new_envs(m, cmd);
+    printlist_envp(m->envp);
+    return (0);
 }

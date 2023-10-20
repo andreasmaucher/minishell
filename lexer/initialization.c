@@ -70,7 +70,7 @@ parameter name, which is later being used as a search keyword */
 void	init_minishell_struct_and_signals(t_minishell *m, char **envp)
 {
 	ft_memset(m, 0, sizeof(t_minishell));
-	m->env_lib = create_env_library(envp);
-	m->envp_lib = create_envp_library(envp);
+	m->envp = create_envp_list(envp);
+	printlist_envp(m->envp); //!testing
 	init_signals(m, handle_signals);
 }

@@ -59,16 +59,22 @@ char *env_within_double_quotes(char *line, int *i)
 	return(env_string);
 }
 
-bool check_if_part_of_library(char **env_lib, char *search_str)
+bool check_if_part_of_library(t_list *envp, char *search_str)
 {
-	int	i;
+	t_list *tmp;
+	t_dict *dict;
+	int i;
 
 	i = 0;
-	while (env_lib[i] != NULL)
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (tmp != NULL)
 	{
-		if (ft_strcmp(env_lib[i], search_str) == 0)
+		dict = tmp->value;
+		if (ft_strcmp(dict->key, search_str) == 0)
 			return(true);
 		i++;
+		tmp = tmp->next;
 	}
 	return(false);
 }
@@ -85,6 +91,27 @@ char	**find_path(char **envp, char *search_str)
 	while (ft_strnstr(envp[i], search_str, ft_strlen(search_str)) == NULL)
 		i++;
 	path = ft_strstr(envp[i], "=");
+	if (path == NULL)
+		return (NULL);
+	path_buf = ft_split(++path, '\0');
+	return (path_buf);
+}
+
+char	**find_path_after_key(t_list *envp, char *search_str)
+{
+	char	*path;
+	char	**path_buf;
+	t_list	*tmp;
+	t_dict	*dict;
+
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (ft_strnstr(dict->value, search_str, ft_strlen(search_str)) == NULL)
+	{
+		tmp = tmp->next;
+		dict = tmp->value;
+	}
+	path = ft_strstr(dict->value, "=");
 	if (path == NULL)
 		return (NULL);
 	path_buf = ft_split(++path, '\0');
@@ -111,18 +138,16 @@ char	*extract_env_name(char *line, int *i)
 }
 
 /* extract the env_str from the input */
-char	*env_token(char *line, int *i, t_type *token_type, char **env_lib, char **envp)
+char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list, char **envp)
 {
 	char	*search_str;
 	char	*env_final;
-	//char	**env_lib;
 
 	(*i)++;
+	(void)envp;
 	*token_type = WORD;//ENV;
 	search_str = extract_env_name(line, i);
-	printf("SEARCH: %s", search_str);
-	//env_lib = create_env_library(envp);
-	if (check_if_part_of_library(env_lib, search_str) == false)
+	if (check_if_part_of_library(env_list, search_str) == false)
 	{
 		*token_type = ENV_FAIL;
 		if (ft_strcmp(search_str, "$") == 0) // if theres a single dollar sign it's supposed to be printed
@@ -137,7 +162,7 @@ char	*env_token(char *line, int *i, t_type *token_type, char **env_lib, char **e
 	}
 	else 
 	{
-		env_final = *find_path(envp, search_str);
+		env_final = *find_path_after_key(env_list, search_str);
 		free(search_str);
 	}
 	return (env_final);

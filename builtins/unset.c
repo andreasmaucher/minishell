@@ -12,7 +12,24 @@
 
 # include "../minishell.h"
 
-//! NOT WORKING YET
+/* 
+checks if the current key matches with the key in the user input;
+if true the corresponding node is deleted and free 
+*/
+bool    check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp)
+{
+    t_dict *dict;
+
+    dict = (t_dict *)tmp->value;
+    printf("DICT KEY %s\n", dict->key);
+    printf("CMD->ARGS %s\n", cmd->args[i]);
+    if (ft_strcmp(dict->key, cmd->args[i]) == 0)
+    {
+        ft_lstremove(&m->envp, tmp, del_envp);
+        return (true);
+    }
+    return (false);
+}
 
 /*
 unset function is used to unset or remove environment variables or
@@ -23,34 +40,24 @@ is successfully unset. If the variable does not exist, it still returns 0.
 If multiple variable names are entered after unset, all will be checked and
 unset even if incorrect variable names are included.
 */
-int unset(t_minishell m, t_command *cmd)
+int unset(t_minishell *m, t_command *cmd)
 {
     int i;
-    int j;
+    t_list *tmp;
 
-    j = 0;
     i = 0;
+    tmp = m->envp;
     while(cmd->args[i] != NULL)
     {
-        if (check_if_part_of_library(m.env_lib, cmd->args[i]) == true)
+        tmp = m->envp;
+        if (check_if_part_of_library(m->envp, cmd->args[i]) == true)
         {
-            printf("UNSET TEST");
-            while (m.env_lib[j])
+            while (tmp != NULL)
 	        {
-		        if (ft_strcmp(m.env_lib[j], cmd->args[i]) == 0)
-                {
-                    //!make new list
-                    printf("ENV LIB J: %s\n", m.env_lib[j]);
+                if (check_for_key(m, cmd, i, tmp) == true)
                     break;
-                }
-		        j++;
+                tmp = tmp->next;
 	        }
-            //j = -1; // go one back to be at the correct index //!
-            if (m.envp_lib[j]) //! MAYBE ITS HERE?!?!?!?!?
-            {   
-                //! make new list
-                printf("ENVP LIB J: %s\n", m.envp_lib[j]);
-            }
         }
         i++;
     }

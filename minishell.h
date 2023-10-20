@@ -104,7 +104,7 @@ typedef struct s_minishell
     int tokens;
     t_list *tlist; // for lexer, token list
     t_list *clist; // for parser, command list
-	t_list	*env; // not used?
+	t_list	*envp;
 	char **env_lib;
 	char	**envp_lib;
     char *line;
@@ -140,6 +140,8 @@ t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type
 t_list *find_previous_node(t_list *head, t_list *target_node);
 void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *));
 t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type);
+void env_del(void *content);
+void	del_envp(void *arg);
 
 //parser
 t_list *parser(t_minishell m);
@@ -154,6 +156,7 @@ void	*ft_memset(void *s, int c, size_t n);
 //testing
 void	printlist(t_list *head);
 void print_command_list(t_list *clist);
+void	printlist_envp(t_list *head);
 
 //lexer
 t_list *split_line_into_tokens(t_minishell m, char **envp);
@@ -161,6 +164,8 @@ t_list *split_line_into_tokens(t_minishell m, char **envp);
 //env_library
 char **create_envp_library(char **envp);
 char **create_env_library(char **envp);
+t_list *create_envp_list(char **envp);
+char    *extract_key_from_envp(char *envp);
 
 //lexer_tokens
 char *pipe_token(int *i, t_type *token_type);
@@ -187,18 +192,21 @@ void join_str_and_del_old_node(t_list *tlist, t_list *current_node, t_list *prev
 //free_memory
 int	exit_shell(t_minishell m);
 void	command_del(void *arg);
-void	*ft_free_set_null(void *ptr);
+void	*set_pt_to_null(void *ptr);
 void token_del(void *content);
 void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 
 //env
-char	*env_token(char *line, int *i, t_type *token_type, char **env_lib, char **envp);
+char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list, char **envp);
 char	*extract_env_name(char *line, int *i);
 char 	*env_within_double_quotes(char *line, int *i);
 char	**find_path(char **envp, char *search_str);
-bool check_if_part_of_library(char **env_lib, char *search_str);
+bool check_if_part_of_library(t_list *envp, char *search_str);
 char *env_within_double_quotes(char *line, int *i);
+char	**find_path_after_key(t_list *envp, char *search_str);
+char	*extract_env_name(char *line, int *i);
+char    *extract_key_from_envp(char *envp);
 
 //ft_split
 char	**ft_split(char const *s, char c);
@@ -223,7 +231,7 @@ int token_count_tlist(t_list *tlist);
 int arg_count(char **args);
 char    *pwd_path(void);
 int    pwd(void);
-int unset(t_minishell m, t_command *cmd);
+int unset(t_minishell *m, t_command *cmd);
 int export(t_minishell *m, t_command *cmd);
 int	execute_program(t_minishell *m, t_command *cmd, int process_n);
 int env(t_minishell *m);
@@ -233,6 +241,7 @@ char *extract_search_str(t_command *cmd, int i);
 bool    check_if_existing_env(t_minishell *m, t_command *cmd, int len);
 int calc_length_of_new_env_arr(t_minishell *m, t_command *cmd);
 void    update_env_lib(t_minishell *m, t_command *cmd);
+bool    check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp);
 
 //execution
 int executor(t_minishell m, char **envp);
