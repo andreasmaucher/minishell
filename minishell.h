@@ -207,6 +207,8 @@ char *env_within_double_quotes(char *line, int *i);
 char	**find_path_after_key(t_list *envp, char *search_str);
 char	*extract_env_name(char *line, int *i);
 char    *extract_key_from_envp(char *envp);
+void add_new_envs(t_minishell *m, t_command *cmd);
+bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
 
 //ft_split
 char	**ft_split(char const *s, char c);
@@ -242,6 +244,7 @@ bool    check_if_existing_env(t_minishell *m, t_command *cmd, int len);
 int calc_length_of_new_env_arr(t_minishell *m, t_command *cmd);
 void    update_env_lib(t_minishell *m, t_command *cmd);
 bool    check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp);
+int cd(t_minishell *m, t_command *cmd);
 
 //execution
 int executor(t_minishell m, char **envp);

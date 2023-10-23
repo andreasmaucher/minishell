@@ -224,12 +224,12 @@ int free_execve_fail(t_minishell *m)
 int	execute_program(t_minishell *m, t_command *cmd, int process_n)
 {
     //! FREE MEMORY?! IF TYPE == BUILTIN
-    /* if (cmd->type == BUILTIN)
+    if (cmd->type == BUILTIN)
     { 
         printf("EXECUTED\n");
         execute_builtins(m, cmd);
     }
-    else */
+    else
     (void)m;
     {
         printf("Command to run is: %s\n", cmd->path);

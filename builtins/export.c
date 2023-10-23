@@ -467,8 +467,6 @@ bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp)
     t_dict *dict;
 
     dict = (t_dict *)tmp->value;
-    printf("DICT KEY %s\n", dict->key);
-    printf("CMD->ARGS %s\n", search_str);
     if (ft_strcmp(dict->key, search_str) == 0)
     {
         ft_lstremove(&m->envp, tmp, del_envp);

@@ -12,7 +12,8 @@
 
 # include "../minishell.h"
 
-/* generates a unique filename for a heredoc file by using a static index that increments with each call;
+/* generates a unique filename for a heredoc file by using a static index 
+that increments with each call;
 converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename */
 static char *create_heredoc_file(void)
