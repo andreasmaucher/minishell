@@ -52,7 +52,7 @@ void print_command_list(t_list *clist)
         {
             printf("--- Input Redirections or Heredoc ---\n");
             printf("Input redirection type: %s\n", token_type_names_parser[cmd->input_redir_type]);
-            printf("File Descriptor (fd): %d\n", cmd->in_redirects.fd);
+            printf("File Descriptor (fd): %d\n", cmd->in_redirects.fd_write);
             printf("File Name: %s\n", cmd->in_redirects.file_name != NULL ? cmd->in_redirects.file_name : "None");
             printf("Stop Heredoc: %s\n", cmd->in_redirects.stop_heredoc != NULL ? cmd->in_redirects.stop_heredoc : "None");
             printf("New Heredoc File: %s\n", cmd->in_redirects.new_heredoc_file != NULL ? cmd->in_redirects.new_heredoc_file : "None");
@@ -62,7 +62,7 @@ void print_command_list(t_list *clist)
         {
             printf("--- Out Redirection --- \n");
             printf("Output redirection type: %s\n", token_type_names_parser[cmd->output_redir_type]);
-            printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd);
+            printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd_write);
             printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
         }
         i = 0;

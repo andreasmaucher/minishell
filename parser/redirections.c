@@ -22,7 +22,7 @@ static char *create_heredoc_file(void)
     char        *str;
 
     str = ft_itoa(index++);
-    filename = ft_strjoin("/tmp/.heredoc_", str);
+    filename = ft_strjoin("heredoc", str);
     return(filename);
 }
 
@@ -41,7 +41,7 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *)(* tlist)->value;
-    tmp_cmd->in_redirects.fd = -1;
+    tmp_cmd->in_redirects.fd_write = -1;
     if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
     {
         tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
@@ -54,6 +54,10 @@ void cmd_input_redirection(t_list **tlist, t_list *clist)
         tmp_cmd->in_redirects.stop_heredoc = NULL;
         tmp_cmd->in_redirects.new_heredoc_file = NULL;
     }
+//    else if (tmp_cmd->input_redir_type == REDIRECT_IN)
+//    {
+//        here_docs(tmp_cmd, m);
+//    }
 }
 
 /* for output redirections a new file needs to be created to store whatever is entered
@@ -73,7 +77,7 @@ void    cmd_output_redirection(t_list **tlist, t_list *clist)
     tmp_cmd = (t_command *) clist->value;
     tmp_token = (t_token *) (* tlist)->value;
     tmp_cmd->output_redir_type = tmp_token->type;
-    tmp_cmd->out_redirects.fd = -1;
+    tmp_cmd->out_redirects.fd_write = -1;
     if (*tlist != NULL)
         *tlist = (* tlist)->next;
     tmp_token = (t_token *) (* tlist)->value;

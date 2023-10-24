@@ -132,10 +132,174 @@ void kill_process(t_minishell *m, int process_id)
     }
 }
 
+int delete_file(char *filename)
+{
+    if (unlink(filename) == 0) {
+        printf("Deleted previous HEREDOCS temp file %s\n", filename);
+    } else {
+        printf("No previous HEREDOCS file found\n");
+    }
+    return(0);
+}
+
+void ft_heredoc(char *delimiter)
+{
+    pid_t   pid;
+    int     fd[2];
+    // Prompt the user for input until the heredoc delimiter is entered
+    char *line;
+    if (pipe(fd) == -1)
+        exit(42);
+    pid = fork();
+    if (pid == 0)
+    {
+        close(fd[0]);
+        line = NULL;
+        while (1)
+        {
+            line = readline("heredoc> ");
+            line = ft_strjoin(line, "\n");
+            if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0 &&
+                ft_strlen(delimiter) == ft_strlen(line) - 1)
+            {
+                free(line);
+                exit(EXIT_SUCCESS);
+            }
+            write(fd[1], line, ft_strlen(line));
+            free(line);
+        }
+    }
+    close(fd[1]);
+    dup2(fd[0], STDIN_FILENO);
+    wait(NULL);
+}
+
+void here_docs(t_command *cmd, t_minishell *m)
+{
+    int     fd[2];
+    int status;
+    (void)status;
+    pid_t pid;
+    char *tmp_str;
+
+    //delete_file(cmd->in_redirects.new_heredoc_file);
+
+
+    if (pipe(fd) == -1)
+        exit(42);
+//    if (cmd->input_redir_type == REDIRECT_HEREDOC) {
+    pid = fork();
+    if (pid == 0)
+    {
+        tmp_str = NULL;
+        close(fd[0]);
+//            if (cmd->input_redir_type == REDIRECT_HEREDOC) {
+//        printf("HEREDOCS are starting here: \n");
+//        fd[1] = open(cmd->in_redirects.new_heredoc_file, O_CREAT | O_RDWR, 0777);
+//        if (fd[1] == -1)
+//        {
+//            perror("Error opening HEREDOCS temp file\n");
+//            exit(1);
+//        }
+//        dup2(fd[0], STDIN_FILENO);
+//        close(fd[1]);
+        while (1)
+        {
+            m->here_docs = readline("> ");
+
+            if (ft_strcmp(m->here_docs, cmd->in_redirects.stop_heredoc) == 0)
+            {
+                printf("Closing file\n");
+                free(m->here_docs);
+
+                        //dup2(cmd->in_redirects.fd_write, STDIN_FILENO);
+//                        if (dup2(fd[1], STDIN_FILENO) == -1)
+//                            perror("Input IN-redirection isn't working\n");
+                        //delete_file(cmd->in_redirects.new_heredoc_file);
+                        //close(fd[1]);
+//                close(fd[1]);
+//                dup2(fd[0], STDIN_FILENO);
+               exit(EXIT_SUCCESS);
+            }
+            tmp_str = ft_strjoin(m->here_docs, "\n");
+
+            write(fd[1], tmp_str, ft_strlen(tmp_str));
+
+//            write(fd[1], tmp_str, ft_strlen(tmp_str));
+            free(m->here_docs);
+            free(tmp_str);
+        }
+    }
+    else
+    {
+        close(fd[1]);
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[0]);
+
+//        if (dup2(fd[0], STDIN_FILENO) == -1)
+//            perror("Input IN-redirection isn't working\n");
+        waitpid(pid, NULL, 0);
+        //wait(NULL);
+    }
+
+//    if (pid != 0) {
+//        wait(NULL);
+//    }
+//        int status;
+//        waitpid(-1, &status, 0);
+}
+
+int output_redirect(t_command *cmd)
+{
+    if (cmd->output_redir_type == REDIRECT_OUT)
+    {
+        write(1, "Output redirection function running\n", 25);
+        cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
+        if (cmd->out_redirects.fd_write == -1)
+            write(1, "Could not open output file\n", 25);
+        dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+        //close_pipes(m);
+        close(cmd->out_redirects.fd_write);
+    }
+    if (cmd->output_redir_type == REDIRECT_APPEND)
+    {
+        write(1, "Output redirection function running\n", 25);
+        cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR | O_APPEND, 0777);
+        if (cmd->out_redirects.fd_write == -1)
+            write(1, "Could not open output file\n", 25);
+        dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+        //close_pipes(m);
+        close(cmd->out_redirects.fd_write);
+    }
+    return(0);
+}
+
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
     printf("error here4\n");
+
+//    int pid = here_docs(cmd, m);
+//    waitpid(pid, NULL, 0);
+//    here_docs(cmd, m);
+
+    //t_command *cmd = NULL;
+    //while(current_process_id <= m->pipe_n && m->clist)
+
+    //here_docs(cmd, m);
+
+//    ft_heredoc("eof");
+//    while(m->clist)
+//    {
+//        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+//        {
+//            here_docs(cmd, m);
+//        }
+//    m->clist = m->clist->next;
+//
+//    }
+
+
 
     m->child_id[0] = fork();
 //    if (m->child_id[0] != 0)
@@ -155,16 +319,18 @@ int single_cmd(t_minishell *m)
 //              free_env(m->path_buf);
         }
 
-        if (cmd->output_redir_type == REDIRECT_OUT)
+        if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
         {
-            //dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-            write(1, "is output redirection working for a single command?\n", 52);
-            cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
-            if (cmd->out_redirects.fd_write == -1)
-                write(1, "Could not open output file\n", 25);
-            dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
-            //close_pipes(m);
-            close(cmd->out_redirects.fd_write);
+            output_redirect(cmd);
+//
+//            //dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+//            write(1, "is output redirection working for a single command?\n", 52);
+//            cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
+//            if (cmd->out_redirects.fd_write == -1)
+//                write(1, "Could not open output file\n", 25);
+//            dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+//            //close_pipes(m);
+//            close(cmd->out_redirects.fd_write);
         }
         execute_program(cmd->args, cmd->path, m, 0);
     }
@@ -181,6 +347,15 @@ int multiple_cmd(t_minishell *m)
 
     current_process_id = 0;
     t_command *cmd = NULL;
+//    while(m->clist)
+//    {
+//        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+//        {
+//            ft_heredoc(cmd->in_redirects.stop_heredoc);
+//        }
+//        m->clist = m->clist->next;
+//
+//    }
     //while(current_process_id <= m->pipe_n && m->clist)
     while(m->clist)
         {
@@ -188,46 +363,50 @@ int multiple_cmd(t_minishell *m)
 //        while (m->clist)
 //        {
             cmd = (t_command *) m->clist->value;
+//        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+//        {
+//            ft_heredoc(cmd->in_redirects.stop_heredoc);
+//        }
             m->child_id[current_process_id] = fork();
-            if (m->child_id[current_process_id] == 0)
+        if (m->child_id[current_process_id] == 0)
+        {
+            if (current_process_id == 0)
             {
-                if (current_process_id == 0)
-                {
-                    dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-                    close_pipes(m);
-                }
-
-                else if (current_process_id == m->pipe_n && cmd->output_redir_type == REDIRECT_OUT)
-                {
-                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-                    write(1, "is output redirection working?\n", 32);
-                    cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
-                    if (cmd->out_redirects.fd_write == -1)
-                            write(1, "Could not open output file\n", 25);
-                    dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
-                    close_pipes(m);
-                    close(cmd->out_redirects.fd_write);
-                }
-
-                else if (current_process_id == m->pipe_n && cmd->output_redir_type != REDIRECT_OUT)
-                {
-                    write(1, "WHat about this?\n", 18);
-
-                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-                    close_pipes(m);
-                }
-                else
-                {
-                    dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-                    dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-                    close_pipes(m);
-                }
-                printf("------Child process N %d running---------\n", current_process_id);
-                cmd->path = valid_path(m->path_buf, cmd->args[0]);
-                free_env(m->path_buf);
-                execute_program(cmd->args, cmd->path, m, current_process_id);
-                current_process_id++; //? can i delete this since it just runs in the child who already finished
+                dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
+                close_pipes(m);
             }
+
+            else if (current_process_id == m->pipe_n && (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND))
+            {
+                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+                output_redirect(cmd);
+//                write(1, "is output redirection working?\n", 32);
+//                cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
+//                if (cmd->out_redirects.fd_write == -1)
+//                    write(1, "Could not open output file\n", 25);
+//                dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
+//                close(cmd->out_redirects.fd_write);
+                close_pipes(m);
+            }
+
+            else if (current_process_id == m->pipe_n && (cmd->output_redir_type != REDIRECT_OUT ||  cmd->output_redir_type != REDIRECT_APPEND))
+            {
+                write(1, "WHat about this?\n", 18);
+                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+                close_pipes(m);
+            }
+            else
+            {
+                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+                dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
+                close_pipes(m);
+            }
+            printf("------Child process N %d running---------\n", current_process_id);
+            cmd->path = valid_path(m->path_buf, cmd->args[0]);
+            free_env(m->path_buf);
+            execute_program(cmd->args, cmd->path, m, current_process_id);
+            current_process_id++; //? can i delete this since it just runs in the child who already finished
+        }
 //        if (m->child_id[current_process_id] != 0)
 //        {
 //            waitpid(m->child_id[0], NULL, 0);
@@ -385,7 +564,7 @@ int in_redirections(t_minishell *m)
         printf("error here2\n");
 
         cmd = (t_command *) temp->value;
-        (void)cmd;
+//        (void)cmd;
         if (cmd->input_redir_type == REDIRECT_IN)
         {
             printf("error here3\n");
@@ -399,6 +578,14 @@ int in_redirections(t_minishell *m)
                 perror("Input IN-redirection isn't working\n");
             close(cmd->in_redirects.fd_write);
         }
+        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+        {
+            here_docs(cmd, m);
+        }
+
+        // maybe heredocs go here?
+
+
         temp = temp->next;
         printf("error here\n");
     }
@@ -447,6 +634,8 @@ int executor(t_minishell m, char **envp)
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
     in_redirections(&m);
+    //here_docs(cmd, m);
+
     printf("error here3\n");
 
     if (m.pipe_n == 0)

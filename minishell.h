@@ -117,6 +117,9 @@ typedef struct s_minishell
     int **pipes;
 	char **path_to_check;
     char **path_buf;
+    char *here_docs;
+    int stdin_original;
+
 }   t_minishell;
 
 //str_utils

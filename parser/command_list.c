@@ -77,11 +77,11 @@ t_command	*ft_create_cmd(void)
 	cmd->input_redir_type = 0;
 	cmd->output_redir_type = 0;
 	cmd->args = NULL;
-	cmd->out_redirects.fd = -1;
+	cmd->out_redirects.fd_write = -1;
 	cmd->out_redirects.file_name = NULL;
 	cmd->out_redirects.stop_heredoc = NULL;
 	cmd->out_redirects.new_heredoc_file = NULL;
-	cmd->in_redirects.fd = -1;
+	cmd->in_redirects.fd_write = -1;
 	cmd->in_redirects.file_name = NULL;
 	cmd->in_redirects.stop_heredoc = NULL;
 	cmd->in_redirects.new_heredoc_file = NULL;

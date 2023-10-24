@@ -1,0 +1,19 @@
+Command to run is: /usr/bin/ls
+Arg_vec : ls
+Makefile
+README.md
+badfile
+executor
+infile
+lexer
+main.c
+main.o
+minishell
+minishell.dSYM
+minishell.h
+out
+outputfile
+parser
+singlecmdoutput
+suppressions.supp
+utils

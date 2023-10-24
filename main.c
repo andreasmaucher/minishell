@@ -17,6 +17,7 @@
 m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
 tlist = tokenlist, meaning the list that holds all tokens,
 clist = commandlist, meaning the list that holds all commands */
+
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
@@ -25,21 +26,28 @@ int main(int ac, char **av, char **envp)
 	if (ac != 1)
 		return (1);
 	init_minishell_struct_and_signals(&m, envp);
-	while (1)
+    while (1)
 	{
-		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
+        if (dup2(m.stdin_original, 0) == -1)
+        {
+            perror("Failed to restore stdin");
+            return (1);
+        }
+        m.line = readline("Myshell: ");
 		add_history(m.line);
-		if (m.line == NULL || ft_strcmp(m.line, "exit") == 0) 
-			exit_shell(m);
-		m.tlist = split_line_into_tokens(m, envp);
-		printlist(m.tlist); //! only for testing
-		m.clist = parser(m);
-		executor(m, envp);
+//		if (ft_strcmp(m.line, "exit") == 0)
+//            m.line = readline("Myshell: ");
+        if (m.line != NULL)
+            m.tlist = split_line_into_tokens(m, envp);
+        if (m.tlist != NULL)
+        {
+            printlist(m.tlist); //! only for testing
+            m.clist = parser(m);
+        }
+        if (m.clist != NULL)
+		    executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
-		//! if execve -1 free **args of command_list
-		free(m.line);
+        free(m.line);
 	}
 }

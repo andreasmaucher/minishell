@@ -1,6 +1,0 @@
-------Child process N 1 running---------
-Command to run is: /usr/bin/grep
-Arg_vec : grep
-Arg_vec : main
-main.c
-main.o

@@ -1,0 +1,8 @@
+Command to run is: /usr/bin/echo
+Arg_vec : echo
+Arg_vec : lala
+lala
+Command to run is: /usr/bin/echo
+Arg_vec : echo
+Arg_vec : lulu
+lulu

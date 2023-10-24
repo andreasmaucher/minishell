@@ -65,7 +65,7 @@ t_list *parser(t_minishell m)
     }
    else
    {
-        exit_shell(m);
+//        exit_shell(m);
         return (NULL); //!exit code? */
    }
 }

@@ -1,1 +1,0 @@
-# minishell is really hard
