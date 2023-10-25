@@ -10,21 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
-/* used for joining two consecutive word tokens; the function takes in a pointer to the head of the
-list and two pointers to the current node and the previous node;
-if the token type of the previous node is WORD the string contents of the two consecutive tokens are joined 
-into one and one token is freed */
-void join_str_and_del_old_node(t_list *tlist, t_list *current_node, t_list *previous_node)
+/* used for joining two consecutive word tokens; the function takes in a 
+pointer to the head of thelist and two pointers to the current node and
+the previous node;if the token type of the previous node is WORD the string
+contents of the two consecutive tokens are joined into one and one token
+is freed */
+void	join_str_and_del_old_node(t_list *tlist, t_list *current_node,
+		t_list *previous_node)
 {
-	char	*new_joined_str;
-	t_token *previous_token;
+	char		*new_joined_str;
+	t_token		*previous_token;
 
 	previous_token = previous_node->value;
 	if (previous_token->type == WORD)
 	{
-		new_joined_str = ft_strjoin(previous_token->str, ((t_token *)current_node->value)->str); 
+		new_joined_str = ft_strjoin(previous_token->str,
+				((t_token *)current_node->value)->str); 
 		free(((t_token *)previous_node->value)->str);
 		((t_token *)previous_node->value)->str = new_joined_str;
 		ft_lstremove(&tlist, current_node, token_del);
@@ -33,10 +36,10 @@ void join_str_and_del_old_node(t_list *tlist, t_list *current_node, t_list *prev
 
 /* function that merges two consecutive word tokens (without spaces in between!)
 e.g. l"s"; otherwise the parser would process this as two separate tokens */
-t_list	*merge_words(t_list **tlist, t_list *current_node)
+t_list	*merge_tokens(t_list **tlist, t_list *current_node)
 {
-	t_list *previous_node;
-	t_token	*current_token;
+	t_list		*previous_node;
+	t_token		*current_token;
 
 	previous_node = NULL;
 	current_token = current_node->value;
@@ -49,6 +52,9 @@ t_list	*merge_words(t_list **tlist, t_list *current_node)
 	return (*tlist);
 }
 
+/*
+delete all whitespace tokens at the end of the lexer
+*/
 t_list	*delete_whitespace(t_list **tlist, t_list *current_node)
 {
 	t_token	*tmp_token;
@@ -56,10 +62,14 @@ t_list	*delete_whitespace(t_list **tlist, t_list *current_node)
 	tmp_token = current_node->value;
 	if (tmp_token->type == WHITESPACE)
 		ft_lstremove(tlist, current_node, token_del);
-	return(*tlist);
+	return (*tlist);
 }
 
-t_list	*modify_list(t_list **tlist, t_list *(*f)(t_list **tlist, t_list *current_node))
+/*
+applies a function to every node of a list
+*/
+t_list	*apply_function_to_list(t_list **tlist, t_list *(*f)
+		(t_list **tlist, t_list *current_node))
 {
 	t_list	*current_node;
 	t_list	*next;
@@ -76,7 +86,7 @@ t_list	*modify_list(t_list **tlist, t_list *(*f)(t_list **tlist, t_list *current
 
 t_list	*cleanup_token_list(t_list *tlist)
 {
-	tlist = modify_list(&tlist, merge_words);
-	tlist = modify_list(&tlist, delete_whitespace);
-	return(tlist);
+	tlist = apply_function_to_list(&tlist, merge_tokens);
+	tlist = apply_function_to_list(&tlist, delete_whitespace);
+	return (tlist);
 }

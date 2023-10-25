@@ -40,8 +40,6 @@ typedef enum
     REDIRECT_APPEND,
     REDIRECT_IN,
     REDIRECT_OUT,
-    DOUBLE_QUOTES,
-    SINGLE_QUOTES,
 	ENV,
 	ENV_FAIL,
 }	t_type;
@@ -108,7 +106,7 @@ typedef struct s_minishell
 	char	**envp_lib;
     char *line;
     char *string_between_quotes;
-	char 	*str_with_all_tokens;
+	char 	*token_str;
     t_type token_type;
     t_token token;
 	struct sigaction sa;
@@ -135,10 +133,10 @@ int	lst_size(t_list *head);
 t_list	*create_new_node(void *value);
 void	insert_at_tail(t_list *head, t_list *new_value);
 t_list	*return_tail_value(t_list *head);
-t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type token_type);
+t_list *add_token_to_list(t_list **token_list, char *token_str, t_type token_type);
 t_list *find_previous_node(t_list *head, t_list *target_node);
 void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *));
-t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type);
+t_token *add_token_type_and_str(char *token_str, t_type token_type);
 void env_del(void *content);
 void	del_envp(void *arg);
 
@@ -159,7 +157,7 @@ void print_command_list(t_list *clist);
 void	printlist_envp(t_list *head);
 
 //lexer
-t_list *split_line_into_tokens(t_minishell m, char **envp);
+t_list *split_line_into_tokens(t_minishell m);
 
 //env_library
 char **create_envp_library(char **envp);
@@ -176,7 +174,7 @@ bool	check_for_quotes(char c);
 char *redirection_token(char *line, int *i, t_type *token_type);
 
 //lexer_quotes
-char *single_or_double_quotes_token(char *line, int *i, t_type *token_type, t_minishell m);
+char *quotes(char *line, int *i, t_type *token_type, t_minishell m);
 char *single_quote_to_string(char *line, int *i);
 char *double_quote_to_string(char *line, int *i, t_minishell m);
 char	*char_to_str(char c);
@@ -184,9 +182,9 @@ char	*append_str(char *str, char *appendix);
 
 //lexer_cleanup
 t_list	*cleanup_token_list(t_list *tlist);
-t_list	*modify_list(t_list **tlist, t_list *(*f)(t_list **tlist, t_list *current_node));
+t_list	*apply_function_to_list(t_list **tlist, t_list *(*f)(t_list **tlist, t_list *current_node));
 t_list	*delete_whitespace(t_list **tlist, t_list *current_node);
-t_list	*merge_words(t_list **tlist, t_list *current_node);
+t_list	*merge_tokens(t_list **tlist, t_list *current_node);
 void join_str_and_del_old_node(t_list *tlist, t_list *current_node, t_list *previous_node);
 
 //free_memory
@@ -198,7 +196,7 @@ void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 
 //env
-char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list, char **envp);
+char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);
 char	*extract_env_name(char *line, int *i);
 char 	*env_within_double_quotes(char *line, int *i);
 char	**find_path(char **envp, char *search_str);
@@ -209,6 +207,8 @@ char	*extract_env_name(char *line, int *i);
 char    *extract_key_from_envp(char *envp);
 void add_new_envs(t_minishell *m, t_command *cmd);
 bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
+char	**find_path_after_key(t_list *envp, char *search_str);
+char	**find_path(char **envp, char *search_str);
 
 //ft_split
 char	**ft_split(char const *s, char c);

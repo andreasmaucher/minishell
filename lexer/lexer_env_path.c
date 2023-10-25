@@ -12,34 +12,45 @@
 
 #include "../minishell.h"
 
-bool	check_for_metacharacter(char c)
+/*
+searches for the corresponding env to search_str within envp;
+when assigning to the buffer path is iterated by one to skip the equal
+sign
+*/
+
+char	**find_path(char **envp, char *search_str)
 {
-	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>')
-		return (true);
-	else
-		return (false);
+	int		i;
+	char	*path;
+	char	**path_buf;
+
+	i = 0;
+	while (ft_strnstr(envp[i], search_str, ft_strlen(search_str)) == NULL)
+		i++;
+	path = ft_strstr(envp[i], "=");
+	if (path == NULL)
+		return (NULL);
+	path_buf = ft_split(++path, '\0');
+	return (path_buf);
 }
 
-/* checks if c is a double or single quote */
-bool	check_for_quotes(char c)
+char	**find_path_after_key(t_list *envp, char *search_str)
 {
-	if (c == '"' || c == '\'')
-		return (true);
-	else
-		return (false);
-}
+	char	*path;
+	char	**path_buf;
+	t_list	*tmp;
+	t_dict	*dict;
 
-/* each substring is malloced! */
-char	*check_for_word_token(char *line, int *i, t_type *token_type)
-{
-	int	start_index;
-	int	end_index;
-
-	*token_type = WORD;
-	start_index = *i;
-	while (check_for_metacharacter(line[*i]) == false
-		&& check_for_quotes(line[*i]) == false && line[*i] != '$' && line[*i])
-		(*i)++;
-	end_index = *i - start_index;
-	return (ft_substr(line, start_index, end_index));
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (ft_strnstr(dict->value, search_str, ft_strlen(search_str)) == NULL)
+	{
+		tmp = tmp->next;
+		dict = tmp->value;
+	}
+	path = ft_strstr(dict->value, "=");
+	if (path == NULL)
+		return (NULL);
+	path_buf = ft_split(++path, '\0');
+	return (path_buf);
 }

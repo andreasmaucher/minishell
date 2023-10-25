@@ -10,123 +10,57 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
-char **create_env_library(char **envp)
+char	*extract_key_from_envp(char *envp)
 {
-    char **buf = NULL;
-    char target = '=';
-    int len = 0;
-    int substr_len;
+	char	*tmp;
+	int		i;
 
-    while (envp[len] != NULL)
-        len++;
-    buf = malloc(sizeof(char *) * (len + 1));
-    if (!buf)
-        return (NULL);
-    len = 0; //! Don't get that logic fully 
-    while (envp[len] != NULL)
-    {
-        char *target_pos = strchr(envp[len], target); //! LIBFT
-        if (target_pos != NULL)
-        {
-            substr_len = target_pos - envp[len];
-            buf[len] = malloc(substr_len + 1);
-            if (!buf[len])
-                return (NULL);
-            strncpy(buf[len], envp[len], substr_len); //! LIBFT
-            buf[len][substr_len] = '\0';
-            //printf("SUBSTR: %s\n", buf[len]);
-        }
-        else
-        {
-            buf[len] = NULL;
-        }
-        len++;
-    }
-    buf[len] = NULL;
-    return (buf);
+	i = 0;
+	while (envp[i] != '\0' && envp[i] != '=')
+		i++;
+	tmp = malloc(sizeof(char) * i + 1);
+	if (!tmp)
+		return (NULL);
+	i = 0;
+	while (envp[i] != '\0' && envp[i] != '=')
+	{
+		tmp[i] = envp[i];
+		i++;
+	}
+	tmp[i] = '\0';
+	return (tmp);
 }
 
-char **create_envp_library(char **envp)
+/*
+fills the key and value components with content;
+key = the part before '=';
+value = the full path including the key;
+*/
+t_dict	*add_key_and_value(char *envp)
 {
-    char **buf = NULL;
-    char target = '\0';
-    int len = 0;
-    int substr_len;
+	t_dict	*lib;
+	char	*key_str;
 
-    while (envp[len] != NULL)
-        len++;
-    buf = malloc(sizeof(char *) * (len + 1));
-    if (!buf)
-        return (NULL);
-    len = 0;
-    while (envp[len] != NULL)
-    {
-        char *target_pos = strchr(envp[len], target); //! LIBFT
-        if (target_pos != NULL)
-        {
-            substr_len = target_pos - envp[len];
-            buf[len] = malloc(substr_len + 1);
-            if (!buf[len])
-                return (NULL);
-            strncpy(buf[len], envp[len], substr_len); //! LIBFT
-            buf[len][substr_len] = '\0';
-            //printf("SUBSTR: %s\n", buf[len]);
-        }
-        //! not needed?!?!??!?!?!?
-        /* else
-        {
-            buf[len] = NULL;
-        } */
-        len++;
-    }
-    buf[len] = NULL;
-    return (buf);
-}
-
-char    *extract_key_from_envp(char *envp)
-{
-    int i;
-    char    *tmp;
-
-    i = 0;
-    while (envp[i] != '\0' && envp[i] != '=')
-        i++;
-    tmp = malloc(sizeof(char) * i + 1);
-    if (!tmp)
-        return (NULL);
-    i = 0;
-    while (envp[i] != '\0' && envp[i] != '=')
-    {
-        tmp[i] = envp[i];
-        i++;
-    }
-    tmp[i] = '\0';
-    return (tmp);
-}
-
-t_dict *add_key_and_value(char *envp)
-{
-	t_dict *lib;
-    char    *key_str;
-
-    lib = malloc(sizeof(t_dict));
+	lib = malloc(sizeof(t_dict));
 	if (!lib)
-		return(NULL);
-    key_str = extract_key_from_envp(envp);
+		return (NULL);
+	key_str = extract_key_from_envp(envp);
 	lib->key = key_str;
-    lib->value = ft_strdup(envp);
-    //free(key_str); //! NEEDED?!
-	return(lib);
+	lib->value = ft_strdup(envp);
+	return (lib);
 }
 
-/* adds a new node to a list; in case the list is empty, the new node becomes the head, else 
-it is added at the end of the list */
-t_list *add_token_to_envp(t_list **token_list, char *envp)
+/*
+adds a new node to a list; in case the list is empty, 
+the new node becomes the head,
+else it is added at the end of the list
+*/
+t_list	*add_token_to_envp(t_list **token_list, char *envp)
 {
-	t_list *new_node;
-	t_dict *lib;
+	t_list	*new_node;
+	t_dict	*lib;
 
 	lib = add_key_and_value(envp);
 	if (!lib)
@@ -139,37 +73,41 @@ t_list *add_token_to_envp(t_list **token_list, char *envp)
 	return (*token_list);
 }
 
-
-//only for testing purposes, prints a list
+/*
+only for testing purposes, prints a list
+*/
 void	printlist_envp(t_list *head)
 {
+	int		i;
 	t_list	*temporary;
-	t_dict *token;
-	int i;
+	t_dict	*token;
 
 	i = 0;
 	temporary = head;
-    printf("\n--- ENVP LIST ---\n");
+	printf("\n--- ENVP LIST ---\n");
 	while (temporary != NULL)
 	{
 		token = (t_dict *)temporary->value;
 		printf("[%d]: %s key: %s\n", i, (char *)token->value, token->key);
 		i++;
-        temporary = temporary->next;
+		temporary = temporary->next;
 	}
 }
 
-t_list *create_envp_list(char **envp)
+/*
+creates a list based on the envp variables
+*/
+t_list	*create_envp_list(char **envp)
 {
-    int i;
-    t_list *list;
-    
-    list = NULL;
-    i = 0;
-    while (envp[i] != NULL)
-    {
-        add_token_to_envp(&list, envp[i]);
-        i++;
-    }
-    return (list);
+	int		i;
+	t_list	*list;
+
+	list = NULL;
+	i = 0;
+	while (envp[i] != NULL)
+	{
+		add_token_to_envp(&list, envp[i]);
+		i++;
+	}
+	return (list);
 }

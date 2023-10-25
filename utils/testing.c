@@ -23,8 +23,6 @@ const char *token_type_names_parser[] =
     "REDIRECT_APPEND",
     "REDIRECT_IN",
     "REDIRECT_OUT",
-	"DOUBLE_QUOTES",
-    "SINGLE_QUOTES"
 };
 
 const char *command_name_types_parser[] = 
@@ -88,8 +86,6 @@ const char *token_type_names[] =
     "REDIRECT_APPEND",
     "REDIRECT_IN",
     "REDIRECT_OUT",
-	"DOUBLE_QUOTES",
-    "SINGLE_QUOTES",
 	"ENV",
 	"ENV_FAIL",
 };

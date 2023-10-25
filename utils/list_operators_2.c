@@ -12,14 +12,14 @@
 
 # include "../minishell.h"
 
-t_token *add_token_type_and_str(char *str_with_all_tokens, t_type token_type)
+t_token *add_token_type_and_str(char *token_str, t_type token_type)
 {
 	t_token *token;
 
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return(NULL);
-	token->str = str_with_all_tokens;
+	token->str = token_str;
 	token->type = token_type;
 	return(token);
 }

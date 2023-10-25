@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
 void	*ft_memset(void *s, int c, size_t n)
 {
@@ -26,9 +26,10 @@ void	*ft_memset(void *s, int c, size_t n)
 	return (s);
 }
 
-/* first initialize all fields in the main data structure t_minishell to zero by using memset;
-create libaries for the envp fields, one containing the full information and one only the 
-parameter name, which is later being used as a search keyword */
+/* first initialize all fields in the main data structure t_minishell 
+to zero by using memset;create libaries for the envp fields, one containing
+the full information and one only the parameter name, which is later being
+used as a search keyword */
 void	init_minishell_struct_and_signals(t_minishell *m, char **envp)
 {
 	init_signals();

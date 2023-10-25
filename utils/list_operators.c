@@ -72,12 +72,12 @@ void	insert_at_tail(t_list *head, t_list *new_value)
 
 /* adds a new node to a list; in case the list is empty, the new node becomes the head, else 
 it is added at the end of the list */
-t_list *add_token_to_list(t_list **token_list, char *str_with_all_tokens, t_type token_type)
+t_list *add_token_to_list(t_list **token_list, char *token_str, t_type token_type)
 {
 	t_list *new_node;
 	t_token *data;
 
-	data = add_token_type_and_str(str_with_all_tokens, token_type);
+	data = add_token_type_and_str(token_str, token_type);
 	if (!data)
 		return (NULL);
 	new_node = create_new_node(data);

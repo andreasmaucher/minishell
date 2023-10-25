@@ -37,7 +37,7 @@ int main(int ac, char **av, char **envp)
 		if (!m.line)
 			exit_shell(m);
 		add_history(m.line);
-		m.tlist = split_line_into_tokens(m, envp);
+		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
 		cmd = (t_command *) m.clist->value;
