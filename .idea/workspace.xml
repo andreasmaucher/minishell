@@ -22,49 +22,9 @@
   <component name="ChangeListManager">
     <list default="true" id="f3b01a49-75c3-4165-8937-63422938ed17" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/111singlecmdout" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README2.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/executor/executor.c" beforeDir="false" afterPath="$PROJECT_DIR$/executor/executor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infile" beforeDir="false" afterPath="$PROJECT_DIR$/infile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infilelast" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lexer/initialization.c" beforeDir="false" afterPath="$PROJECT_DIR$/lexer/initialization.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/minishell.h" beforeDir="false" afterPath="$PROJECT_DIR$/minishell.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiout" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ou443" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ou4433" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out098" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out098765" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out1234" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out12345" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out2134" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out213425" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out3344" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out444" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out44443" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out4444444" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out4445454" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out55" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out555" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out666" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out77" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out777" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out8888" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile111" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile123" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outfile999" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outsingle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/outsingle1238" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ouy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/command_list.c" beforeDir="false" afterPath="$PROJECT_DIR$/parser/command_list.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/parser.c" beforeDir="false" afterPath="$PROJECT_DIR$/parser/parser.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser/redirections.c" beforeDir="false" afterPath="$PROJECT_DIR$/parser/redirections.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/free_memory_2.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils/free_memory_2.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/testing.c" beforeDir="false" afterPath="$PROJECT_DIR$/utils/testing.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,7 +158,8 @@
       <workItem from="1697985564004" duration="12381000" />
       <workItem from="1698081124720" duration="5895000" />
       <workItem from="1698152188492" duration="5750000" />
-      <workItem from="1698163391286" duration="408000" />
+      <workItem from="1698163391286" duration="2192000" />
+      <workItem from="1698240300818" duration="2106000" />
     </task>
     <servers />
   </component>
@@ -210,7 +171,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/main.c</url>
-          <line>39</line>
+          <line>35</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

@@ -35,8 +35,6 @@ int main(int ac, char **av, char **envp)
         }
         m.line = readline("Myshell: ");
 		add_history(m.line);
-//		if (ft_strcmp(m.line, "exit") == 0)
-//            m.line = readline("Myshell: ");
         if (m.line != NULL)
             m.tlist = split_line_into_tokens(m, envp);
         if (m.tlist != NULL)
