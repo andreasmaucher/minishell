@@ -85,16 +85,6 @@ bool    check_valid_export_input(char **args)
     return(true);
 }
 
-int calculate_old_env_lib_size(t_minishell m)
-{
-    int i;
-
-    i = 0;
-    while (m.envp_lib[i] != NULL)
-        i++;
-    return(i - 1);
-}
-
 /*
 function extracts the part until '=' to later compare it with m.env_lib
 */

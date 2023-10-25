@@ -34,6 +34,27 @@ char	**find_path(char **envp, char *search_str)
 	return (path_buf);
 }
 
+//!used in echo builtin
+char	*find_env_value(t_list *envp, char *search_str)
+{
+	t_list	*tmp;
+	t_dict	*dict;
+	int		i;
+
+	i = 0;
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (tmp != NULL)
+	{
+		dict = tmp->value;
+		if (ft_strcmp(dict->key, search_str) == 0)
+			return (dict->value); //! strdup?!
+		i++;
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
 char	**find_path_after_key(t_list *envp, char *search_str)
 {
 	char	*path;

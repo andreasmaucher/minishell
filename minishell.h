@@ -105,8 +105,6 @@ typedef struct s_minishell
     t_list *tlist; // for lexer, token list
     t_list *clist; // for parser, command list
 	t_list	*envp;
-	char **env_lib;
-	char	**envp_lib;
     char *line;
     char *string_between_quotes;
 	char 	*token_str;
@@ -204,16 +202,15 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);
 char	*extract_env_name(char *line, int *i);
 char 	*env_within_double_quotes(char *line, int *i);
-char	**find_path(char **envp, char *search_str);
 bool check_if_part_of_library(t_list *envp, char *search_str);
 char *env_within_double_quotes(char *line, int *i);
-char	**find_path_after_key(t_list *envp, char *search_str);
 char	*extract_env_name(char *line, int *i);
 char    *extract_key_from_envp(char *envp);
 void add_new_envs(t_minishell *m, t_command *cmd);
 bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
 char	**find_path_after_key(t_list *envp, char *search_str);
 char	**find_path(char **envp, char *search_str);
+char	*find_env_value(t_list *envp, char *search_str);
 
 //ft_split
 char	**ft_split(char const *s, char c);

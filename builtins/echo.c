@@ -36,7 +36,8 @@ int echo(t_minishell m, t_command *cmd)
     while (cmd->args[i] != NULL)
     {
         if (ft_strcmp(cmd->args[i], "~") == 0)
-            cmd->args[i] = *find_path(m.envp_lib, cmd->args[i]);
+		//! this will not work, need to change path function to list?!
+            cmd->args[i] = find_env_value(m.envp, "HOME");
         printf("%s", cmd->args[i]);
         if (cmd->args[i + 1] != NULL)
             printf(" ");

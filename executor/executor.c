@@ -343,8 +343,7 @@ int multiple_cmd(t_minishell *m)
 int free_execve_fail(t_minishell *m)
 {
     free_env(m->path_buf);
-    free_env(m->env_lib);
-    free_env(m->envp_lib);
+    //! need to add new env-list
     free(m->line);
     return(0);
 }
