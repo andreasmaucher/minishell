@@ -12,8 +12,6 @@
 
 # include "../minishell.h"
 
-//DONE
-
 /*
 returns the number of arguments within one command
 */
@@ -60,8 +58,27 @@ exit hi: 'exit: hi: numeric argument required'
 exit hi man: 'exit: too many arguments'
 
 function starts at index one to skip the actual command name;
-- (if ac == 1) -> case for only 'echo'
+- (if ac == 1) -> case for only 'exit'
 */
+
+int exit_conditions(t_command *cmd, int ac, int i)
+{
+    if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == true)
+    {
+        printf("exit");
+        return(global_exit_code = 1);
+    }
+    else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false)
+    {
+        printf("exit: %s: numeric argument required", cmd->args[1]);
+        return(global_exit_code = 2);
+    }
+    else
+    {
+        printf("exit: too many arguments");
+        return(global_exit_code = 1);
+    }
+}
 
 int exit_builtin(t_minishell m, t_command *cmd)
 {
@@ -69,31 +86,17 @@ int exit_builtin(t_minishell m, t_command *cmd)
     int i;
 
     ac = arg_count(cmd->args);
-    i = 1; // start after echo
-    if (ac == 1) //case for only echo
+    i = 1;
+    if (ac == 1)
     {
         global_exit_code = 0;
         exit_shell(m); //! or should this go to execution?
     }
-    else if (ac != 1) // case for min. one more arg next to echo
+    else if (ac != 1)
     {
         while (cmd->args[i] != NULL)
         {
-            if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == true) // case for echo + int
-            {
-                printf("exit");
-                return(global_exit_code = 1);
-            }
-            else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false) // echo + word
-            {
-                printf("exit: %s: numeric argument required", cmd->args[1]);
-                return(global_exit_code = 2);
-            }
-            else
-            {
-                printf("exit: too many arguments");
-                return(global_exit_code = 1);
-            }
+            exit_conditions(cmd, ac, i);
             i++;
         }
     }

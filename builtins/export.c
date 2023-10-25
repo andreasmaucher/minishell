@@ -49,34 +49,37 @@ bool	ft_is_digit(int c)
 	return (false);
 }
 
+/*
+first letter needs to be _ or a character;
+in the key only characters, digits & _ is allowed;
+*/
 bool    check_valid_export_input(char **args)
 {
     int i;
     int j;
 
-    i = 1; // need to start after the command
+    i = 1;
     j = 0;
     while (args[i] != NULL)
     {   
         j= 0;
-        while (args[i][j] != '\0')
+        while (args[i][j] != '\0' && args[i][j] != '=')
         {
-            if (args[i][0] != '_' && ft_isalpha(args[i][0]) == false) // first letter needs to be _ or character
+            printf("ARGS IJ: %c\n", args[i][j]);
+            if (args[i][0] != '_' && ft_isalpha(args[i][0]) == false)
             {
                 printf("export '%s' : not a valid identifier\n", args[i]);
                 return(false);
             }
-            else if (args[i][j] == '=') // stop at equal sign, more characters allowed  afterwards
+            if (args[i][j] == '=')
                 break;
-            // if not character, digit or _ its invalid input
-            else if ((ft_isalpha(args[i][j]) == false && ft_is_digit(args[i][j] == false && args[i][j] != '_')))
+            if (ft_isalpha(args[i][j]) == false && ft_is_digit(args[i][j]) == false && args[i][j] != '_')
             {
                 printf("export '%s' : not a valid identifier\n", args[i]);
                 return(false);
             }
             j++;
         }
-        // after moving to the next arg
         i++;
     }
     return(true);
@@ -120,305 +123,6 @@ char *extract_search_str(t_command *cmd, int i)
     search_str[j] = '\0';
     return (search_str);
 }
-
-bool    check_if_existing_env(t_minishell *m, t_command *cmd, int len)
-{
-    char    *search_str;
-    int i;
-
-    search_str = NULL;
-    i = 1;
-    while(cmd->args[i])
-    {   
-        search_str = extract_search_str(cmd, i); //! UPDATE ENV LIB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (ft_strcmp(m->env_lib[len], search_str) == 0) //! DOES LEN HERE STILL MAKE SENSE IN CASE OF DOUBLES?!
-        {
-            printf("SEARCH STR IF FOUND: %s\n", search_str);
-            printf("M.env-lib found: %s\n", search_str);
-            //free(search_str);
-            return(true);
-        }
-        i++;
-    }
-    //free(search_str);
-    return (false);
-}
-
-int calc_length_of_old_env_arr(t_minishell *m, t_command *cmd)
-{
-    int full_len;
-    int double_count;
-
-    full_len = 0;
-    double_count = 0;
-    while(m->envp_lib[full_len] != NULL)
-    {
-        if (check_if_existing_env(m, cmd, full_len) == true)
-            double_count++;
-        full_len++;
-    }
-    full_len -= 1; // reduce by one for NULL;
-    //full_len += arg_count(cmd->args) - 2; // minus the command and the NULL
-    //printf("DOUBLE COUNT: %d\n", double_count);
-    full_len -= double_count;
-    return (full_len);
-}
-
-/*
-part that adds new vars within cmd->arg the new lib;
-first size of the old lib - doubles is counted to determine index starting point for additions;
-*/
-char    **add_args_to_env_lib(t_minishell *m, char **tmp_envp, t_command *cmd, int full_len)
-{
-    //int env_lib_size;
-    int i;
-    /* int len;
-    int substr_len; */
-
-    //env_lib_size = calc_length_of_old_env_arr(m, cmd);
-    /* i = 1;
-    len = env_lib_size + 1; //! should it be plus one since we want to start at the next one or is included because of '\0'?
-    substr_len = 0;
-    printf("START INDEX FOR ADDING: %d\n", len);
-    printf("FULL LEN UNTIL THAT CAN BE ADDED: %d\n", full_len); */
-    /* while (len <= full_len) //! should be equal since null terminator is separated, but everythign else not
-    {
-        substr_len = ft_strlen(cmd->args[i]);
-        tmp_envp[len] = malloc(substr_len + 1);
-        if (!tmp_envp[len])
-            return(NULL);
-        strncpy(tmp_envp[len], cmd->args[i], substr_len); //! LIBFT
-        tmp_envp[len][substr_len] = '\0';
-        printf("ARG THAT IS ADDED: %s\n", tmp_envp[len]);
-        len++;
-        i++;
-    } */
-    (void)m;
-    i = 1;
-    while (tmp_envp[full_len] != NULL)
-    {
-        tmp_envp[full_len] = ft_strdup(cmd->args[i]);
-        i++;
-        full_len++;
-    }
-    return(tmp_envp);
-}
-
-//! EVEN WORKS FOR ADDITIONS ITS ALL IN TMP_ENVP ONLY PRINTING IS WRONG!!!!!!!!!!!!!!!
-char **copy_existing_env_lib(t_minishell *m, char **tmp_envp, t_command *cmd, int full_len)
-{
-    int len;
-    char *tmp_str;
-    int i;
-
-    i = 0;
-    len = 0;
-    (void)cmd;
-    tmp_str = NULL;
-    while (len <= full_len && m->envp_lib[len] != NULL)
-    {
-        i = 0;
-        tmp_str = malloc(sizeof(char) * ft_strlen(m->envp_lib[len]) + 1);
-        if (!tmp_str)
-            return (NULL);
-        while (m->envp_lib[len][i] != '\0' && m->envp_lib[len][i] != '=')
-        {
-            tmp_str[i] = m->envp_lib[len][i];
-            i++;
-        }
-        tmp_str[i] = '\0';
-        tmp_envp[len] = ft_strdup(tmp_str);
-        free(tmp_str);
-        len++;
-    }
-    tmp_envp[len] = NULL;
-    return(tmp_envp);
-}
-
-//! EVEN WORKS FOR ADDITIONS ITS ALL IN TMP_ENVP ONLY PRINTING IS WRONG!!!!!!!!!!!!!!!
-char **copy_existing_envp_lib(t_minishell *m, char **tmp_envp, t_command *cmd, int full_len)
-{
-    int len;
-    /* int substr_len;
-    char target = '\0';
-    char *target_pos;
-    int i; */
-
-    //i = 0;
-    len = 0;
-    /* substr_len = 0;
-    target_pos = NULL;
-    printf("WITHIN copy existing env lib\n"); */
-    (void)cmd;
-    while (m->envp_lib[len] != NULL)
-    {
-        // I want to check if m.envp_lib at position len is equal to one arg
-        //if (check_if_existing_env(m, cmd, len) == false)
-        /* {
-            target_pos = strchr(m->envp_lib[len], target); //! LIBFT
-            if (target_pos != NULL)
-            {
-                substr_len = target_pos - m->envp_lib[len];
-                tmp_envp[i] = malloc(substr_len + 1);
-                if (!tmp_envp[i])
-                    return(NULL);
-                strncpy(tmp_envp[i], m->envp_lib[len], substr_len); //! LIBFT
-                tmp_envp[i][substr_len] = '\0';
-                printf("EXISTING ENV TO COPY: %s\n", tmp_envp[i]);
-                i++;
-            }
-        } */
-        tmp_envp[len] = ft_strdup(m->envp_lib[len]);
-        len++;
-    }
-    int i = 1;
-    while (len <= full_len)
-    {
-        tmp_envp[len] = ft_strdup(cmd->args[i]);
-        printf("CMD_ARGS %s\n", cmd->args[i]);
-        printf("TMP_ENVP %s\n", tmp_envp[len]);
-        i++;
-        len++;
-    }
-    tmp_envp[len] = NULL;
-    return(tmp_envp);
-}
-
-/*
-calculates the number of args that need to be added to the env_lib while taking into account
-already existing variables that are supposed to be changed
-*/
-int calc_length_of_new_env_arr(t_minishell *m, t_command *cmd)
-{
-    int full_len;
-   /// int double_count;
-
-    full_len = 0;
-  //  double_count = 0;
-    while(m->envp_lib[full_len] != NULL)
-    {
-/*         if (check_if_existing_env(m, cmd, full_len) == true)
-            double_count++; */
-        full_len++;
-    }
-    full_len += arg_count(cmd->args) - 2; // minus the command and the NULL
-    //printf("DOUBLE COUNT: %d\n", double_count);
-    //full_len -= double_count;
-    return (full_len);
-}
-
-void    update_env_lib(t_minishell  *m, t_command *cmd)
-{
-    char   **tmp_envp;
-    int    len;
-    int full_len;
-
-    tmp_envp = NULL;
-    full_len = calc_length_of_new_env_arr(m, cmd);
-    tmp_envp = malloc(sizeof(char *) * (full_len + 1)); // without +1?
-    if (!tmp_envp)
-        return ;
-    ///tmp_envp[full_len + 1] = NULL;
-    tmp_envp = copy_existing_env_lib(m, tmp_envp, cmd, full_len);
-    //tmp_envp = add_args_to_env_lib(m, tmp_envp, cmd, full_len);
-    //! testing
-    len = 0;
-    while (tmp_envp[len])
-    {
-        printf("ENV AFTER UPDATE: %s\n", tmp_envp[len]);
-        len++;
-    }
-    free_env(m->env_lib);
-    m->env_lib = malloc(sizeof(char *) * (full_len + 1));
-    if (!m->env_lib)
-        return ;
-    len = 0;
-    while (len <= full_len)
-    {
-        m->env_lib[len] = ft_strdup(tmp_envp[len]);
-        len++;
-    }
-    m->env_lib[len] = NULL;
-    len = 0;
-    while (m->env_lib[len])
-    {
-        printf("ENV NEW LIST: %s\n", m->env_lib[len]);
-        len++;
-    }
-    len = 0;
-    while (tmp_envp[len] != NULL) {
-        free(tmp_envp[len]); // Free each string
-        len++;
-    }
-    free(tmp_envp); //  the array of strings
-	//_env(tmp_envp);
-}
-
-//! DO THE SAME FOR ENV LIB!!!!!!!!!!!!!!!!!!!!!!!!! need to cut at '='
-void    update_envp_lib(t_minishell *m, t_command *cmd)
-{
-    char   **tmp_envp;
-    int    len;
-    int full_len;
-
-    tmp_envp = NULL;
-    full_len = calc_length_of_new_env_arr(m, cmd);
-    tmp_envp = malloc(sizeof(char *) * (full_len + 1)); // without +1?
-    if (!tmp_envp)
-        return ;
-    ///tmp_envp[full_len + 1] = NULL;
-    tmp_envp = copy_existing_envp_lib(m, tmp_envp, cmd, full_len);
-    //tmp_envp = add_args_to_env_lib(m, tmp_envp, cmd, full_len);
-    //! testing
-    len = 0;
-    while (tmp_envp[len])
-    {
-        printf("ENVP AFTER UPDATE: %s\n", tmp_envp[len]);
-        len++;
-    }
-    //free_env(m->envp_lib);
-    m->envp_lib = malloc(sizeof(char *) * (full_len + 1));
-    if (!m->envp_lib)
-        return ;
-    len = 0;
-    while (len <= full_len)
-    {
-        m->envp_lib[len] = ft_strdup(tmp_envp[len]);
-        len++;
-    }
-    m->envp_lib[len] = NULL;
-    len = 0;
-    while (m->envp_lib[len])
-    {
-        printf("ENVP NEW LIST: %s\n", m->envp_lib[len]);
-        len++;
-    }
-    len = 0;
-  /*   while (tmp_envp[len] != NULL) {
-        free(tmp_envp[len]); // Free each string
-        len++;
-    }
-    free(tmp_envp); */ // Free the array of strings
-}
-
-//! does not cover case where = is missing, so they will be added currently
-//! do all builtins need to return a value?
-/* int export(t_minishell *m, t_command *cmd)
-{
-    //if (check_valid_export_input(cmd->args) == true)
-    {
-        int len = 0;
-        while (m->envp_lib[len])
-        {
-            printf("ENVP BEFORE UDPATE: %s\n", m->envp_lib[len]);
-            len++;
-        }
-        update_envp_lib(m, cmd);
-        //update_env_lib(m, cmd);
-        return (0); //! exit_codes
-    }
-    //return (1); //! exit_codes
-} */
 
 bool    check_equal_sign(char *str)
 {
@@ -475,17 +179,6 @@ bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp)
     return (false);
 }
 
-/* char *extract_key_from_args(char *arg)
-{
-    int i;
-
-    i = 0;
-    while (arg[i] != '=')
-    {
-
-    }
-} */
-
 t_list *delete_double_envs(t_minishell *m, t_command *cmd)
 {
     int i;
@@ -517,10 +210,12 @@ t_list *delete_double_envs(t_minishell *m, t_command *cmd)
 
 int export(t_minishell *m, t_command *cmd)
 {
-    if (check_valid_export_input(cmd->args) ==false)
-        return (1);
-    delete_double_envs(m, cmd);
-    add_new_envs(m, cmd);
-    printlist_envp(m->envp);
-    return (0);
+    if (check_valid_export_input(cmd->args) == true)
+    {
+        delete_double_envs(m, cmd);
+        add_new_envs(m, cmd);
+        printlist_envp(m->envp);
+        return (0);
+    }
+    return (1);
 }

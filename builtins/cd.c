@@ -171,19 +171,23 @@ int cd(t_minishell *m, t_command *cmd)
     {
         path = get_path(m, "OLDPWD");
         if (!path)
+        {
             printf(("Error OLDPW not set!\n"));
-        return (1);
+            return (1);
+        }
     }
     else if ((arg_count(cmd->args)) == 1 || ft_strcmp(cmd->args[1], "--") == 0)
     {
         path = get_path(m, "HOME");
         printf("HOME PATH %s \n", path);
         if (!path)
+        {
             printf(("Error HOME not set!\n"));
-        return (1);
+            return (1);
+        }
     }
-    else
-        path = process_path(m, cmd); //! still needs to be done
+ /*    else
+        path = standard_path(m, cmd); */
     update_paths(path, m, cmd);
     return(0);
 }

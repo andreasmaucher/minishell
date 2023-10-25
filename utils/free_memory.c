@@ -122,6 +122,5 @@ int	exit_shell(t_minishell m)
 		free_env(m.env_lib);
 	if (m.envp_lib)
 		free_env(m.envp_lib);
-	printf("\nExiting...\n");
 	exit(1);
 }

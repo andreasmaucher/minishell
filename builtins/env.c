@@ -12,8 +12,6 @@
 
 # include "../minishell.h"
 
-//DONE
-
 /*
 imitates the behavior of the command 'env' and prints the env library incl.
 the relevant path for each variable
@@ -29,8 +27,6 @@ int env(t_minishell *m)
     {
         dict = (t_dict *)tmp->value;
         printf("%s\n", (char *)dict->value);
-        printf("%s\n", dict->key);
-        //printf("%s\n", m->env_lib[i]);  //! only test
         tmp = tmp->next;
     }
     return (0); //! exit_code

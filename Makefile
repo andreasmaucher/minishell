@@ -21,6 +21,7 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 		parser/redirections.c parser/input_check.c executor/executor.c \
 		builtins/builtins.c builtins/echo.c builtins/pwd.c builtins/unset.c \
 		builtins/cd.c builtins/exit.c builtins/env.c builtins/export.c \
+		utils/signals.c \
 
 OBJS = $(SOURCES:.c=.o)
 

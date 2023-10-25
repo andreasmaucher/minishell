@@ -12,10 +12,16 @@
 
 #include "minishell.h"
 
-/* shell is only created if there is exactly one argument (name of the executable);
+int global_exit_code;
+
+/* 
+shell is only created if there is exactly one argument (name of the executable);
 m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
 tlist = tokenlist, meaning the list that holds all tokens,
-clist = commandlist, meaning the list that holds all commands */
+clist = commandlist, meaning the list that holds all commands;
+if (!m.line) -> this condition is to mimic the behavior of Ctrl+D and signals
+that there's no more input and closes the shell
+*/
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
@@ -28,6 +34,8 @@ int main(int ac, char **av, char **envp)
 	while(1)
 	{
 		m.line = readline("Myshell: ");
+		if (!m.line)
+			exit_shell(m);
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m, envp);
 		printlist(m.tlist); //! only for testing

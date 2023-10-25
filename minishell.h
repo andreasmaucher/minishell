@@ -24,11 +24,10 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <limits.h>
-#include <sys/syslimits.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 
-int global_exit_code;
+extern int global_exit_code;
 
 //token type (index starts at 0 e.g. word = 0, pipe = 2)
 typedef enum
@@ -152,6 +151,7 @@ char	*ft_itoa(int n);
 //initialization
 void	init_minishell_struct_and_signals(t_minishell *m, char **envp);
 void	*ft_memset(void *s, int c, size_t n);
+void	init_signals();
 
 //testing
 void	printlist(t_list *head);
