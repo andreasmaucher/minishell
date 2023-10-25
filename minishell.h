@@ -26,6 +26,7 @@
 #include <limits.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 extern int global_exit_code;
 
@@ -79,6 +80,8 @@ in thie output redirection
 typedef struct s_file
 {
 	int		fd;
+	int		fd_read;
+	int		fd_write;
 	char	*file_name;
 	char	*stop_heredoc;
 	char	*new_heredoc_file;
@@ -115,6 +118,8 @@ typedef struct s_minishell
     int **pipes;
 	char **path_to_check;
     char **path_buf;
+	char *here_docs;
+    int stdin_original;
 }   t_minishell;
 
 //str_utils
@@ -235,7 +240,6 @@ char    *pwd_path(void);
 int    pwd(void);
 int unset(t_minishell *m, t_command *cmd);
 int export(t_minishell *m, t_command *cmd);
-int	execute_program(t_minishell *m, t_command *cmd, int process_n);
 int env(t_minishell *m);
 int echo(t_minishell m, t_command *cmd);
 int    execute_builtins(t_minishell *m, t_command *cmd);
@@ -248,7 +252,7 @@ int cd(t_minishell *m, t_command *cmd);
 
 //execution
 int executor(t_minishell m, char **envp);
-
+int	execute_program(char **arg_vec, char *path);
 int initialize_pipes(t_minishell *m);
 int close_pipes(t_minishell *m);
 void kill_process(t_minishell *m, int process_id);

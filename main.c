@@ -33,6 +33,11 @@ int main(int ac, char **av, char **envp)
 	init_minishell_struct_and_signals(&m, envp);
 	while(1)
 	{
+		if (dup2(m.stdin_original, 0) == -1)
+        {
+            perror("Failed to restore stdin");
+            return (1);
+        }
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
@@ -42,7 +47,7 @@ int main(int ac, char **av, char **envp)
 		m.clist = parser(m);
 		cmd = (t_command *) m.clist->value;
 		execute_builtins(&m, cmd);
-		//executor(m, envp);
+		executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
 		//! if execve -1 free **args of command_list

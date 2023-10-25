@@ -1,0 +1,3 @@
+Command to run is: /usr/bin/wc
+Arg_vec : wc
+Arg_vec : -l

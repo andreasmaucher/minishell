@@ -16,7 +16,6 @@ int    execute_builtins(t_minishell *m, t_command *cmd)
 {
     int exit_code;
 
-    printf("WITHIN BUILTINS \n");
     exit_code = 0;
     if (ft_strcmp(cmd->args[0], "echo") == 0)
         exit_code = echo(*m, cmd);
