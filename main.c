@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int global_exit_code;
+int g_exit_code;
 
 /* 
 shell is only created if there is exactly one argument (name of the executable);
@@ -48,8 +48,8 @@ int main(int ac, char **av, char **envp)
 		cmd = (t_command *) m.clist->value;
 		execute_builtins(&m, cmd);
 		executor(m, envp);
-		ft_lstclear(&m.tlist, token_del);
-		ft_lstclear(&m.clist, command_del);
+		ft_lstclear(&m.tlist, delete_token);
+		ft_lstclear(&m.clist, delete_cmd);
 		//! if execve -1 free **args of command_list
 		free(m.line);
 	}

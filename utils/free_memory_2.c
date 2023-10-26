@@ -10,27 +10,60 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
-void	ft_lstdelone(t_list *lst, void (*del)(void*))
+/* delete a node in the env list */
+void	delete_envp(void *arg)
 {
-	if (lst == 0 || del == 0)
+	t_dict	*dict;
+
+	if (!arg)
 		return ;
-	(*del)(lst->value);
+	dict = (t_dict *)arg;
+	if (!dict)
+		return ;
+	dict->value = set_pt_to_null(dict->value);
+	dict->key = set_pt_to_null(dict->key);
+	dict = set_pt_to_null(dict);
+}
+
+void	free_env(char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env[i] != NULL)
+	{
+		free(env[i]);
+		i++;
+	}
+	free(env);
+}
+
+/*
+deletes a single node within a linked list and frees the associated memory
+*/
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
+{
+	if (!del)
+		return ;
+	del(lst->value);
 	free(lst);
 }
 
-void	ft_lstclear(t_list **lst, void (*del)(void*))
+/*
+deletes an entire linked list
+*/
+void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
 	t_list	*temp;
 
-	if (lst == 0 || del == 0)
+	if (!del)
 		return ;
-	while (*lst != 0)
+	while (lst && *lst)
 	{
 		temp = (*lst)->next;
 		ft_lstdelone(*lst, del);
 		*lst = temp;
 	}
-	*lst = 0;
 }

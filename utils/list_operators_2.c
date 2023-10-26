@@ -10,33 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
-t_token *add_token_type_and_str(char *token_str, t_type token_type)
+t_token	*add_token_type_and_str(char *token_str, t_type token_type)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = malloc(sizeof(t_token));
 	if (!token)
-		return(NULL);
+		return (NULL);
 	token->str = token_str;
 	token->type = token_type;
-	return(token);
+	return (token);
 }
 
-t_list *find_previous_node(t_list *head, t_list *target_node)
+t_list	*find_previous_node(t_list *head, t_list *target_node)
 {
-    t_list *previous_node;
-    t_list *current_node;
-	
+	t_list	*previous_node;
+	t_list	*current_node;
+
 	current_node = head;
 	previous_node = NULL;
-    while (current_node != NULL && current_node != target_node)
-    {
-        previous_node = current_node;
-        current_node = current_node->next;
-    }
-    return (previous_node);
+	while (current_node != NULL && current_node != target_node)
+	{
+		previous_node = current_node;
+		current_node = current_node->next;
+	}
+	return (previous_node);
 }
 
 void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))

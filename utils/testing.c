@@ -12,7 +12,7 @@
 
 # include "../minishell.h"
 
-//used to print out the token types (only for testing purposes)
+/* used to print out the token types (only for testing purposes) */
 const char *token_type_names_parser[] = 
 {
     "NOT SET",
@@ -75,7 +75,7 @@ void print_command_list(t_list *clist)
     }
 }
 
-//used to print out the token types (only for testing purposes)
+/* used to print out the token types (only for testing purposes) */
 const char *token_type_names[] = 
 {
     "NOT SET",
@@ -90,7 +90,7 @@ const char *token_type_names[] =
 	"ENV_FAIL",
 };
 
-//only for testing purposes, prints a list
+/* only for testing purposes, prints a list */
 void	printlist(t_list *head)
 {
 	t_list	*temporary;

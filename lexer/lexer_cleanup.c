@@ -30,7 +30,7 @@ void	join_str_and_del_old_node(t_list *tlist, t_list *current_node,
 				((t_token *)current_node->value)->str); 
 		free(((t_token *)previous_node->value)->str);
 		((t_token *)previous_node->value)->str = new_joined_str;
-		ft_lstremove(&tlist, current_node, token_del);
+		ft_lstremove(&tlist, current_node, delete_token);
 	}
 }
 
@@ -53,6 +53,19 @@ t_list	*merge_tokens(t_list **tlist, t_list *current_node)
 }
 
 /*
+delete all ENV_FAIL type tokens at the end of the lexer
+*/
+t_list	*delete_env_fail(t_list **tlist, t_list *current_node)
+{
+	t_token	*tmp_token;
+
+	tmp_token = current_node->value;
+	if (tmp_token->type == ENV_FAIL)
+		ft_lstremove(tlist, current_node, delete_token);
+	return (*tlist);
+}
+
+/*
 delete all whitespace tokens at the end of the lexer
 */
 t_list	*delete_whitespace(t_list **tlist, t_list *current_node)
@@ -61,7 +74,7 @@ t_list	*delete_whitespace(t_list **tlist, t_list *current_node)
 
 	tmp_token = current_node->value;
 	if (tmp_token->type == WHITESPACE)
-		ft_lstremove(tlist, current_node, token_del);
+		ft_lstremove(tlist, current_node, delete_token);
 	return (*tlist);
 }
 
@@ -87,6 +100,7 @@ t_list	*apply_function_to_list(t_list **tlist, t_list *(*f)
 t_list	*cleanup_token_list(t_list *tlist)
 {
 	tlist = apply_function_to_list(&tlist, merge_tokens);
+	tlist = apply_function_to_list(&tlist, delete_env_fail);
 	tlist = apply_function_to_list(&tlist, delete_whitespace);
 	return (tlist);
 }

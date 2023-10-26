@@ -14,20 +14,22 @@
 
 int    execute_builtins(t_minishell *m, t_command *cmd)
 {
-    int exit_code;
+    int return_code;
 
-    exit_code = 0;
+    return_code = 0;
     if (ft_strcmp(cmd->args[0], "echo") == 0)
-        exit_code = echo(*m, cmd);
+        return_code = echo(*m, cmd);
     else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-        exit_code = pwd();
+        return_code = pwd();
     else if (ft_strcmp(cmd->args[0], "unset") == 0)
-        exit_code = unset(m, cmd);
+        return_code = unset(m, cmd);
     else if (ft_strcmp(cmd->args[0], "env") == 0)
-        exit_code = env(m);
+        return_code = env(m);
     else if (ft_strcmp(cmd->args[0], "export") == 0)
-        exit_code = export(m, cmd);
+        return_code = export(m, cmd);
     else if (ft_strcmp(cmd->args[0], "cd") == 0)
-        exit_code = cd(m, cmd);
-    return(exit_code);
+        return_code = cd(m, cmd);
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+        return_code = exit_builtin(m, cmd);
+    return(return_code);
 }

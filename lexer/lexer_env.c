@@ -33,26 +33,6 @@ char	*env_within_double_quotes(char *line, int *i)
 	return (env_string);
 }
 
-bool	check_if_part_of_library(t_list *envp, char *search_str)
-{
-	t_list	*tmp;
-	t_dict	*dict;
-	int		i;
-
-	i = 0;
-	tmp = envp;
-	dict = (t_dict *)tmp->value;
-	while (tmp != NULL)
-	{
-		dict = tmp->value;
-		if (ft_strcmp(dict->key, search_str) == 0)
-			return (true);
-		i++;
-		tmp = tmp->next;
-	}
-	return (false);
-}
-
 /* search_str is the string that needs to be found */
 char	*extract_env_name(char *line, int *i)
 {
@@ -72,34 +52,38 @@ char	*extract_env_name(char *line, int *i)
 }
 
 /*
-extract the env_str from the input;
-if theres a single dollar sign it's supposed to be printed
+for '$' variables a dollar sign is printed and the type is set to word
 */
-char	*env_token(char *line, int *i, t_type *token_type,
+char	*handle_dollar_signs(t_type *token_type, char *search_str)
+{
+	*token_type = WORD;
+	free(search_str);
+	return(ft_substr("$", 0, 1));
+}
+
+/*
+in case the env is not part of the library its type is set to ENV_FAIL
+and the node is later on deleted;
+if it is part of the library the corresponding path for the key is 
+searched for and returned;
+*/
+char	*env_token_expansion(char *line, int *i, t_type *token_type,
 			t_list *env_list)
 {
 	char	*search_str;
 	char	*env_final;
 
-	(*i)++;
-	*token_type = WORD;//ENV;
-	env_final = NULL;
 	search_str = extract_env_name(line, i);
-	printf("SEARCH STR %s\n", search_str);
+	env_final = NULL;
 	if (check_if_part_of_library(env_list, search_str) == false)
 	{
 		if (ft_strcmp(search_str, "$") == 0)
-		{
-			*token_type = WORD;
-			free(search_str);
-			return(ft_substr("$", 0, 1));
-		}
+			return(handle_dollar_signs(token_type, search_str));
 		else
 		{
 			*token_type = ENV_FAIL;
 			free(search_str);
-			return (ft_substr("", 0, 1)); //! does this make sense? how should I process it?
-			//! if no matching ENV nothing happens, meaning I could do if type ENV_FAIL = skip that command
+			return (ft_substr("\0", 0, 0));
 		}
 	}
 	else 
@@ -107,5 +91,30 @@ char	*env_token(char *line, int *i, t_type *token_type,
 		env_final = *find_path_after_key(env_list, search_str);
 		free(search_str);
 	}
+	return(env_final);
+}
+
+/*
+extract the env_str from the input;
+if theres a single dollar sign it's supposed to be printed;
+'$?' -> returns the last exit code;
+*/
+char	*env_token(char *line, int *i, t_type *token_type,
+			t_list *env_list)
+{
+	char	*env_final;
+
+	(*i)++;
+	*token_type = WORD;
+	env_final = NULL;
+	int j = (*i);
+	if (line[*i] == '?' && (line[j + 1] == 32 || line[j + 1] == '\0'))
+	{
+		(*i)++;
+		env_final = ft_itoa(g_exit_code);
+		return(env_final);
+	}
+	else
+		env_final = env_token_expansion(line, i, token_type, env_list);
 	return (env_final);
 }

@@ -10,62 +10,58 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen(const char *str)
 {
-	int	i;
+	int	counter;
 
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
+	counter = 0;
+	while (str[counter] != '\0')
+	{
+		counter++;
+	}
+	return (counter);
 }
 
 char	*ft_strdup(const char *s)
 {
-	char	*duplicate;
-	int		i;
-	int		len;
+	char	*s_new;
+	size_t	s_size;
 
-	i = 0;
-	len = ft_strlen((char *)s);
-	duplicate = (char *)malloc(sizeof(char) * (len + 1));
-	if (!duplicate)
+	s_size = ft_strlen(s) + 1;
+	s_new = (char *)malloc(sizeof(*s_new) * s_size);
+	if (!s_new)
 		return (NULL);
-	while (s[i] != '\0')
-	{
-		duplicate[i] = (char)s[i];
-		i++;
-	}
-	duplicate[i] = '\0';
-	return (duplicate);
+	return ((char *)ft_memcpy(s_new, s, s_size));
 }
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
+	char			*substr;
 	unsigned int	i;
-	unsigned int	s_len;
-	char			*sub;
+	unsigned int	str_len;
+	unsigned int	correct_size;
 
 	i = 0;
-	s_len = ft_strlen(s);
-	if (s == NULL)
-		return (NULL);
-	if (start > s_len)
-		return (ft_strdup(""));
-	if (s_len <= len)
-		len = (s_len - start);
-	sub = malloc(sizeof(char) * (len + 1));
-	if (sub == NULL)
-		return (NULL);
-	while (i < len && s[i] != '\0' )
+	str_len = ft_strlen((char *)s);
+	correct_size = 1;
+	if (start > str_len || len == 0)
+		correct_size = 1;
+	else if (len <= str_len - start)
+		correct_size = len + 1;
+	else if (len > str_len - start)
+		correct_size = str_len - start + 1;
+	substr = malloc(correct_size * sizeof(char));
+	if (!substr)
+		return ((void *) NULL);
+	while (i != correct_size - 1)
 	{
-		sub[i] = s[start + i];
+		substr[i] = s[start + i];
 		i++;
 	}
-	sub[i] = '\0';
-	return (sub);
+	substr[i] = '\0';
+	return (substr);
 }
 
 int	ft_strcmp(const char *s1, const char *s2)
@@ -80,28 +76,26 @@ int	ft_strcmp(const char *s1, const char *s2)
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	size_t	i;
-	size_t	b;
-	size_t	new_len;
-	char	*new;
+	char			*new_str;
+	unsigned int	i;
+	unsigned int	y;
 
+	new_str = malloc (ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
+	if (!new_str)
+		return ((void *) NULL);
 	i = 0;
-	b = 0;
-	new_len = ft_strlen(s1) + ft_strlen(s2);
-	new = malloc(sizeof(char) * (new_len + 1));
-	if (new == NULL)
-		return (NULL);
+	y = 0;
 	while (s1[i] != '\0')
 	{
-		new[i] = s1[i];
+		new_str[i] = s1[i];
 		i++;
 	}
-	while (s2[b] != '\0')
+	while (s2[y] != '\0')
 	{
-		new[i] = s2[b];
+		new_str[i] = s2[y];
 		i++;
-		b++;
+		y++;
 	}
-	new[i] = '\0';
-	return (new);
+	new_str[i] = '\0';
+	return (new_str);
 }

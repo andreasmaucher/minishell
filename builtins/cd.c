@@ -21,7 +21,7 @@ char    *extract_value_from_env(char *path)
     int j;
 
     i = 0;
-    while (path[i] != '=')
+    while (path[i] != '=' && path[i] != '\0')
         i++;
     i++;
     path_len = ft_strlen(path) - i;
@@ -93,19 +93,52 @@ void    delete_specific_envs(t_minishell *m, t_command *cmd, char *search_key)
     }
 }
 
-void add_specific_envs(t_minishell *m, char *path_incl_key)
+void add_specific_envs(t_minishell *m, char *path, char *key)
 {
     t_list *new;
     t_dict *dict;
+	char	*key_and_path;
 
     new = NULL;
     dict = NULL;
     new = create_new_node(NULL);
     dict = malloc(sizeof(t_dict));
-    dict->value = ft_strdup(path_incl_key);
-    dict->key = extract_key_from_envp(path_incl_key);
+	key_and_path = ft_strjoin(key, path);
+    dict->value = key_and_path;
+    dict->key = ft_strdup(key);
     new->value = dict;
     insert_at_tail(m->envp, new);
+}
+
+/*
+'cd ..' -> go one directory level up;
+'cd .' -> the dot represents the current directory, so essentially nothing happens;
+'cd /' -> change current directory to the root directory;
+*/
+static char	*standard_path(t_minishell *m, t_command *cmd)
+{
+	char	*path;
+	char	*current_dir;
+	char	*path_with_slash;
+	char	*final_path;
+
+	final_path = NULL;
+	if (ft_strcmp(cmd->args[1], ".") == 0 || ft_strcmp(cmd->args[1], "..") == 0
+		|| ft_strcmp(cmd->args[1], "/") == 0)
+		path = ft_strdup(cmd->args[1]);
+	else
+	{
+		if (check_if_part_of_library(m->envp, cmd->args[1]) == true)
+		{
+			current_dir = get_path(m, "PWD");
+			path_with_slash = ft_strjoin(current_dir, "/");
+			final_path = ft_strjoin(path_with_slash, cmd->args[1]);
+			free(path_with_slash);
+		}
+		else
+			return (NULL);
+	}
+	return (final_path);
 }
 
 /*
@@ -119,11 +152,9 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     char    *old_dir;
     char    *new_path_returned_from_cwd;
 
-    (void)m;
-    (void)cmd;
     getcwd(cwd, PATH_MAX);
     old_dir = ft_strdup(cwd);
-    printf("OLD DIR: %s\n", old_dir);
+    printf("OLDPWD: %s\n", old_dir);
     printf("NEW PATH TO SEND INTO CHDIR: %s\n", new_path);
     if (chdir(new_path))
     {
@@ -134,15 +165,37 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     }
     getcwd(cwd, PATH_MAX);
     new_path_returned_from_cwd = ft_strdup(cwd);
-    printf("NEW PATH RETURNED FROM CWD: %s\n", new_path_returned_from_cwd);
+    printf("PWD: %s\n", new_path_returned_from_cwd);
     //! PART BELOW STILL NEEDS TESTING WHEN MORE FUNCTIONALITY
     // this is supposed to change PWD & OLDPWD --- NOT HOME!
     delete_specific_envs(m, cmd, "PWD");
-    add_specific_envs(m, new_path_returned_from_cwd);
+    add_specific_envs(m, new_path_returned_from_cwd, "PWD=");
     delete_specific_envs(m, cmd, "OLDPWD");
-    add_specific_envs(m, old_dir);
+    add_specific_envs(m, old_dir, "OLDPWD=");
     new_path = set_pt_to_null(new_path);
     return(0);
+}
+
+char	*go_back_to_home(t_minishell *m, char *path)
+{
+	path = get_path(m, "HOME");
+	if (!path)
+	{
+		printf(("Error HOME not set!\n"));
+		return (NULL);
+	}
+	return(path);
+}
+
+char	*go_back_to_last_directory(t_minishell *m, char *path)
+{
+	path = get_path(m, "OLDPWD");
+	if (!path)
+	{
+		printf(("Error OLDPWD not set!\n"));
+		return (NULL);
+	}
+	return(path);
 }
 
 /*
@@ -167,27 +220,17 @@ int cd(t_minishell *m, t_command *cmd)
         printf("Too many arguments\n");
         return (1);
     }
-    else if ((arg_count(cmd->args) == 2) && ft_strcmp(cmd->args[1], "-") == 0)
+	else if (arg_count(cmd->args) == 1 && ft_strcmp(cmd->args[0], "cd") == 0)
+		path = go_back_to_home(m, path);
+    else if (arg_count(cmd->args) == 2)
     {
-        path = get_path(m, "OLDPWD");
-        if (!path)
-        {
-            printf(("Error OLDPW not set!\n"));
-            return (1);
-        }
-    }
-    else if ((arg_count(cmd->args)) == 1 || ft_strcmp(cmd->args[1], "--") == 0)
-    {
-        path = get_path(m, "HOME");
-        printf("HOME PATH %s \n", path);
-        if (!path)
-        {
-            printf(("Error HOME not set!\n"));
-            return (1);
-        }
-    }
- /*    else
-        path = standard_path(m, cmd); */
+		if (ft_strcmp(cmd->args[1], "-") == 0)
+			path = go_back_to_last_directory(m, cmd->args[1]);
+		else if (ft_strcmp(cmd->args[1], "--") == 0 || ft_strcmp(cmd->args[1], "~") == 0)
+			path = go_back_to_home(m, path);
+		else
+			path = standard_path(m, cmd);
+	}
     update_paths(path, m, cmd);
     return(0);
 }

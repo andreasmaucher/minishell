@@ -10,72 +10,67 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
+/* find the first occurence of a substring 'needle' wihtin a given string*/
 char	*ft_strstr(const char *haystack, const char *needle)
 {
-	char	*phaystack;
+	char	*tmpstack;
 	size_t	needle_len;
 
-	phaystack = (char *)haystack;
+	tmpstack = (char *)haystack;
 	needle_len = ft_strlen(needle);
 	if (needle_len == 0)
 	{
-		return (phaystack);
+		return (tmpstack);
 	}
-	while (*phaystack)
+	while (*tmpstack)
 	{
-		if (*phaystack == *needle)
+		if (*tmpstack == *needle)
 		{
-			if (ft_strncmp(needle, phaystack, needle_len) == 0)
+			if (ft_strncmp(needle, tmpstack, needle_len) == 0)
 			{
-				return (phaystack);
+				return (tmpstack);
 			}
 		}
-		phaystack++;
+		tmpstack++;
 	}
 	return (NULL);
 }
 
 char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
-	size_t	i;
-	size_t	j;
+	size_t	a;
+	size_t	b;
 
-	i = 0;
-	if (little[0] == '\0')
-		return ((char *)big);
-	while (big[i] != '\0' && i < len)
+	a = 0;
+	b = 0;
+	if (little[a] == '\0')
+		return ((char *) big);
+	while (big[a] != '\0' && a < len)
 	{
-		j = 0;
-		while (big[i + j] != '\0' && big[i + j] == little[j] && i + j < len)
+		while (big[a + b] == little[b] && big[a + b] != '\0' && a + b < len)
 		{
-			if (little[j + 1] == '\0')
-			{
-				return ((char *)big + i);
-			}
-			j++;
+			b++;
 		}
-		i++;
+		if (little[b] == '\0')
+			return ((char *) big + a);
+		a++;
+		b = 0;
 	}
 	return (0);
 }
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	unsigned int	i;
+	size_t	i;
 
 	i = 0;
-	while (s1[i] && i < n)
+	while ((s1[i] != '\0' || s2[i] != '\0') && i < n)
 	{
 		if (s1[i] != s2[i])
-		{
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		}
+			return ((unsigned char) s1[i] - (unsigned char)s2[i]);
 		i++;
 	}
-	if (s2[i] == '\0' || i == n)
-		return (0);
-	else
-		return (-s2[i]);
+	return (0);
 }

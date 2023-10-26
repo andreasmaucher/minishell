@@ -25,7 +25,7 @@ bool    check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp)
     printf("CMD->ARGS %s\n", cmd->args[i]);
     if (ft_strcmp(dict->key, cmd->args[i]) == 0)
     {
-        ft_lstremove(&m->envp, tmp, del_envp);
+        ft_lstremove(&m->envp, tmp, delete_envp);
         return (true);
     }
     return (false);
