@@ -71,6 +71,37 @@ char	*join_strings(const char *str1, const char *str2, const char *str3)
     return (result);
 }
 
+char *ft_last_substring(const char *haystack, const char *needle) 
+{
+    int i;
+
+    i = 0;
+    char *last_substring = NULL;
+    if (ft_strncmp(haystack, "./", 2) != 0)
+        return NULL;
+    char *substring = ft_strstr(haystack, needle);
+    while (substring != NULL) {
+        last_substring = substring;
+        substring = ft_strstr(substring + 1, needle);
+    }
+    printf("last_substring is |%s|\n", last_substring);
+
+    
+
+
+
+    // while (i != 2)
+    // {
+    // if (last_substring == NULL)
+    //     return (NULL);
+    // last_substring++;
+    // i++;
+    // }
+
+
+    return last_substring;
+}
+
 char	**find_path_executor(char **envp)
 {
     int		i;
@@ -85,12 +116,15 @@ char	**find_path_executor(char **envp)
     return (path_buf);
 }
 
+
 char	*valid_path(char **path, char *argv)
 {
     int		i;
     char	*correct_path;
 
     i = 0;
+    if (access(argv, X_OK) == 0)
+        return (argv);
     while (path[i])
     {
         correct_path = join_strings(path[i], "/", argv);
@@ -104,7 +138,7 @@ char	*valid_path(char **path, char *argv)
     }
     return (NULL);
 }
-
+  
 int wait_processes(t_minishell *m)
 {
     int i;
@@ -271,12 +305,15 @@ int output_redirect(t_command *cmd)
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
-
     m->child_id[0] = fork();
     if (m->child_id[0] == 0)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
+        printf("Is this runnign?\n");
+
+        // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
+
         if (cmd->path == NULL)
         {
             //Should I do anything here?
@@ -286,7 +323,13 @@ int single_cmd(t_minishell *m)
         {
             output_redirect(cmd);
         }
-        execute_program(cmd->args, cmd->path);
+        if (cmd->type != BUILTIN)
+            execute_program(cmd->args, cmd->path);
+        if (cmd->type == BUILTIN)
+        {
+            printf("this is def a builtin\n");
+            execute_builtins(m, cmd);
+        }
     }
     return (0);
 }
@@ -315,11 +358,11 @@ int multiple_cmd(t_minishell *m)
                 close_pipes(m);
             }
 			//! CHECK CONDITIONS, ERROR WARNING ALL CONDITIONS TRUE
-           /*  else if (current_process_id == m->pipe_n && (cmd->output_redir_type != REDIRECT_OUT &&  cmd->output_redir_type != REDIRECT_APPEND))
+            else if (current_process_id == m->pipe_n && (cmd->output_redir_type != REDIRECT_OUT &&  cmd->output_redir_type != REDIRECT_APPEND))
             {
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
                 close_pipes(m);
-            } */
+            }
             else
             {
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
@@ -328,7 +371,15 @@ int multiple_cmd(t_minishell *m)
             }
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
+
             free_env(m->path_buf);
+            if (cmd->type != BUILTIN)
+            execute_program(cmd->args, cmd->path);
+            if (cmd->type == BUILTIN)
+            {
+            printf("this is def a builtin\n");
+            execute_builtins(m, cmd);
+            }
             execute_program(cmd->args, cmd->path);
             current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
@@ -451,7 +502,7 @@ int executor(t_minishell m, char **envp)
 
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
-    in_redirections(&m);
+    //in_redirections(&m);
     if (m.pipe_n == 0)
     {
         single_cmd(&m);

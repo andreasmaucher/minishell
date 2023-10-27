@@ -31,5 +31,5 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
 		return_code = cd(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return_code = exit_builtin(m, cmd);
-	return (return_code);
+	exit (return_code);
 }

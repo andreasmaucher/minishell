@@ -169,6 +169,7 @@ char	**create_envp_library(char **envp);
 char	**create_env_library(char **envp);
 t_list	*create_envp_list(char **envp);
 char	*extract_key_from_envp(char *envp);
+t_list	*delete_env_fail(t_list **tlist, t_list *current_node);
 
 /* lexer_tokens */
 char	*pipe_token(int *i, t_type *token_type);
@@ -199,6 +200,7 @@ void	*set_pt_to_null(void *ptr);
 void	delete_token(void *content);
 void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
+void	free_all(t_minishell m);
 
 /* env */
 char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);

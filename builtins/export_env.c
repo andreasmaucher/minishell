@@ -23,6 +23,7 @@ bool	check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp)
 	dict = (t_dict *)tmp->value;
 	if (ft_strcmp(dict->key, search_str) == 0)
 	{
+		printf("DELETE DOUBLE KEY\n");
 		ft_lstremove(&m->envp, tmp, delete_envp);
 		return (true);
 	}

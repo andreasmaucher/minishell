@@ -10,32 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
-
-//CHECK AGAIN WHEN CD WORKS; BUT SHOULD BE GOOD
+#include "../minishell.h"
 
 /*
 memory management is handled by getcwd function, which returns the path of
 the current directory
 */
-int    pwd(void)
+int	pwd(void)
 {
-    char    current_dir[PATH_MAX];
+	char	current_dir[PATH_MAX];
 
-    if (getcwd(current_dir, PATH_MAX) == NULL)
-        return (1);
-    printf("%s\n", current_dir);
-    return(0);
+	if (getcwd(current_dir, PATH_MAX) == NULL)
+		return (1);
+	printf("%s\n", current_dir);
+	return (0);
 }
 
-//! NEED TO FREE IN EXECUTION
-char    *pwd_path(void)
+char	*pwd_path(void)
 {
-    char    current_dir[PATH_MAX];
-    char    *return_str;
+	char	current_dir[PATH_MAX];
+	char	*return_str;
 
-    if (getcwd(current_dir, PATH_MAX) == NULL)
-        return (NULL);
-    return_str = ft_strdup(current_dir);
-    return(return_str);
+	if (getcwd(current_dir, PATH_MAX) == NULL)
+		return (NULL);
+	return_str = ft_strdup(current_dir);
+	return (return_str);
 }

@@ -67,3 +67,15 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 		*lst = temp;
 	}
 }
+
+void	free_all(t_minishell m)
+{
+	if (m.line)
+		m.line = set_pt_to_null(m.line);
+	if (m.tlist)
+		ft_lstclear(&m.tlist, delete_token);
+	if (m.clist)
+		ft_lstclear(&m.clist, delete_cmd);
+	if (m.envp)
+		ft_lstclear(&m.envp, delete_envp);
+}

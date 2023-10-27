@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-# include "../minishell.h"
 
 /* extracts the path starting AFTER = */
 char    *extract_value_from_env(char *path)
@@ -41,7 +28,7 @@ char    *extract_value_from_env(char *path)
 }
 
 /*
-searches for the HOME directory path in the env list;
+searches for the directory path in the env list;
 return value is the path after '=';
 */
 char    *get_path(t_minishell *m, char *search_path)
@@ -55,20 +42,21 @@ char    *get_path(t_minishell *m, char *search_path)
     return_value = NULL;
     dict = (t_dict *)tmp->value;
     return_path = NULL;
+	printf("in get path function\n");
     while (tmp != NULL)
     {
+		printf("GET PATH FUNCTION search path: %s\n", search_path);
         dict = (t_dict *)tmp->value;
-		printf("search path to be matched with key: %s \n", search_path);
         if (ft_strcmp(dict->key, search_path) == 0)
         {
             return_path = ft_strdup(dict->value);
+			printf("GET PATH FUNCTION return path: %s\n", return_path);
             break;
         }
         tmp = tmp->next;
     }
-	printf("Return path to be extracted %s\n", return_path);
     return_value = extract_value_from_env(return_path);
-    free(return_path);
+    //free(return_path);
     return(return_value);
 }
 
@@ -81,13 +69,14 @@ void    delete_specific_envs(t_minishell *m, t_command *cmd, char *search_key)
     tmp = m->envp;
     while(cmd->args[i] != NULL)
     {
-        //if (check_if_part_of_library(m->envp, search_key) == true)
+        tmp = m->envp;
+		printf("SEARCH KEY FOR DELETION %s\n", search_key);
+        if (check_if_part_of_library(m->envp, search_key) == true)
         {
-			//tmp = m->envp;
             while (tmp != NULL)
 	        {
                 if (check_for_key_doubles(m, search_key, tmp) == true)
-					break ;
+                    break;
                 tmp = tmp->next;
 	        }
         }
@@ -119,19 +108,34 @@ void add_specific_envs(t_minishell *m, char *path, char *key)
 */
 static char	*standard_path(t_minishell *m, t_command *cmd)
 {
+	char	*path;
 	char	*current_dir;
 	char	*path_with_slash;
 	char	*final_path;
 
+	final_path = NULL;
 	if (ft_strcmp(cmd->args[1], ".") == 0 || ft_strcmp(cmd->args[1], "..") == 0
 		|| ft_strcmp(cmd->args[1], "/") == 0)
-		final_path = ft_strdup(cmd->args[1]);
+		{
+			path = ft_strdup(cmd->args[1]);
+			printf("PATH WITH DOT %s\n", path);
+			return (path);
+		}
 	else
 	{
+		//if (check_if_part_of_library(m->envp, cmd->args[1]) == true)
+		{
+			printf("STANDARD PATH VALID\n");
 			current_dir = get_path(m, "PWD");
+			printf("STANDARD PWD: %s\n", current_dir);
 			path_with_slash = ft_strjoin(current_dir, "/");
+			printf("PATH WITH SLASH: %s\n", current_dir);
 			final_path = ft_strjoin(path_with_slash, cmd->args[1]);
+			printf("FINAL PATH %s\n", final_path);
 			free(path_with_slash);
+		}
+		/* else
+			return (NULL); */
 	}
 	return (final_path);
 }
@@ -147,14 +151,11 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     char    *old_dir;
     char    *new_path_returned_from_cwd;
 
-	(void)m; //!
 	(void)cmd; //!
     getcwd(cwd, PATH_MAX);
     old_dir = ft_strdup(cwd);
     printf("OLDPWD: %s\n", old_dir);
     printf("NEW PATH TO SEND INTO CHDIR: %s\n", new_path);
-	delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD");
     if (chdir(new_path))
     {
         free(old_dir);
@@ -167,6 +168,8 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     printf("PWD: %s\n", new_path_returned_from_cwd);
     //! PART BELOW STILL NEEDS TESTING WHEN MORE FUNCTIONALITY
     // this is supposed to change PWD & OLDPWD --- NOT HOME!
+    delete_specific_envs(m, cmd, "PWD");
+	delete_specific_envs(m, cmd, "OLDPWD");
     add_specific_envs(m, new_path_returned_from_cwd, "PWD=");
     add_specific_envs(m, old_dir, "OLDPWD=");
     new_path = set_pt_to_null(new_path);
@@ -195,6 +198,8 @@ char	*go_back_to_last_directory(t_minishell *m, char *path)
 	return(path);
 }
 
+//! WHERE TO CHECK FOR VALID PATH?!?!?
+
 /*
 function that replicates the behavior of the cd command;
 Example behavior:
@@ -212,24 +217,28 @@ int cd(t_minishell *m, t_command *cmd)
 
     (void)m;
     path = NULL;
-    if ((arg_count(cmd->args) > 2))
+  /*   if ((arg_count(cmd->args) > 2))
     {
         printf("Too many arguments\n");
         return (1);
     }
 	else if (arg_count(cmd->args) == 1 && ft_strcmp(cmd->args[0], "cd") == 0)
+	{
 		path = go_back_to_home(m, path);
-    else if (arg_count(cmd->args) == 2)
+		delete_specific_envs(m, cmd, "PWD");
+		delete_specific_envs(m, cmd, "OLDPWD");
+	}
+    else  */if (arg_count(cmd->args) == 2)
     {
+		printf("INNER CD LOOP \n");
 		if (ft_strcmp(cmd->args[1], "-") == 0)
 			path = go_back_to_last_directory(m, cmd->args[1]);
 		else if (ft_strcmp(cmd->args[1], "--") == 0 || ft_strcmp(cmd->args[1], "~") == 0)
 			path = go_back_to_home(m, path);
 		else
 			path = standard_path(m, cmd);
+		printf("PATH BEFORE UPDATE %s\n", path);
 	}
     update_paths(path, m, cmd);
-	delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD");
     return(0);
 }

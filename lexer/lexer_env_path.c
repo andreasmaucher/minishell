@@ -13,6 +13,19 @@
 #include "../minishell.h"
 
 /*
+delete all ENV_FAIL type tokens at the end of the lexer
+*/
+t_list	*delete_env_fail(t_list **tlist, t_list *current_node)
+{
+	t_token	*tmp_token;
+
+	tmp_token = current_node->value;
+	if (tmp_token->type == ENV_FAIL)
+		ft_lstremove(tlist, current_node, delete_token);
+	return (*tlist);
+}
+
+/*
 checks if the env is part of the library 
 */
 bool	check_if_part_of_library(t_list *envp, char *search_str)

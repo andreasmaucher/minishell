@@ -58,7 +58,7 @@ char	*handle_dollar_signs(t_type *token_type, char *search_str)
 {
 	*token_type = WORD;
 	free(search_str);
-	return(ft_substr("$", 0, 1));
+	return (ft_substr("$", 0, 1));
 }
 
 /*
@@ -78,7 +78,7 @@ char	*env_token_expansion(char *line, int *i, t_type *token_type,
 	if (check_if_part_of_library(env_list, search_str) == false)
 	{
 		if (ft_strcmp(search_str, "$") == 0)
-			return(handle_dollar_signs(token_type, search_str));
+			return (handle_dollar_signs(token_type, search_str));
 		else
 		{
 			*token_type = ENV_FAIL;
@@ -91,7 +91,7 @@ char	*env_token_expansion(char *line, int *i, t_type *token_type,
 		env_final = *find_path_after_key(env_list, search_str);
 		free(search_str);
 	}
-	return(env_final);
+	return (env_final);
 }
 
 /*
@@ -103,16 +103,17 @@ char	*env_token(char *line, int *i, t_type *token_type,
 			t_list *env_list)
 {
 	char	*env_final;
+	int		j;
 
 	(*i)++;
 	*token_type = WORD;
 	env_final = NULL;
-	int j = (*i);
+	j = (*i);
 	if (line[*i] == '?' && (line[j + 1] == 32 || line[j + 1] == '\0'))
 	{
 		(*i)++;
 		env_final = ft_itoa(g_exit_code);
-		return(env_final);
+		return (env_final);
 	}
 	else
 		env_final = env_token_expansion(line, i, token_type, env_list);

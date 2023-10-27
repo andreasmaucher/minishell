@@ -53,19 +53,6 @@ t_list	*merge_tokens(t_list **tlist, t_list *current_node)
 }
 
 /*
-delete all ENV_FAIL type tokens at the end of the lexer
-*/
-t_list	*delete_env_fail(t_list **tlist, t_list *current_node)
-{
-	t_token	*tmp_token;
-
-	tmp_token = current_node->value;
-	if (tmp_token->type == ENV_FAIL)
-		ft_lstremove(tlist, current_node, delete_token);
-	return (*tlist);
-}
-
-/*
 delete all whitespace tokens at the end of the lexer
 */
 t_list	*delete_whitespace(t_list **tlist, t_list *current_node)

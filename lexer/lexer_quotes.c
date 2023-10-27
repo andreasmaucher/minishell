@@ -19,8 +19,6 @@ char	*append_str(char *str, char *appendix)
 	if (!str)
 		return (appendix);
 	appended_str = ft_strjoin(str, appendix);
-	/* free(str);
-	free(appendix); */
 	return (appended_str);
 }
 
