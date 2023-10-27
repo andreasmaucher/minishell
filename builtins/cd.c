@@ -153,8 +153,8 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     old_dir = ft_strdup(cwd);
     printf("OLDPWD: %s\n", old_dir);
     printf("NEW PATH TO SEND INTO CHDIR: %s\n", new_path);
-	delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD");
+	/* delete_specific_envs(m, cmd, "PWD");
+	delete_specific_envs(m, cmd, "OLDPWD"); */
     if (chdir(new_path))
     {
         free(old_dir);
@@ -167,8 +167,8 @@ int update_paths(char *new_path, t_minishell *m, t_command *cmd)
     printf("PWD: %s\n", new_path_returned_from_cwd);
     //! PART BELOW STILL NEEDS TESTING WHEN MORE FUNCTIONALITY
     // this is supposed to change PWD & OLDPWD --- NOT HOME!
-    add_specific_envs(m, new_path_returned_from_cwd, "PWD=");
-    add_specific_envs(m, old_dir, "OLDPWD=");
+   /*  add_specific_envs(m, new_path_returned_from_cwd, "PWD=");
+    add_specific_envs(m, old_dir, "OLDPWD="); */
     new_path = set_pt_to_null(new_path);
     return(0);
 }
@@ -229,7 +229,7 @@ int cd(t_minishell *m, t_command *cmd)
 			path = standard_path(m, cmd);
 	}
     update_paths(path, m, cmd);
-	delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD");
+	/* delete_specific_envs(m, cmd, "PWD");
+	delete_specific_envs(m, cmd, "OLDPWD"); */
     return(0);
 }

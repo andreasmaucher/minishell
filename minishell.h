@@ -213,7 +213,6 @@ char	*env_within_double_quotes(char *line, int *i);
 char	*extract_env_name(char *line, int *i);
 char    *extract_key_from_envp(char *envp);
 void	add_new_envs(t_minishell *m, t_command *cmd);
-bool    check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
 char	**find_path_after_key(t_list *envp, char *search_str);
 
 /* ft_split */
