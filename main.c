@@ -44,14 +44,19 @@ int main(int ac, char **av, char **envp)
             perror("Failed to restore stdin");
             return (1);
         }
+		close(default_stdin);
 		if (dup2(default_stdout, 1) == -1)
         {
             perror("Failed to restore stdout");
             return (1);
         }
+		close(default_stdout);
+
+		
 		m.line = readline("Myshell: ");
 		// if (!m.line)
 		// 	exit_shell(m);
+		printf("Passed m.line\n");
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
@@ -62,6 +67,26 @@ int main(int ac, char **av, char **envp)
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);
 		//! if execve -1 free **args of command_list
+		// int i = 0;
+
+		// while(m.child_id[i])
+		// {
+		// 	kill(m.child_id[i], SIGTERM);
+		// 	i++;
+		// }
+		// kill(m.child_id[0], SIGTERM);
+		printf("End of main M.line is :|%s|\n", m.line);
+		term_processes(m); // is this needed?
+
+
+
+		m.forked =0;
+
+
+
+
 		free(m.line);
+		
+
 	}
 }

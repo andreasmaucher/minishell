@@ -29,5 +29,7 @@ int    execute_builtins(t_minishell *m, t_command *cmd)
         exit_code = export(m, cmd);
     else if (ft_strcmp(cmd->args[0], "cd") == 0)
         exit_code = cd(m, cmd);
-    return(exit_code);
+    // return(exit_code);
+    exit(exit_code);
+
 }

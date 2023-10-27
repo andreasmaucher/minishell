@@ -1,0 +1,42 @@
+------Child process N 2 running---------
+Command to run is: /usr/bin/sort
+Arg_vec : sort
+------Child process N 1 running---------
+0ut91
+Arg_vec : ls
+Command to run is: /usr/bin/ls
+Makefile
+README.md
+a.out
+builtins
+eof2
+executor
+file
+infile
+lexer
+main.c
+main.o
+minishell
+minishell.dSYM
+minishell.h
+out00
+out01
+out101
+out2
+out3
+out4
+out44
+out5
+out543
+out76
+out765
+out9
+out91
+out98
+out987
+out99
+outfile
+parser
+suppressions.supp
+test.c
+utils

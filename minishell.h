@@ -119,6 +119,7 @@ typedef struct s_minishell
 	char *here_docs;
     int stdin_original;
 	int stdout_original;
+	int forked;
 }   t_minishell;
 
 //str_utils
@@ -260,6 +261,8 @@ int     free_execve_fail(t_minishell *m);
 char *ft_last_substring(const char *haystack, const char *needle);
 char	*find_path_pwd(char **envp);
 char *validate_path(char **path, char *argv, char **envp);
+void	term_processes(t_minishell m);
+
 
 
 

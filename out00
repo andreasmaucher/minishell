@@ -1,0 +1,4 @@
+------Child process N 1 running---------
+Command to run is: /usr/bin/wc
+Arg_vec : wc
+     36      46     330
