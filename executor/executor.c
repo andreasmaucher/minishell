@@ -354,10 +354,11 @@ int single_cmd(t_minishell *m)
             output_redirect(cmd);
         }
         if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path);
+            execute_program(cmd->args, cmd->path, m);
         if (cmd->type == BUILTIN)
         {
             printf("this is def a builtin\n");
+
             execute_builtins(m, cmd);
         }
     }
@@ -403,9 +404,9 @@ int multiple_cmd(t_minishell *m)
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
 
-            free_env(m->path_buf);
+            //free_env(m->path_buf);
             if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path);
+            execute_program(cmd->args, cmd->path, m);
             if (cmd->type == BUILTIN)
             {
             printf("this is def a builtin\n");
@@ -430,7 +431,7 @@ int free_execve_fail(t_minishell *m)
     return(0);
 }
 
-int	execute_program(char **arg_vec, char *path)
+int	execute_program(char **arg_vec, char *path, t_minishell *m)
 {
     int i;
 
@@ -447,10 +448,16 @@ int	execute_program(char **arg_vec, char *path)
         printf("Arg_vec : %s\n", arg_vec[i]);
         i++;
     }
+    printf("Path is : %s\n", path);
+
     if (execve(path, arg_vec, NULL) == -1)
     {
+        (void)m;
         free(path);
         free_env(arg_vec);
+        free_all(*m);
+        free_env(m->path_buf);
+        free(m->child_id);
         perror("Could not execute");
         exit(1);
     }
@@ -526,6 +533,7 @@ int executor(t_minishell m, char **envp)
     m.pipe_n = command_count(m.tlist) - 1;
     m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
     m.path_buf = find_path_executor(envp);
+
 
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");

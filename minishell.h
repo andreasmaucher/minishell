@@ -258,7 +258,7 @@ bool	check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
 
 /* execution */
 int		executor(t_minishell m, char **envp);
-int		execute_program(char **arg_vec, char *path);
+int		execute_program(char **arg_vec, char *path, t_minishell *m);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
