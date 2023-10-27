@@ -314,11 +314,11 @@ int multiple_cmd(t_minishell *m)
                 output_redirect(cmd);
                 close_pipes(m);
             }
-            else if (current_process_id == m->pipe_n && (cmd->output_redir_type != REDIRECT_OUT ||  cmd->output_redir_type != REDIRECT_APPEND))
-            {
-                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-                close_pipes(m);
-            }
+//            else if (current_process_id == m->pipe_n && (cmd->output_redir_type != REDIRECT_OUT ||  cmd->output_redir_type != REDIRECT_APPEND))
+//            {
+//                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+//                close_pipes(m);
+//            }
             else
             {
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);

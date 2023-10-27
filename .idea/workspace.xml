@@ -23,8 +23,6 @@
     <list default="true" id="f3b01a49-75c3-4165-8937-63422938ed17" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executor/executor.c" beforeDir="false" afterPath="$PROJECT_DIR$/executor/executor.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/minishell.h" beforeDir="false" afterPath="$PROJECT_DIR$/minishell.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,7 +157,9 @@
       <workItem from="1698081124720" duration="5895000" />
       <workItem from="1698152188492" duration="5750000" />
       <workItem from="1698163391286" duration="2192000" />
-      <workItem from="1698240300818" duration="2106000" />
+      <workItem from="1698240300818" duration="3162000" />
+      <workItem from="1698262289747" duration="2000" />
+      <workItem from="1698408450201" duration="1000" />
     </task>
     <servers />
   </component>
