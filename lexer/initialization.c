@@ -35,4 +35,6 @@ void	init_minishell_struct_and_signals(t_minishell *m, char **envp)
 	init_signals();
 	ft_memset(m, 0, sizeof(t_minishell));
 	m->envp = create_envp_list(envp);
+	m->stdin_original = 0;
+	m->stdout_original = 1;
 }

@@ -118,6 +118,7 @@ int	exit_shell(t_minishell m)
 		ft_lstclear(&m.tlist, token_del);
 	if (m.clist)
 		ft_lstclear(&m.clist, command_del);
+	printf("Exiting ..\n");
 	//! add freeing function for env list
 	exit(1);
 }

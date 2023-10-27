@@ -25,28 +25,39 @@ that there's no more input and closes the shell
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
-	t_command *cmd = NULL;
+	// t_command *cmd = NULL;
 
 	(void)av;
 	if (ac != 1)
 		return (1);
 	init_minishell_struct_and_signals(&m, envp);
+	int default_stdin; // Duplicate stdin (file descriptor 0)
+    int default_stdout; // Duplicate stdout (file descriptor 1)
+
 	while(1)
 	{
-		if (dup2(m.stdin_original, 0) == -1)
+		//!input not being restored after command "<out98 cat"
+		default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
+    	default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
+		if (dup2(default_stdin, 0) == -1)
         {
             perror("Failed to restore stdin");
             return (1);
         }
+		if (dup2(default_stdout, 1) == -1)
+        {
+            perror("Failed to restore stdout");
+            return (1);
+        }
 		m.line = readline("Myshell: ");
-		if (!m.line)
-			exit_shell(m);
+		// if (!m.line)
+		// 	exit_shell(m);
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		cmd = (t_command *) m.clist->value;
-		execute_builtins(&m, cmd);
+		// cmd = (t_command *) m.clist->value;
+		// execute_builtins(&m, cmd);
 		executor(m, envp);
 		ft_lstclear(&m.tlist, token_del);
 		ft_lstclear(&m.clist, command_del);

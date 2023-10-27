@@ -118,6 +118,7 @@ typedef struct s_minishell
     char **path_buf;
 	char *here_docs;
     int stdin_original;
+	int stdout_original;
 }   t_minishell;
 
 //str_utils
@@ -255,5 +256,12 @@ int close_pipes(t_minishell *m);
 void kill_process(t_minishell *m, int process_id);
 void	free_env(char **env);
 int     free_execve_fail(t_minishell *m);
+
+char *ft_last_substring(const char *haystack, const char *needle);
+char	*find_path_pwd(char **envp);
+char *validate_path(char **path, char *argv, char **envp);
+
+
+
 
 #endif
