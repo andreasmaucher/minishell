@@ -302,6 +302,37 @@ int output_redirect(t_command *cmd)
     return(0);
 }
 
+
+int in_redirections(t_minishell *m)
+{
+    t_command *cmd;
+    t_list *temp;
+
+    temp = m->clist;
+    while(temp)
+    {
+        cmd = (t_command *) temp->value;
+        if (cmd->input_redir_type == REDIRECT_IN)
+        {
+            // check for access
+//            if (check_file_rights(cmd->in_redirects.file_name) != 0)
+//                perror("Cant read from input file, permission denied\n");
+            cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+            if (cmd->in_redirects.fd_write == -1)
+                perror("Cant open the file\n");
+            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+                perror("Input IN-redirection isn't working\n");
+            close(cmd->in_redirects.fd_write);
+        }
+        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+        {
+            here_docs(cmd, m);
+        }
+        temp = temp->next;
+    }
+    return (0);
+}
+
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
@@ -310,10 +341,9 @@ int single_cmd(t_minishell *m)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
         printf("Is this runnign?\n");
-
+        in_redirections(m);
         // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
-
         if (cmd->path == NULL)
         {
             //Should I do anything here?
@@ -346,6 +376,7 @@ int multiple_cmd(t_minishell *m)
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
+            in_redirections(m);
             if (current_process_id == 0)
             {
                 dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
@@ -380,7 +411,7 @@ int multiple_cmd(t_minishell *m)
             printf("this is def a builtin\n");
             execute_builtins(m, cmd);
             }
-            execute_program(cmd->args, cmd->path);
+            //execute_program(cmd->args, cmd->path);
             current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
         printf("------Child process N %d finished---------\n", current_process_id);
@@ -404,7 +435,13 @@ int	execute_program(char **arg_vec, char *path)
     int i;
 
     i = 0;
-    printf("Command to run is: %s\n", path);
+    // while (arg_vec[i])
+    // {
+    //     printf("Arg_vec : %s i is : %i\n", arg_vec[i], i);
+    //     i++;
+    // }
+    // i = 0;
+    // printf("Command to run is: %s\n", path);
     while (arg_vec[i])
     {
         printf("Arg_vec : %s\n", arg_vec[i]);
@@ -412,6 +449,8 @@ int	execute_program(char **arg_vec, char *path)
     }
     if (execve(path, arg_vec, NULL) == -1)
     {
+        free(path);
+        free_env(arg_vec);
         perror("Could not execute");
         exit(1);
     }
@@ -464,35 +503,23 @@ int close_pipes(t_minishell *m)
 //    //Should i also free filename?
 //}
 
-int in_redirections(t_minishell *m)
-{
-    t_command *cmd;
-    t_list *temp;
 
-    temp = m->clist;
-    while(temp)
-    {
-        cmd = (t_command *) temp->value;
-        if (cmd->input_redir_type == REDIRECT_IN)
-        {
-            // check for access
-//            if (check_file_rights(cmd->in_redirects.file_name) != 0)
-//                perror("Cant read from input file, permission denied\n");
-            cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
-            if (cmd->in_redirects.fd_write == -1)
-                perror("Cant open the file\n");
-            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
-                perror("Input IN-redirection isn't working\n");
-            close(cmd->in_redirects.fd_write);
-        }
-        if (cmd->input_redir_type == REDIRECT_HEREDOC)
-        {
-            here_docs(cmd, m);
-        }
-        temp = temp->next;
-    }
-    return (0);
+void	term_processes(t_minishell m)
+{
+	int	j;
+
+	j = 0;
+	if (m.forked == 1)
+	{
+		while (j <= m.pipe_n)
+		{
+			kill(m.child_id[j], SIGTERM);
+			j++;
+		}
+	}
+    m.forked =0;
 }
+
 
 int executor(t_minishell m, char **envp)
 {
@@ -502,15 +529,21 @@ int executor(t_minishell m, char **envp)
 
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
-    //in_redirections(&m);
+    // in_redirections(&m);
     if (m.pipe_n == 0)
     {
+        m.forked = 1;
         single_cmd(&m);
+        // wait(NULL);
     }
     if (m.pipe_n > 0)
     {
+        m.forked = 1;
+
         initialize_pipes(&m);
         multiple_cmd(&m);
+        // wait_processes(&m); // Here is a traditional way to place wait
+
     }
 //  out_redirections(&m);
 //should I move out_redirections here instead of having them in single and mutliple_cmd?

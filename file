@@ -1,3 +1,6 @@
-Command to run is: /usr/bin/wc
+------Child process N 1 running---------
 Arg_vec : wc
-Arg_vec : -l
+Arg_vec : -
+Arg_vec : l
+     18      24     198 -
+     18      24     198 total
