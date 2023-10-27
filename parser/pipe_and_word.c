@@ -120,7 +120,7 @@ void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
 		tmp_token = (t_token *) tmp_tlist->value;
 		check_if_builtin(tmp_token, tmp_command);
 		tlist_len = token_count_tlist(tmp_tlist);
-		tmp_command->args = malloc(sizeof(char *) * (tlist_len) + 1);
+		tmp_command->args = malloc(sizeof(char *) * (tlist_len + 1));
 		if (!tmp_command->args)
 			return ;
 		i = 0;

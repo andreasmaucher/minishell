@@ -411,7 +411,7 @@ int multiple_cmd(t_minishell *m)
             printf("this is def a builtin\n");
             execute_builtins(m, cmd);
             }
-            execute_program(cmd->args, cmd->path);
+            //execute_program(cmd->args, cmd->path);
             current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
         printf("------Child process N %d finished---------\n", current_process_id);
@@ -435,7 +435,13 @@ int	execute_program(char **arg_vec, char *path)
     int i;
 
     i = 0;
-    printf("Command to run is: %s\n", path);
+    // while (arg_vec[i])
+    // {
+    //     printf("Arg_vec : %s i is : %i\n", arg_vec[i], i);
+    //     i++;
+    // }
+    // i = 0;
+    // printf("Command to run is: %s\n", path);
     while (arg_vec[i])
     {
         printf("Arg_vec : %s\n", arg_vec[i]);
@@ -443,6 +449,8 @@ int	execute_program(char **arg_vec, char *path)
     }
     if (execve(path, arg_vec, NULL) == -1)
     {
+        free(path);
+        free_env(arg_vec);
         perror("Could not execute");
         exit(1);
     }
@@ -509,6 +517,7 @@ void	term_processes(t_minishell m)
 			j++;
 		}
 	}
+    m.forked =0;
 }
 
 
