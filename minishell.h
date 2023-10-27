@@ -130,6 +130,8 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 void	*ft_memset(void *s, int c, size_t n);
 size_t	ft_strlen(const char *s);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+bool	ft_isalpha(int c);
+bool	ft_is_digit(int c);
 
 /* list operators */
 int		lst_size(t_list *head);
@@ -245,6 +247,10 @@ void    update_env_lib(t_minishell *m, t_command *cmd);
 bool    check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp);
 int		cd(t_minishell *m, t_command *cmd);
 int		exit_builtin(t_minishell *m, t_command *cmd);
+t_list	*delete_double_envs(t_minishell *m, t_command *cmd);
+void	add_new_envs(t_minishell *m, t_command *cmd);
+bool	check_equal_sign(char *str);
+bool	check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
 
 /* execution */
 int		executor(t_minishell m, char **envp);

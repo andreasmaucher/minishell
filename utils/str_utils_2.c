@@ -74,3 +74,17 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
+
+bool	ft_isalpha(int c)
+{
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (true);
+	return (false);
+}
+
+bool	ft_is_digit(int c)
+{
+	if (c >= '0' && c <= '9')
+		return (true);
+	return (false);
+}

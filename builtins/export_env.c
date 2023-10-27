@@ -16,14 +16,12 @@
 checks if the current key matches with the key in the user input;
 if true the corresponding node is deleted and free 
 */
-bool	check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp)
+bool	check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp)
 {
 	t_dict	*dict;
 
 	dict = (t_dict *)tmp->value;
-	printf("DICT KEY %s\n", dict->key);
-	printf("CMD->ARGS %s\n", cmd->args[i]);
-	if (ft_strcmp(dict->key, cmd->args[i]) == 0)
+	if (ft_strcmp(dict->key, search_str) == 0)
 	{
 		ft_lstremove(&m->envp, tmp, delete_envp);
 		return (true);
@@ -31,35 +29,54 @@ bool	check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp)
 	return (false);
 }
 
-/*
-unset function is used to unset or remove environment variables or
-shell variables
-Syntax: 'unset variable_name'
-Exit Status: The unset command typically returns a status of 0 if the variable
-is successfully unset. If the variable does not exist, it still returns 0.
-If multiple variable names are entered after unset, all will be checked and
-unset even if incorrect variable names are included.
-*/
-int	unset(t_minishell *m, t_command *cmd)
+t_list	*delete_double_envs(t_minishell *m, t_command *cmd)
 {
 	int		i;
 	t_list	*tmp;
+	char	*search_str;
 
 	i = 0;
 	tmp = m->envp;
+	search_str = NULL;
 	while (cmd->args[i] != NULL)
 	{
 		tmp = m->envp;
-		if (check_if_part_of_library(m->envp, cmd->args[i]) == true)
+		search_str = extract_key_from_envp(cmd->args[i]);
+		if (check_if_part_of_library(m->envp, search_str) == true)
 		{
 			while (tmp != NULL)
 			{
-				if (check_for_key(m, cmd, i, tmp) == true)
+				if (check_for_key_doubles(m, search_str, tmp) == true)
 					break ;
 				tmp = tmp->next;
 			}
 		}
+		free(search_str);
 		i++;
 	}
-	return (0);
+	return (tmp);
+}
+
+void	add_new_envs(t_minishell *m, t_command *cmd)
+{
+	int		i;
+	t_list	*new;
+	t_dict	*dict;
+
+	i = 0;
+	new = NULL;
+	dict = NULL;
+	while (cmd->args[i])
+	{
+		if (check_equal_sign(cmd->args[i]) == true)
+		{
+			new = create_new_node(NULL);
+			dict = malloc(sizeof(t_dict));
+			dict->value = ft_strdup(cmd->args[i]);
+			dict->key = extract_key_from_envp(cmd->args[i]);
+			new->value = dict;
+			insert_at_tail(m->envp, new);
+		}
+		i++;
+	}
 }
