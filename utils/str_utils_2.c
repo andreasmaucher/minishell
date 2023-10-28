@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-/* find the first occurence of a substring 'needle' wihtin a given string*/
+/* find the first occurence of a substring 'needle' wihtin a given string */
 char	*ft_strstr(const char *haystack, const char *needle)
 {
 	char	*tmpstack;

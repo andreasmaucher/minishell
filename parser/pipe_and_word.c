@@ -103,6 +103,12 @@ int	token_count_tlist(t_list *tlist)
 	return (len);
 }
 
+/*
+this function allocates memory for the args within the command structure;
+the number of args depends on the length of the token list (tlist);
+arguments are added from the token list until a pipe is encountered or
+the end of the list is reached;
+*/
 void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
 {
 	t_token		*tmp_token;

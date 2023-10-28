@@ -52,6 +52,9 @@ void	free_args(char **args)
 	free(args);
 }
 
+/*
+deletes a command node and all args in it;
+*/
 void	delete_cmd(void *arg)
 {
 	t_command	*command;
@@ -78,6 +81,5 @@ int	exit_shell(t_minishell m)
 		ft_lstclear(&m.clist, delete_cmd);
 	if (m.envp)
 		ft_lstclear(&m.envp, delete_envp);
-	printf("test2");
 	exit(g_exit_code);
 }

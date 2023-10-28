@@ -69,15 +69,13 @@ bool	check_parser_redirections(t_list *tlist)
 }
 
 /* 
-checks if all conditions for a valid parser input are fullfilled:
+checks if all conditions for a valid parser input are fullfilled;
+in case of a syntax error, the exit code is 2;
 */
 bool	check_parser_input(t_list *tlist)
 {
 	if (check_parser_redirections(tlist) == false
 		|| check_parser_pipes(tlist) == false)
-	{
-		printf("Invalid parser syntax.");
 		return (false);
-	}
 	return (true);
 }

@@ -89,7 +89,6 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 	if (ac == 1)
 	{
 		g_exit_code = 0;
-		printf("TEST\n");
 		exit_shell(*m);
 	}
 	else if (ac != 1)

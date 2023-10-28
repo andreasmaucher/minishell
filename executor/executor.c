@@ -281,21 +281,22 @@ int out_redirections(t_minishell *m)
 
 int output_redirect(t_command *cmd)
 {
+    
     if (cmd->output_redir_type == REDIRECT_OUT)
     {
-        write(1, "Output redirection function running\n", 25);
+        write(1, "Output redirection function running\n", 40);
         cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR, 0777);
         if (cmd->out_redirects.fd_write == -1)
-            write(1, "Could not open output file\n", 25);
+            write(1, "Could not open output file\n", 40);
         dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
-        close(cmd->out_redirects.fd_write);
+        close(cmd->out_redirects.fd_write);    
     }
     if (cmd->output_redir_type == REDIRECT_APPEND)
     {
-        write(1, "Output redirection function running\n", 25);
+        write(1, "Output redirection function running\n", 40);
         cmd->out_redirects.fd_write = open(cmd->out_redirects.file_name, O_CREAT | O_RDWR | O_APPEND, 0777);
         if (cmd->out_redirects.fd_write == -1)
-            write(1, "Could not open output file\n", 25);
+            write(1, "Could not open output file\n", 40);
         dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
         close(cmd->out_redirects.fd_write);
     }
@@ -354,10 +355,11 @@ int single_cmd(t_minishell *m)
             output_redirect(cmd);
         }
         if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path);
+            execute_program(cmd->args, cmd->path, m);
         if (cmd->type == BUILTIN)
         {
             printf("this is def a builtin\n");
+
             execute_builtins(m, cmd);
         }
     }
@@ -403,9 +405,9 @@ int multiple_cmd(t_minishell *m)
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
 
-            free_env(m->path_buf);
+            //free_env(m->path_buf);
             if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path);
+            execute_program(cmd->args, cmd->path, m);
             if (cmd->type == BUILTIN)
             {
             printf("this is def a builtin\n");
@@ -430,7 +432,7 @@ int free_execve_fail(t_minishell *m)
     return(0);
 }
 
-int	execute_program(char **arg_vec, char *path)
+int	execute_program(char **arg_vec, char *path, t_minishell *m)
 {
     int i;
 
@@ -447,10 +449,16 @@ int	execute_program(char **arg_vec, char *path)
         printf("Arg_vec : %s\n", arg_vec[i]);
         i++;
     }
+    printf("Path is : %s\n", path);
+
     if (execve(path, arg_vec, NULL) == -1)
     {
+        (void)m;
         free(path);
         free_env(arg_vec);
+        free_all(*m);
+        free_env(m->path_buf);
+        free(m->child_id);
         perror("Could not execute");
         exit(1);
     }
@@ -527,13 +535,65 @@ int executor(t_minishell m, char **envp)
     m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
     m.path_buf = find_path_executor(envp);
 
+
     printf("\n------Start---------\n");
     printf("---Executor starts here---\n");
+
+    t_command *cmd;
+    cmd = NULL;
+
+      int	old_stdin;
+            int	old_stdout;
+
+    
+    // int default_stdin; // Duplicate stdin (file descriptor 0)
+    // int default_stdout; // Duplicate stdout (file descriptor 1)
+
     // in_redirections(&m);
     if (m.pipe_n == 0)
     {
         m.forked = 1;
-        single_cmd(&m);
+        while(m.clist)
+        {
+        cmd = (t_command *) m.clist->value;
+        if (m.pipe_n == 0 && cmd->type == BUILTIN)
+        {
+            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            {
+                old_stdin = dup(STDIN_FILENO);
+                old_stdout = dup(STDOUT_FILENO);
+                output_redirect(cmd);
+            }
+            execute_single_builtins(&m, cmd);
+            dup2(old_stdin, STDIN_FILENO);
+            close(old_stdin);
+            dup2(old_stdout, STDOUT_FILENO);
+            close(old_stdout);  
+          
+            
+            // if (io_redirection(NULL, NULL, command) == -1)
+            //     return (EXIT_FAILURE);
+            // exit_code = execute_builtin_cmd(data, command);
+            
+            // default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
+            // default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
+            // if (dup2(default_stdin, 0) == -1)
+            // {
+            //     perror("Failed to restore stdin");
+            //     return (1);
+            // }
+            // close(default_stdin);
+            // if (dup2(default_stdout, 1) == -1)
+            // {
+            //     perror("Failed to restore stdout");
+            //     return (1);
+            // }
+            // close(default_stdout);
+        }
+        else
+            single_cmd(&m);
+        m.clist = m.clist->next;
+        }
         // wait(NULL);
     }
     if (m.pipe_n > 0)

@@ -15,7 +15,8 @@
 int g_exit_code;
 
 /* 
-shell is only created if there is exactly one argument (name of the executable);
+shell is only created if there is exactly one argument
+(name of the executable);
 m.line == NULL to exit if the user calls Ctrl+D or simply if "exit" is called;
 tlist = tokenlist, meaning the list that holds all tokens,
 clist = commandlist, meaning the list that holds all commands;
@@ -74,6 +75,7 @@ int main(int ac, char **av, char **envp)
 		// }
 		// kill(m.child_id[0], SIGTERM);
 		//printf("End of main M.line is :|%s|\n", m.line);
+		printf("End of main M.line is :|%s|\n", m.line);
 		term_processes(m); // is this needed?
 	}
 }

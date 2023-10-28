@@ -28,6 +28,9 @@ t_list	*create_command_list(t_list **clist, t_command *tmp_cmd)
 	return (*clist);
 }
 
+/*
+allocates memory for a new command and initializes all its elements
+*/
 t_command	*ft_create_cmd(void)
 {
 	t_command	*cmd;

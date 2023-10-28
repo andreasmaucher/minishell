@@ -54,7 +54,11 @@ static void	add_attributes_to_command_list(t_minishell m)
 	}
 }
 
-/* For testing: print_command_list(m.clist); */
+/* 
+if the input fullfills the parser syntax the command list clist
+is created anf dilled with elements;
+For testing: print_command_list(m.clist);
+*/
 t_list	*parser(t_minishell m)
 {
 	if (check_parser_input(m.tlist) == true && m.tlist != NULL)
@@ -68,6 +72,8 @@ t_list	*parser(t_minishell m)
 	}
 	else
 	{
+		printf("syntax error near unexpected token");
+		g_exit_code = 2;
 		return (NULL);
 	}
 }

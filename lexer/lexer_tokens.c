@@ -56,6 +56,9 @@ char	*pipe_token(int *i, t_type *token_type)
 	return (ft_strdup("|"));
 }
 
+/*
+function iterates i as long as whitespace is encountered;
+*/
 char	*whitespace_token(char *line, int *i, t_type *token_type)
 {
 	int	start_index;

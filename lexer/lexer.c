@@ -13,7 +13,9 @@
 #include "../minishell.h"
 
 /*
-iterates through line and splits it into tokens
+iterates through line and splits it into tokens;
+splitting occurs whenever a symbol specified in the if conditions appears;
+the line is iterated (i) within the token functions;
 */
 t_list	*split_line_into_tokens(t_minishell m)
 {

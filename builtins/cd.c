@@ -117,7 +117,7 @@ int	update_paths(char *new_path, t_minishell *m)
 		free(old_dir);
 		free(new_path);
 		printf("No such file or directory!\n");
-		return (1);
+		return (-1);
 	}
 	getcwd(cwd, PATH_MAX);
 	new_path_returned_from_cwd = ft_strdup(cwd);

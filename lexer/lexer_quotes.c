@@ -86,6 +86,10 @@ char	*single_quote_to_string(char *line, int *i)
 	return (str_between_quotes);
 }
 
+/*
+depending if the symbol is double or single quotes the respective
+function is called; before entering the function i is increased by one;
+*/
 char	*quotes(char *line, int *i,
 				t_type *token_type, t_minishell m)
 {
