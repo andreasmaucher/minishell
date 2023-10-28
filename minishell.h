@@ -265,5 +265,7 @@ void	kill_process(t_minishell *m, int process_id);
 void	free_env(char **env);
 int		free_execve_fail(t_minishell *m);
 void	term_processes(t_minishell m);
+int		execute_single_builtins(t_minishell *m, t_command *cmd);
+
 
 #endif
