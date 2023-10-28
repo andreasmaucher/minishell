@@ -25,7 +25,6 @@ that there's no more input and closes the shell
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
-	t_command *cmd = NULL;
 
 	(void)av;
 	if (ac != 1)
@@ -58,9 +57,7 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		cmd = (t_command *) m.clist->value;
-		execute_builtins(&m, cmd);
-		//executor(m, envp);
+		executor(m, envp);
 		if (m.line)
 			m.line = set_pt_to_null(m.line);
 		if (m.tlist)

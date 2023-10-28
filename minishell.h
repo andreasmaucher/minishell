@@ -254,6 +254,11 @@ t_list	*delete_double_envs(t_minishell *m, t_command *cmd);
 void	add_new_envs(t_minishell *m, t_command *cmd);
 bool	check_equal_sign(char *str);
 bool	check_for_key_doubles(t_minishell *m, char *search_str, t_list *tmp);
+char	*go_back_to_home(t_minishell *m, char *path);
+char	*go_back_to_last_directory(t_minishell *m, char *path);
+void	delete_node(t_minishell *m, char *search_key);
+void	add_specific_envs(t_minishell *m, char *path, char *key);
+char	*get_path(t_minishell *m, char *search_path);
 
 /* execution */
 int		executor(t_minishell m, char **envp);

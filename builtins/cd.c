@@ -10,111 +10,71 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../minishell.h"
+#include "../minishell.h"
 
 /* extracts the path starting AFTER = */
-char    *extract_value_from_env(char *path)
+char	*extract_value_from_env(char *path)
 {
-    int i;
-    char    *tmp;
-    int path_len;
-    int j;
+	int		i;
+	char	*tmp;
+	int		path_len;
+	int		j;
 
-    i = 0;
-    while (path[i] != '=' && path[i] != '\0')
-        i++;
-    i++;
-    path_len = ft_strlen(path) - i;
-    tmp = malloc(sizeof(char) * path_len + 1);
-    if (!tmp)
-        return (NULL);
-    j = 0;
-    while (path[i] != '\0')
-    {
-        tmp[j] = path[i];
-        j++;
-        i++;
-    }
-    tmp[j] = '\0';
-    printf("PATH AFTER: %s\n", tmp);
-    return (tmp);
+	i = 0;
+	while (path[i] != '=' && path[i] != '\0')
+		i++;
+	i++;
+	path_len = ft_strlen(path) - i;
+	tmp = malloc(sizeof(char) * (path_len + 1));
+	if (!tmp)
+		return (NULL);
+	j = 0;
+	while (path[i] != '\0')
+	{
+		tmp[j] = path[i];
+		j++;
+		i++;
+	}
+	tmp[j] = '\0';
+	return (tmp);
 }
 
 /*
 searches for the HOME directory path in the env list;
 return value is the path after '=';
 */
-char    *get_path(t_minishell *m, char *search_path)
+char	*get_path(t_minishell *m, char *search_path)
 {
-    t_list *tmp;
-    t_dict  *dict;
-    char    *return_path;
-    char    *return_value;
+	t_list	*tmp;
+	t_dict	*dict;
+	char	*return_path;
+	char	*return_value;
 
-    tmp = m->envp;
-    return_value = NULL;
-    dict = (t_dict *)tmp->value;
-    return_path = NULL;
-    while (tmp != NULL)
-    {
-        dict = (t_dict *)tmp->value;
-		printf("search path to be matched with key: %s \n", search_path);
-        if (ft_strcmp(dict->key, search_path) == 0)
-        {
-            return_path = ft_strdup(dict->value);
-            break;
-        }
-        tmp = tmp->next;
-    }
-	printf("Return path to be extracted %s\n", return_path);
-    return_value = extract_value_from_env(return_path);
-    free(return_path);
-    return(return_value);
-}
-
-void    delete_specific_envs(t_minishell *m, t_command *cmd, char *search_key)
-{
-    int i;
-    t_list *tmp;
-
-    i = 0;
-    tmp = m->envp;
-    while(cmd->args[i] != NULL)
-    {
-        //if (check_if_part_of_library(m->envp, search_key) == true)
-        {
-			//tmp = m->envp;
-            while (tmp != NULL)
-	        {
-                if (check_for_key_doubles(m, search_key, tmp) == true)
-					break ;
-                tmp = tmp->next;
-	        }
-        }
-        i++;
-    }
-}
-
-void add_specific_envs(t_minishell *m, char *path, char *key)
-{
-    t_list *new;
-    t_dict *dict;
-	char	*key_and_path;
-
-    new = NULL;
-    dict = NULL;
-    new = create_new_node(NULL);
-    dict = malloc(sizeof(t_dict));
-	key_and_path = ft_strjoin(key, path);
-    dict->value = key_and_path;
-    dict->key = ft_strdup(key);
-    new->value = dict;
-    insert_at_tail(m->envp, new);
+	tmp = m->envp;
+	return_value = NULL;
+	dict = (t_dict *)tmp->value;
+	return_path = NULL;
+	while (tmp != NULL)
+	{
+		dict = (t_dict *)tmp->value;
+		if (ft_strcmp(dict->key, search_path) == 0)
+		{
+			return_path = ft_strdup(dict->value);
+			break ;
+		}
+		tmp = tmp->next;
+	}
+	return_value = extract_value_from_env(return_path);
+	free(return_path);
+	return (return_value);
 }
 
 /*
+In case of input "cd directory_name" this function creates the path that 
+needs to be set as the new PDW;
 'cd ..' -> go one directory level up;
-'cd .' -> the dot represents the current directory, so essentially nothing happens;
+'cd .' -> the dot represents the current directory, so essentially nothing
+happens;
 'cd /' -> change current directory to the root directory;
 */
 static char	*standard_path(t_minishell *m, t_command *cmd)
@@ -128,71 +88,48 @@ static char	*standard_path(t_minishell *m, t_command *cmd)
 		final_path = ft_strdup(cmd->args[1]);
 	else
 	{
-			current_dir = get_path(m, "PWD");
-			path_with_slash = ft_strjoin(current_dir, "/");
-			final_path = ft_strjoin(path_with_slash, cmd->args[1]);
-			free(path_with_slash);
+		current_dir = get_path(m, "PWD");
+		path_with_slash = ft_strjoin(current_dir, "/");
+		final_path = ft_strjoin(path_with_slash, cmd->args[1]);
+		free(current_dir);
+		free(path_with_slash);
 	}
 	return (final_path);
 }
 
 /*
+this function updates the PWD and OLDPWD variables;
 first current working directory is saved in in old_dir;
-chdir function is used to change the current working directory of a process to new_path;
+chdir function is used to change the current working directory
+of a process to new_path;
 chdir returns -1 if there was an error and 0 on success;
 */
-int update_paths(char *new_path, t_minishell *m, t_command *cmd)
+int	update_paths(char *new_path, t_minishell *m)
 {
-    char    cwd[PATH_MAX];
-    char    *old_dir;
-    char    *new_path_returned_from_cwd;
+	char	cwd[PATH_MAX];
+	char	*old_dir;
+	char	*new_path_returned_from_cwd;
 
-	(void)m; //!
-	(void)cmd; //!
-    getcwd(cwd, PATH_MAX);
-    old_dir = ft_strdup(cwd);
-    printf("OLDPWD: %s\n", old_dir);
-    printf("NEW PATH TO SEND INTO CHDIR: %s\n", new_path);
-	/* delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD"); */
-    if (chdir(new_path))
-    {
-        free(old_dir);
-        free(new_path);
-        printf("No such file or directory!\n");
-        return(1);
-    }
-    getcwd(cwd, PATH_MAX);
-    new_path_returned_from_cwd = ft_strdup(cwd);
-    printf("PWD: %s\n", new_path_returned_from_cwd);
-    //! PART BELOW STILL NEEDS TESTING WHEN MORE FUNCTIONALITY
-    // this is supposed to change PWD & OLDPWD --- NOT HOME!
-   /*  add_specific_envs(m, new_path_returned_from_cwd, "PWD=");
-    add_specific_envs(m, old_dir, "OLDPWD="); */
-    new_path = set_pt_to_null(new_path);
-    return(0);
-}
-
-char	*go_back_to_home(t_minishell *m, char *path)
-{
-	path = get_path(m, "HOME");
-	if (!path)
+	getcwd(cwd, PATH_MAX);
+	old_dir = ft_strdup(cwd);
+	if (chdir(new_path))
 	{
-		printf(("Error HOME not set!\n"));
-		return (NULL);
+		free(old_dir);
+		free(new_path);
+		printf("No such file or directory!\n");
+		return (1);
 	}
-	return(path);
-}
-
-char	*go_back_to_last_directory(t_minishell *m, char *path)
-{
-	path = get_path(m, "OLDPWD");
-	if (!path)
-	{
-		printf(("Error OLDPWD not set!\n"));
-		return (NULL);
-	}
-	return(path);
+	getcwd(cwd, PATH_MAX);
+	new_path_returned_from_cwd = ft_strdup(cwd);
+	printf("PWD: %s\n", new_path_returned_from_cwd);
+	delete_node(m, "PWD");
+	delete_node(m, "OLDPWD");
+	add_specific_envs(m, new_path_returned_from_cwd, "PWD");
+	add_specific_envs(m, old_dir, "OLDPWD");
+	new_path = set_pt_to_null(new_path);
+	free(old_dir);
+	free(new_path_returned_from_cwd);
+	return (0);
 }
 
 /*
@@ -206,30 +143,31 @@ For multiple arguments it checks first if all folders are valid and if so,
 enters the last one. If one is invalid it returns:
 "cd: N: No such file or directory"
 */
-int cd(t_minishell *m, t_command *cmd)
+int	cd(t_minishell *m, t_command *cmd)
 {
-    char *path;
+	char	*path;
 
-    (void)m;
-    path = NULL;
-    if ((arg_count(cmd->args) > 2))
-    {
-        printf("Too many arguments\n");
-        return (1);
-    }
+	path = NULL;
+	if ((arg_count(cmd->args) > 2))
+	{
+		printf("Too many arguments\n");
+		return (1);
+	}
 	else if (arg_count(cmd->args) == 1 && ft_strcmp(cmd->args[0], "cd") == 0)
 		path = go_back_to_home(m, path);
-    else if (arg_count(cmd->args) == 2)
-    {
+	else if (arg_count(cmd->args) == 2)
+	{
 		if (ft_strcmp(cmd->args[1], "-") == 0)
 			path = go_back_to_last_directory(m, cmd->args[1]);
-		else if (ft_strcmp(cmd->args[1], "--") == 0 || ft_strcmp(cmd->args[1], "~") == 0)
+		else if (ft_strcmp(cmd->args[1], "--") == 0
+			|| ft_strcmp(cmd->args[1], "~") == 0)
 			path = go_back_to_home(m, path);
 		else
+		{
 			path = standard_path(m, cmd);
+			printf("path after standard path %s\n", path);
+		}
 	}
-    update_paths(path, m, cmd);
-	/* delete_specific_envs(m, cmd, "PWD");
-	delete_specific_envs(m, cmd, "OLDPWD"); */
-    return(0);
+	update_paths(path, m);
+	return (0);
 }
