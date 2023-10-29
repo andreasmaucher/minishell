@@ -565,10 +565,15 @@ int executor(t_minishell m, char **envp)
                 output_redirect(cmd);
             }
             execute_single_builtins(&m, cmd);
-            dup2(old_stdin, STDIN_FILENO);
-            close(old_stdin);
-            dup2(old_stdout, STDOUT_FILENO);
-            close(old_stdout);  
+
+            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            {
+                dup2(old_stdin, STDIN_FILENO);
+                close(old_stdin);
+                dup2(old_stdout, STDOUT_FILENO);
+                close(old_stdout);  
+            }
+            
           
             
             // if (io_redirection(NULL, NULL, command) == -1)
