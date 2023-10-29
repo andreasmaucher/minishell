@@ -81,5 +81,12 @@ int	exit_shell(t_minishell m)
 		ft_lstclear(&m.clist, delete_cmd);
 	if (m.envp)
 		ft_lstclear(&m.envp, delete_envp);
+	if (m.child_id)
+		free(m.child_id);
+	if (m.path_buf)
+		free_env(m.path_buf);
+
+
+	//? more stuff
 	exit(g_exit_code);
 }

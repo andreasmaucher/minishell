@@ -63,10 +63,10 @@ t_list	*parser(t_minishell m)
 {
 	if (check_parser_input(m.tlist) == true && m.tlist != NULL)
 	{
-		m.clist = setup_command_list(&m.clist, m.tlist);
+		m.clist = setup_command_list(&m.clist, m.tlist); //
 		if (m.clist == NULL)
 			return (NULL);
-		add_attributes_to_command_list(m);
+		add_attributes_to_command_list(m); //
 		print_command_list(m.clist);
 		return (m.clist);
 	}

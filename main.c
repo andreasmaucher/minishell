@@ -33,6 +33,10 @@ int main(int ac, char **av, char **envp)
 	init_minishell_struct_and_signals(&m, envp);
 	int default_stdin; // Duplicate stdin (file descriptor 0)
     int default_stdout; // Duplicate stdout (file descriptor 1)
+			t_command *cmd;
+			    	cmd = NULL;
+
+
 	while(1)
 	{
 		//!input not being restored after command "<out98 cat"
@@ -65,16 +69,8 @@ int main(int ac, char **av, char **envp)
 			ft_lstclear(&m.tlist, delete_token);
 		if (m.clist)
 			ft_lstclear(&m.clist, delete_cmd);
-		//! if execve -1 free **args of command_list
-		// int i = 0;
-
-		// while(m.child_id[i])
-		// {
-		// 	kill(m.child_id[i], SIGTERM);
-		// 	i++;
-		// }
-		// kill(m.child_id[0], SIGTERM);
-		//printf("End of main M.line is :|%s|\n", m.line);
+		//if (m.child_id)
+		
 		printf("End of main M.line is :|%s|\n", m.line);
 		term_processes(m); // is this needed?
 	}

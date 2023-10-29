@@ -53,5 +53,35 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
 		return_code = cd(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return_code = exit_builtin(m, cmd);
+
+	//this was added to free
+	//free_all(*m);
+	// if (m->line)
+	// 	m->line = set_pt_to_null(m->line);
+	// if (m->tlist)
+	// 	ft_lstclear(&m->tlist, delete_token);
+	// if (m->clist)
+	// 	ft_lstclear(&m->clist, delete_cmd);
+	// if (m->envp)
+	// 	ft_lstclear(&m->envp, delete_envp);
+	if (m->child_id)
+		free(m->child_id);
+	if (m->path_buf)
+		free_env(m->path_buf);
+	// if (cmd->args)
+    // free_args(cmd->args);
+	
+	free_pipes(m);
+	free_all(*m);
+
+	// if (cmd->args)
+	// {
+	// free_args(cmd->args);
+
+	// // if (cmd)
+	// // 	free(cmd);
+	// cmd = set_pt_to_null(cmd);
+	// }
+
 	exit (return_code);
 }
