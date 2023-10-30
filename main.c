@@ -56,8 +56,9 @@ int main(int ac, char **av, char **envp)
 		//printf("Passed m.line\n");
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		//printlist(m.tlist); //! only for testing
+		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
+		print_command_list(m.clist);
 		executor(m, envp);
 		if (m.line)
 			m.line = set_pt_to_null(m.line);

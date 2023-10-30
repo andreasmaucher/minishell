@@ -67,7 +67,6 @@ t_list	*parser(t_minishell m)
 		if (m.clist == NULL)
 			return (NULL);
 		add_attributes_to_command_list(m);
-		//print_command_list(m.clist);
 		return (m.clist);
 	}
 	else

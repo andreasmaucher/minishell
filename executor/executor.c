@@ -1,4 +1,5 @@
 #include "../minishell.h"
+
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 {
     size_t	src_len;
@@ -324,8 +325,8 @@ int in_redirections(t_minishell *m)
             if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                 perror("Input IN-redirection isn't working\n");
             close(cmd->in_redirects.fd_write);
-            // if (cmd->in_redirects.file_name)
-            //     free(cmd->in_redirects.file_name);
+            if (cmd->in_redirects.file_name)
+                 free(cmd->in_redirects.file_name);
         }
         if (cmd->input_redir_type == REDIRECT_HEREDOC)
         {
@@ -453,14 +454,14 @@ int multiple_cmd(t_minishell *m)
             
 
             execute_builtins(m, cmd);
-            if (cmd->in_redirects.file_name)
-                free(cmd->in_redirects.file_name);
+            /* if (cmd->in_redirects.file_name)
+                free(cmd->in_redirects.file_name); */
             }
         current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
         
-        if (cmd->in_redirects.file_name)
-            free(cmd->in_redirects.file_name);
+       /*  if (cmd->in_redirects.file_name)
+            free(cmd->in_redirects.file_name); */
         printf("------Child process N %d finished---------\n", current_process_id);
         tmp = tmp->next;//m->clist = m->clist->next;
         current_process_id++;
