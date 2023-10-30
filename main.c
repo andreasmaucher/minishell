@@ -33,10 +33,11 @@ int main(int ac, char **av, char **envp)
 	init_minishell_struct_and_signals(&m, envp);
 	int default_stdin; // Duplicate stdin (file descriptor 0)
     int default_stdout; // Duplicate stdout (file descriptor 1)
-			t_command *cmd;
-			    	cmd = NULL;
 
-
+	// t_command *cmd;
+    // t_list *tmp;
+    
+    // cmd = NULL;
 	while(1)
 	{
 		//!input not being restored after command "<out98 cat"
@@ -62,6 +63,7 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
+		
 		executor(m, envp);
 		if (m.line)
 			m.line = set_pt_to_null(m.line);
@@ -70,7 +72,15 @@ int main(int ac, char **av, char **envp)
 		if (m.clist)
 			ft_lstclear(&m.clist, delete_cmd);
 		//if (m.child_id)
-		
+		// tmp = m.clist;
+		// while(tmp)//(m->clist)
+    	// {
+        // cmd = (t_command *) tmp->value;//m->clist->value;
+		// if (cmd->in_redirects.file_name)
+        //     free(cmd->in_redirects.file_name);
+		// tmp = tmp->next;
+		// }
+
 		printf("End of main M.line is :|%s|\n", m.line);
 		term_processes(m); // is this needed?
 	}

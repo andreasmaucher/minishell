@@ -325,6 +325,8 @@ int in_redirections(t_minishell *m)
             if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                 perror("Input IN-redirection isn't working\n");
             close(cmd->in_redirects.fd_write);
+            // if (cmd->in_redirects.file_name)
+            //     free(cmd->in_redirects.file_name);
         }
         if (cmd->input_redir_type == REDIRECT_HEREDOC)
         {
@@ -338,6 +340,7 @@ int in_redirections(t_minishell *m)
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
+    
     m->child_id[0] = fork();
     if (m->child_id[0] == 0)
     {
@@ -390,7 +393,6 @@ int multiple_cmd(t_minishell *m)
     while(tmp)//(m->clist)
     {
         cmd = (t_command *) tmp->value;//m->clist->value;
-
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
@@ -449,10 +451,17 @@ int multiple_cmd(t_minishell *m)
             printf("this is def a builtin\n");
             if (cmd->path)
                 free(cmd->path);
+            
+
             execute_builtins(m, cmd);
+            if (cmd->in_redirects.file_name)
+                free(cmd->in_redirects.file_name);
             }
-            current_process_id++; //? can i delete this since it just runs in the child who already finished
+        current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
+        
+        if (cmd->in_redirects.file_name)
+            free(cmd->in_redirects.file_name);
         printf("------Child process N %d finished---------\n", current_process_id);
         tmp = tmp->next;//m->clist = m->clist->next;
         current_process_id++;

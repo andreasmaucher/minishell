@@ -62,6 +62,8 @@ void	delete_cmd(void *arg)
 	command = (t_command *)arg;
 	if (command->args)
 		free_args(command->args);
+	// if (command->in_redirects.file_name)
+    //     free(command->in_redirects.file_name);
 	command = set_pt_to_null(command);
 }
 
