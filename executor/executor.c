@@ -1,5 +1,4 @@
 #include "../minishell.h"
-
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 {
     size_t	src_len;
@@ -136,6 +135,7 @@ char	*valid_path(char **path, char *argv)
         }
         i++;
     }
+    perror("Command does not exist\n");
     return (NULL);
 }
   
@@ -324,6 +324,8 @@ int in_redirections(t_minishell *m)
             if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                 perror("Input IN-redirection isn't working\n");
             close(cmd->in_redirects.fd_write);
+            // if (cmd->in_redirects.file_name)
+            //     free(cmd->in_redirects.file_name);
         }
         if (cmd->input_redir_type == REDIRECT_HEREDOC)
         {
@@ -337,6 +339,7 @@ int in_redirections(t_minishell *m)
 int single_cmd(t_minishell *m)
 {
     t_command *cmd = (t_command *)m->clist->value;
+    
     m->child_id[0] = fork();
     if (m->child_id[0] == 0)
     {
@@ -347,8 +350,20 @@ int single_cmd(t_minishell *m)
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
         if (cmd->path == NULL)
         {
-            //Should I do anything here?
-            //Probably freeing memory
+            if (m->path_buf)
+                free_env(m->path_buf);
+            if (cmd->path)
+                free(cmd->path);
+            if (m->line)
+		        m->line = set_pt_to_null(m->line);
+	        if (m->tlist)
+		        ft_lstclear(&m->tlist, delete_token);
+	        if (m->clist)
+		        ft_lstclear(&m->clist, delete_cmd);
+	        if (m->envp)
+		        ft_lstclear(&m->envp, delete_envp);
+            free(m->child_id);
+            exit(42);
         }
         if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
         {
@@ -371,10 +386,12 @@ int multiple_cmd(t_minishell *m)
 
     current_process_id = 0;
     t_command *cmd;
+    t_list *tmp;
+    tmp = m->clist;
     cmd = NULL;
-    while(m->clist)
+    while(tmp)//(m->clist)
     {
-        cmd = (t_command *) m->clist->value;
+        cmd = (t_command *) tmp->value;//m->clist->value;
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
@@ -404,22 +421,52 @@ int multiple_cmd(t_minishell *m)
             }
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
-
-            //free_env(m->path_buf);
+            if (cmd->path == NULL)
+            {
+                
+                if (m->path_buf)
+                    free_env(m->path_buf);
+                if (cmd->path)
+                    free(cmd->path);
+                if (m->line)
+		            m->line = set_pt_to_null(m->line);
+	            if (m->tlist)
+		            ft_lstclear(&m->tlist, delete_token);
+	            if (m->clist)
+		            ft_lstclear(&m->clist, delete_cmd); ////!!!!
+	            if (m->envp)
+		            ft_lstclear(&m->envp, delete_envp);
+                free(m->child_id);
+                close_pipes(m); // maybe not needed
+                free_pipes(m);
+                exit(42);
+            }
             if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path, m);
+            {
+                execute_program(cmd->args, cmd->path, m);
+            }
             if (cmd->type == BUILTIN)
             {
             printf("this is def a builtin\n");
+            if (cmd->path)
+                free(cmd->path);
+            
+
             execute_builtins(m, cmd);
+            if (cmd->in_redirects.file_name)
+                free(cmd->in_redirects.file_name);
             }
-            //execute_program(cmd->args, cmd->path);
-            current_process_id++; //? can i delete this since it just runs in the child who already finished
+        current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
+        
+        if (cmd->in_redirects.file_name)
+            free(cmd->in_redirects.file_name);
         printf("------Child process N %d finished---------\n", current_process_id);
-        m->clist = m->clist->next;
+        tmp = tmp->next;//m->clist = m->clist->next;
         current_process_id++;
     }
+    
+    
     close_pipes(m);
     return (0);
 }
@@ -454,11 +501,16 @@ int	execute_program(char **arg_vec, char *path, t_minishell *m)
     if (execve(path, arg_vec, NULL) == -1)
     {
         (void)m;
-        free(path);
-        free_env(arg_vec);
+        if (path)
+            free(path);
+        if (arg_vec)
+            free_env(arg_vec);
         free_all(*m);
-        free_env(m->path_buf);
-        free(m->child_id);
+        if (m->path_buf)
+            free(m->path_buf);
+        if (m->child_id)
+            free(m->child_id);
+        free_pipes(m);
         perror("Could not execute");
         exit(1);
     }
@@ -478,6 +530,20 @@ int initialize_pipes(t_minishell *m)
             return (1);
         i++;
     }
+    return (0);
+}
+
+int free_pipes(t_minishell *m)
+{
+    int i;
+
+    i = 0;
+    while(i <= m->pipe_n)
+    {
+        free(m->pipes[i]);
+        i++;
+    }
+    free(m->pipes);
     return (0);
 }
 
@@ -542,14 +608,9 @@ int executor(t_minishell m, char **envp)
     t_command *cmd;
     cmd = NULL;
 
-      int	old_stdin;
-            int	old_stdout;
+    int	old_stdin;
+    int	old_stdout;
 
-    
-    // int default_stdin; // Duplicate stdin (file descriptor 0)
-    // int default_stdout; // Duplicate stdout (file descriptor 1)
-
-    // in_redirections(&m);
     if (m.pipe_n == 0)
     {
         m.forked = 1;
@@ -573,40 +634,21 @@ int executor(t_minishell m, char **envp)
                 dup2(old_stdout, STDOUT_FILENO);
                 close(old_stdout);  
             }
-            
-          
-            
-            // if (io_redirection(NULL, NULL, command) == -1)
-            //     return (EXIT_FAILURE);
-            // exit_code = execute_builtin_cmd(data, command);
-            
-            // default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
-            // default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
-            // if (dup2(default_stdin, 0) == -1)
-            // {
-            //     perror("Failed to restore stdin");
-            //     return (1);
-            // }
-            // close(default_stdin);
-            // if (dup2(default_stdout, 1) == -1)
-            // {
-            //     perror("Failed to restore stdout");
-            //     return (1);
-            // }
-            // close(default_stdout);
         }
         else
             single_cmd(&m);
         m.clist = m.clist->next;
+
         }
-        // wait(NULL);
     }
     if (m.pipe_n > 0)
     {
         m.forked = 1;
-
+        
         initialize_pipes(&m);
         multiple_cmd(&m);
+   		free_pipes(&m);
+
         // wait_processes(&m); // Here is a traditional way to place wait
 
     }
@@ -615,6 +657,10 @@ int executor(t_minishell m, char **envp)
 //test running commands following a command with redirections
 
     wait_processes(&m); // Here is a traditional way to place wait
+    if (m.path_buf)
+		free_env(m.path_buf);
+    free(m.child_id);
+    
     printf("------End---------\n");
     return (0);
 }

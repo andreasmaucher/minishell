@@ -112,6 +112,7 @@ export KEY12=m KEYFAI. KEY11=true -> no variables added, because of invalid
 export LOVE ME= -> will only add ME= but show no error
 
 Function below only adds variables if all variables have the format MY_VAR=
+Test: printlist_envp(m->envp);
 */
 int	export(t_minishell *m, t_command *cmd)
 {
@@ -119,7 +120,6 @@ int	export(t_minishell *m, t_command *cmd)
 	{
 		delete_double_envs(m, cmd);
 		add_new_envs(m, cmd);
-		printlist_envp(m->envp);
 		return (0);
 	}
 	return (1);

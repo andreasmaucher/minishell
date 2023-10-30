@@ -163,10 +163,7 @@ int	cd(t_minishell *m, t_command *cmd)
 			|| ft_strcmp(cmd->args[1], "~") == 0)
 			path = go_back_to_home(m, path);
 		else
-		{
 			path = standard_path(m, cmd);
-			printf("path after standard path %s\n", path);
-		}
 	}
 	update_paths(path, m);
 	return (0);

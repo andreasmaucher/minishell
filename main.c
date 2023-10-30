@@ -53,10 +53,10 @@ int main(int ac, char **av, char **envp)
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
-		printf("Passed m.line\n");
+		//printf("Passed m.line\n");
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		printlist(m.tlist); //! only for testing
+		//printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
 		executor(m, envp);
 		if (m.line)
@@ -75,7 +75,7 @@ int main(int ac, char **av, char **envp)
 		// }
 		// kill(m.child_id[0], SIGTERM);
 		//printf("End of main M.line is :|%s|\n", m.line);
-		printf("End of main M.line is :|%s|\n", m.line);
+		//printf("End of main M.line is :|%s|\n", m.line);
 		term_processes(m); // is this needed?
 	}
 }
