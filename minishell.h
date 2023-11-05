@@ -274,6 +274,14 @@ void	term_processes(t_minishell m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
+//int 	in_redirections(t_minishell *m);
+int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
+int		check_file_rights(char *filename);
+int		free_in_redirects_file(t_minishell *m);
+
+
+
+
 
 
 

@@ -165,7 +165,6 @@ int	cd(t_minishell *m, t_command *cmd)
 		else
 		{
 			path = standard_path(m, cmd);
-			printf("path after standard path %s\n", path);
 		}
 	}
 	update_paths(path, m);

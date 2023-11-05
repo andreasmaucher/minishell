@@ -1,0 +1,7 @@
+<infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
+
+dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO); //issue with <infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
+ is the issue here? multiple_cmds()
+
+
+ <ifni cat | <infile cat <-- Def lost memory,  filename 1 occurence

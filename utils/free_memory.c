@@ -63,7 +63,7 @@ void	delete_cmd(void *arg)
 	if (command->args)
 		free_args(command->args);
 	// if (command->in_redirects.file_name)
-    //     free(command->in_redirects.file_name);
+    //     free(command->in_redirects.file_name); // is this the issue for <nope cat | infile
 	command = set_pt_to_null(command);
 }
 
