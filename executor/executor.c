@@ -414,51 +414,57 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
     return (0);
 }
 
-// int in_redirections(t_minishell *m)
-// {
-//     t_command *cmd;
-//     t_list *temp;
-//     temp = NULL;
+int in_redirections(t_minishell *m)
+{
+    t_command *cmd;
+    t_list *temp;
+    temp = NULL;
 
-//     temp = m->clist;
-//     while(temp)
-//     {
-//         cmd = (t_command *) temp->value;
-//         if (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) // add heredocs -this is a case for <file |echo hallo
-//         {
-//             printf("Byebye!\n");
-//             //exit(42);
-//         }
-//         printf("------Entered in redir loop for process N %d---------\n", m->pipe_n);
-//         write(1, "Entered in_redir function\n", 27);
+    temp = m->clist;
+    while(temp)
+    {
+        cmd = (t_command *) temp->value;
+        if (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) // add heredocs -this is a case for <file |echo hallo
+        {
+            printf("Byebye!\n");
+            //exit(42);
+        }
+        printf("------Entered in redir loop for process N %d---------\n", m->pipe_n);
+        write(1, "Entered in_redir function\n", 27);
 
-//         if (cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL) 
-//         {
-//             // check for access
-// //            if (check_file_rights(cmd->in_redirects.file_name) != 0)
-// //                perror("Cant read from input file, permission denied\n");
-//             printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
-//             write(1, "Running input redirection\n", 27);
-//             // if (!cmd->in_redirects.file_name)
-//             // {
-//             cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
-//             if (cmd->in_redirects.fd_write == -1)
-//                 perror("Cant open the file\n");
-//             if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
-//                 perror("Input IN-redirection isn't working\n");
-//             close(cmd->in_redirects.fd_write);
-//             // if (cmd->in_redirects.file_name != NULL)
-//             //     free(cmd->in_redirects.file_name);
-//             // }
-//         }
-//         if (cmd->input_redir_type == REDIRECT_HEREDOC)
-//         {
-//             here_docs(cmd, m);
-//         }
-//         temp = temp->next;
-//     }
-//     return (0);
-// }
+        if (cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL) 
+        {
+            // check for access
+//            if (check_file_rights(cmd->in_redirects.file_name) != 0)
+//                perror("Cant read from input file, permission denied\n");
+            printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
+            write(1, "Running input redirection\n", 27);
+            // if (!cmd->in_redirects.file_name)
+            // {
+            if (check_file_rights(cmd->in_redirects.file_name) == 0)
+            {
+            cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+            if (cmd->in_redirects.fd_write == -1)
+                perror("Cant open the file\n");
+            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+                perror("Input IN-redirection isn't working\n");
+            close(cmd->in_redirects.fd_write);
+            }
+            else
+                perror("Cant read from input file, permission denied\n");
+
+            // if (cmd->in_redirects.file_name != NULL)
+            //     free(cmd->in_redirects.file_name);
+            // }
+        }
+        if (cmd->input_redir_type == REDIRECT_HEREDOC)
+        {
+            here_docs(cmd, m);
+        }
+        temp = temp->next;
+    }
+    return (0);
+}
 
 int single_cmd(t_minishell *m)
 //int single_cmd(t_minishell *m)
@@ -470,8 +476,8 @@ int single_cmd(t_minishell *m)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
         printf("Is this runnign?\n");
-        //in_redirections(m);
-        in_redirections_per_cmd(m, cmd);
+        in_redirections(m);
+//        in_redirections_per_cmd(m, cmd);
 
         // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
@@ -525,8 +531,8 @@ int multiple_cmd(t_minishell *m)
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
-            //in_redirections(m);
-            in_redirections_per_cmd(m, cmd);
+            in_redirections(m);
+            // in_redirections_per_cmd(m, cmd);
             // if (current_process_id == 0 && (cmd->output_redir_type == REDIRECT_IN ))
             // {
             //     dup2(m->pipes[current_process_id][1], STDIN_FILENO);
