@@ -416,9 +416,12 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 
 int in_redirections(t_minishell *m)
 {
-    t_command *cmd;
-    t_list *temp;
+    t_command   *cmd;
+    t_list      *temp;
+    int         exit_code;
+
     temp = NULL;
+    exit_code = 1;
 
     temp = m->clist;
     while(temp)
@@ -426,7 +429,21 @@ int in_redirections(t_minishell *m)
         cmd = (t_command *) temp->value;
         if (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) // add heredocs -this is a case for <file |echo hallo
         {
-            printf("Byebye!\n");
+            // printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
+            // write(1, "Running input redirection\n", 27);
+            // // if (!cmd->in_redirects.file_name)
+            // // {
+            // if (check_file_rights(cmd->in_redirects.file_name) == 0)
+            // {
+            // cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+            // if (cmd->in_redirects.fd_write == -1)
+            //     perror("Cant open the file\n");
+            // if (dup2(cmd->in_redirects.fd_write, STDOUT_FILENO) == -1)
+            //     perror("Input IN-redirection isn't working\n");
+            // close(cmd->in_redirects.fd_write);
+            // }
+            // else
+            //     perror("Cant read from input file, permission denied\n");
             //exit(42);
         }
         printf("------Entered in redir loop for process N %d---------\n", m->pipe_n);
@@ -444,14 +461,22 @@ int in_redirections(t_minishell *m)
             if (check_file_rights(cmd->in_redirects.file_name) == 0)
             {
             cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
-            if (cmd->in_redirects.fd_write == -1)
-                perror("Cant open the file\n");
-            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
-                perror("Input IN-redirection isn't working\n");
+            if (cmd->in_redirects.fd_write == -1 || dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+                perror("Cant open the file or Input IN-redirection isn't working\n");
+            // if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+            //     perror("Input IN-redirection isn't working\n");
+            else
+                exit_code = 0;
             close(cmd->in_redirects.fd_write);
+            if (cmd->in_redirects.file_name)
+                free(cmd->in_redirects.file_name);
             }
             else
+            {
                 perror("Cant read from input file, permission denied\n");
+                if (cmd->in_redirects.file_name)
+                    free(cmd->in_redirects.file_name);
+            }
 
             // if (cmd->in_redirects.file_name != NULL)
             //     free(cmd->in_redirects.file_name);
@@ -463,25 +488,28 @@ int in_redirections(t_minishell *m)
         }
         temp = temp->next;
     }
-    return (0);
+    return (exit_code);
 }
 
 int single_cmd(t_minishell *m)
 //int single_cmd(t_minishell *m)
 {
+    int     redir_in;
     t_command *cmd = (t_command *)m->clist->value;
+
+    redir_in = 1;
     
     m->child_id[0] = fork();
     if (m->child_id[0] == 0)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
         printf("Is this runnign?\n");
-        in_redirections(m);
+        redir_in = in_redirections(m);
 //        in_redirections_per_cmd(m, cmd);
 
         // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
-        if (cmd->path == NULL)
+        if (cmd->path == NULL || redir_in != 0)
         {
             if (m->path_buf)
                 free_env(m->path_buf);
@@ -502,9 +530,9 @@ int single_cmd(t_minishell *m)
         {
             output_redirect(cmd);
         }
-        if (cmd->type != BUILTIN)
+        if (cmd->type != BUILTIN && redir_in == 0)
             execute_program(cmd->args, cmd->path, m);
-        if (cmd->type == BUILTIN)
+        if (cmd->type == BUILTIN && redir_in == 0)
         {
             printf("this is def a builtin\n");
 
@@ -519,7 +547,9 @@ int single_cmd(t_minishell *m)
 int multiple_cmd(t_minishell *m)
 {
     int current_process_id;
+    int     redir_in;
 
+    redir_in = 1;
     current_process_id = 0;
     t_command *cmd;
     t_list *tmp;
@@ -531,7 +561,7 @@ int multiple_cmd(t_minishell *m)
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
-            in_redirections(m);
+            redir_in = in_redirections(m);
             // in_redirections_per_cmd(m, cmd);
             // if (current_process_id == 0 && (cmd->output_redir_type == REDIRECT_IN ))
             // {
@@ -566,7 +596,7 @@ int multiple_cmd(t_minishell *m)
 
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
-            if (cmd->path == NULL)
+            if (cmd->path == NULL || redir_in != 0)
             {
                 
                 if (m->path_buf)
@@ -586,21 +616,23 @@ int multiple_cmd(t_minishell *m)
                 free_pipes(m);
                 exit(42);
             }
-            if (cmd->type != BUILTIN)
+            if (cmd->type != BUILTIN && redir_in == 0)
             {
                 execute_program(cmd->args, cmd->path, m);
             }
-            if (cmd->type == BUILTIN)
+            if (cmd->type == BUILTIN && redir_in == 0)
             {
             printf("this is def a builtin\n");
             if (cmd->path)
                 free(cmd->path);
-            
-
-            execute_builtins(m, cmd);
             if (cmd->in_redirects.file_name)
                 free(cmd->in_redirects.file_name);
+            execute_builtins(m, cmd);
             }
+            if (m->path_buf)
+		        free_env(m->path_buf);
+            if (cmd->path)
+                free(cmd->path);
         current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
 
@@ -722,7 +754,8 @@ int check_file_rights(char *filename)
 //    filename_path = ft_strjoin(pwd_path(), filename);
    if (access(filename, R_OK) != 0)
    {
-        // if (filename)
+        perror("Input redirection file does not exist or no permissions to read\n");
+// if (filename)
         //     free(filename);
        //free(filename);
        return(1);

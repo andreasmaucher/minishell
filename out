@@ -1,0 +1,20 @@
+Arg_vec : ls
+Path is : /usr/bin/ls
+Makefile
+README.md
+TODO
+a.out
+builtins
+executor
+file
+file2
+infile
+lexer
+main.c
+main.o
+minishell
+minishell.h
+out
+parser
+suppressions.supp
+utils
