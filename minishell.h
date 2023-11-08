@@ -278,6 +278,12 @@ void	free_args(char **args);
 int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
+void	free_arr_to_null(char **arr);
+void	free_all_the_og(t_minishell m);
+void	free_cmd_the_og(t_command *cmd);
+
+
+
 
 
 
