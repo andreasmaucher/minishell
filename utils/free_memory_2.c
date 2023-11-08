@@ -70,6 +70,12 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 
 void	free_all(t_minishell m)
 {
+	// t_command	*tmp_cmd;
+
+	// tmp_cmd = (t_command *) m.clist->value;
+
+	// if (tmp_cmd->in_redirects.file_name)
+    //     free(tmp_cmd->in_redirects.file_name);
 	if (m.line)
 		m.line = set_pt_to_null(m.line);
 	if (m.tlist)
@@ -78,4 +84,5 @@ void	free_all(t_minishell m)
 		ft_lstclear(&m.clist, delete_cmd);
 	if (m.envp)
 		ft_lstclear(&m.envp, delete_envp);
+	
 }
