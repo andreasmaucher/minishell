@@ -103,6 +103,13 @@ void	free_all(t_minishell m)
 	
 }
 
+void free_filename(char *filename)
+{
+	if (filename != NULL)
+        free(filename);
+    filename = NULL;
+}
+
 void	free_all_the_og(t_minishell m)
 {
 	if (m.line != NULL)

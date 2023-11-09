@@ -1,10 +1,26 @@
 #include "../minishell.h"
 
+// t_dict *here(void)
+// {
+//     static t_dict here;
+//     int is_init;
+
+//     if (is_init)
+//         return(&here);
+//     here = (t_dict)
+//     {
+//         .key = 0,
+//         .value = 0
+//     };
+//     reture (here);
+// }
+
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 {
     size_t	src_len;
     size_t	i;
 
+    // here()->key = 0;
     src_len = ft_strlen(src);
     if (destsize)
     {
@@ -123,13 +139,20 @@ char	*valid_path(char **path, char *argv)
     char	*correct_path;
 
     i = 0;
+    // if (argv == NULL || (!argv))
+    //     return(NULL);
+    printf("Im here\n");
+
     if (access(argv, X_OK) == 0)
         return (argv);
     while (path[i])
     {
         correct_path = join_strings(path[i], "/", argv);
         if (access(correct_path, X_OK) == 0)
+        {
+            printf("Correct path is : %s \n", correct_path);
             return (correct_path);
+        }
         else
         {
             free(correct_path);
@@ -290,7 +313,8 @@ int output_redirect(t_command *cmd)
         if (cmd->out_redirects.fd_write == -1)
             write(1, "Could not open output file\n", 40);
         dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
-        close(cmd->out_redirects.fd_write);    
+        close(cmd->out_redirects.fd_write);
+        // free_filename(cmd->out_redirects.file_name);
     }
     if (cmd->output_redir_type == REDIRECT_APPEND && cmd->args != NULL)
     {
@@ -300,7 +324,14 @@ int output_redirect(t_command *cmd)
             write(1, "Could not open output file\n", 40);
         dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
         close(cmd->out_redirects.fd_write);
+        // free_filename(cmd->out_redirects.file_name);
     }
+    if ((cmd->output_redir_type == REDIRECT_APPEND || cmd->output_redir_type == REDIRECT_OUT) && cmd->args == NULL)
+    {
+        write(1, "No cmd bro\n", 12);
+    }
+    free_filename(cmd->out_redirects.file_name);
+
     return(0);
 }
 
@@ -325,12 +356,15 @@ return (0);
 
 int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 {
-        if (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) // add heredocs -this is a case for <file |echo hallo
-        {
-            printf("Byebye!\n");
-        }
+        // if (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) // add heredocs -this is a case for <file |echo hallo
+        // {
+        //     free_filename(cmd->in_redirects.file_name);
+        //     printf("Byebye!\n");
+        // }
+        // printf("cmd-args[0] are : %s\n", cmd->args[0]);
+
         write(1, "Entered in_redir function\n", 27);
-        if (cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL) 
+        if (cmd->input_redir_type == REDIRECT_IN) //&& cmd->args != NULL
         {
             printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
             write(1, "Running input redirection\n", 27);
@@ -348,11 +382,10 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
                 perror("Cant read from input file, permission denied\n");
                 if (cmd->in_redirects.file_name)
                 {
-                    if (cmd->in_redirects.file_name != NULL)
-                    {
-                        free(cmd->in_redirects.file_name);
-                        cmd->in_redirects.file_name = NULL;
-                    }
+                    printf("Im here!!\n");
+
+
+                    free_filename(cmd->in_redirects.file_name);
                     if (m->path_buf)
                         free_env(m->path_buf);
                     if (cmd->path != NULL)
@@ -366,8 +399,9 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 		                ft_lstclear(&m->tlist, delete_token);
 	                if (m->clist)
 		                ft_lstclear(&m->clist, delete_cmd);
-	                    if (m->envp)
-		            ft_lstclear(&m->envp, delete_envp);
+	                if (m->envp)
+		                ft_lstclear(&m->envp, delete_envp);
+                    free_pipes(m);
                     free(m->child_id);
                     exit(42);
                 }
@@ -454,14 +488,17 @@ int single_cmd(t_minishell *m)
 
         // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        printf("cmd->path is %s", cmd->path);
         if (cmd->path == NULL)
         {
             // t_command	*tmp_cmd;
 
 	        // tmp_cmd = (t_command *) m->clist->value;
+            free_filename(cmd->in_redirects.file_name);
+            free_filename(cmd->out_redirects.file_name);
 
-	        if (cmd->in_redirects.file_name != NULL)
-                free(cmd->in_redirects.file_name);
+	        // if (cmd->in_redirects.file_name != NULL)
+            //     free(cmd->in_redirects.file_name);
             if (m->path_buf)
                 free_env(m->path_buf);
             if (cmd->path != NULL)
@@ -485,17 +522,18 @@ int single_cmd(t_minishell *m)
             output_redirect(cmd);
         }
         if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd->path, m);
+            execute_program(cmd->args, cmd, m);
         if (cmd->type == BUILTIN)
         {
             printf("this is def a builtin\n");
 
             execute_builtins(m, cmd);
         }
-           
     }
-    if (cmd->in_redirects.file_name)
-                free(cmd->in_redirects.file_name);
+    free_filename(cmd->in_redirects.file_name);
+    free_filename(cmd->out_redirects.file_name);
+
+
     return (0);
 }
 
@@ -558,42 +596,17 @@ int multiple_cmd(t_minishell *m)
         m->child_id[current_process_id] = fork();
         if (m->child_id[current_process_id] == 0)
         {
-            // in_redirections(m);
             cmd->path = NULL;
-            //in_redirections_per_cmd(m, cmd);
-            // if (current_process_id == 0 || cmd->output_redir_type == REDIRECT_IN)
-
             if (current_process_id == 0 )
             {
                 
-                //dup2(m->pipes[current_process_id][0], STDIN_FILENO);
                 dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-                // if (cmd->output_redir_type == REDIRECT_IN)
-                //     in_redirections_per_cmd(m, cmd);
-                //in_redirections_per_cmd(m, cmd);
-
-                //close_pipes(m);
-
-                //dup2(m->pipes[current_process_id + 1][0], STDIN_FILENO);
             }
-            // if (current_process_id == 0 && (cmd->output_redir_type != REDIRECT_IN ))
-            // else if (current_process_id == 0 && (cmd->output_redir_type != REDIRECT_IN ))
-            // {
-            //     dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-            //     close_pipes(m);
-            // }
             else if (current_process_id == m->pipe_n )
             {
-                // if (cmd->output_redir_type == REDIRECT_IN)
-                //     in_redirections_per_cmd(m, cmd);
-                // else
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
-                if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-                    output_redirect(cmd);
-                //in_redirections_per_cmd(m, cmd);
-
-                // close_pipes(m);
-
+                // if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+                //     output_redirect(cmd);
             }
             // else if (current_process_id == m->pipe_n && (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND))
             // {
@@ -610,30 +623,20 @@ int multiple_cmd(t_minishell *m)
             else
             {
                 write(1, "are we entering this dup2 condition\n", 37);
-                // if (cmd->output_redir_type == REDIRECT_IN)
-                //     in_redirections_per_cmd(m, cmd);
-                // else
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO); //issue with <infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
                 dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-                //in_redirections_per_cmd(m, cmd);
-
-                // close_pipes(m);
             }
-            // if (cmd->output_redir_type == REDIRECT_IN)
             in_redirections_per_cmd(m, cmd);
+            output_redirect(cmd);
             close_pipes(m);
-
             printf("------Child process N %d running---------\n", current_process_id);
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
             if (cmd->path == NULL)
             {
-                
-                // free_all_the_og(*m);
-                // free_cmd_the_og(cmd);
-
-                if (cmd->in_redirects.file_name != NULL)
-                    free(cmd->in_redirects.file_name);
-
+                // free_filename(cmd->in_redirects.file_name);
+                // free_filename(cmd->out_redirects.file_name);
+                // if (cmd->in_redirects.file_name != NULL)
+                //     free(cmd->in_redirects.file_name);
                 if (m->path_buf)
                     free_env(m->path_buf);
                 if (cmd->path != NULL)
@@ -654,32 +657,26 @@ int multiple_cmd(t_minishell *m)
                 exit(42);
             }
             if (cmd->type != BUILTIN)
-            {
-                execute_program(cmd->args, cmd->path, m);
-            }
+                execute_program(cmd->args, cmd, m);
             if (cmd->type == BUILTIN)
             {
             printf("this is def a builtin\n");
             if (cmd->path)
                 free(cmd->path);
-            
-
             execute_builtins(m, cmd);
-            if (cmd->in_redirects.file_name)
-                free(cmd->in_redirects.file_name);
             }
         current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
-
-        // if (cmd->in_redirects.file_name)
-        //     free(cmd->in_redirects.git reset --hard HEAD~1
-        // previous location of clearing filenames
-
         printf("------Child process N %d finished---------\n", current_process_id);
+        // free_filename(cmd->in_redirects.file_name);
+        // free_filename(cmd->out_redirects.file_name);
+        free_filename(cmd->in_redirects.file_name);
+        free_filename(cmd->out_redirects.file_name);
         tmp = tmp->next;//m->clist = m->clist->next;
         current_process_id++;
     }
-    free_in_redirects_file(m);
+    // free_filename(cmd->in_redirects.file_name);
+    // free_filename(cmd->out_redirects.file_name);
 
     
     close_pipes(m);
@@ -694,7 +691,7 @@ int free_execve_fail(t_minishell *m)
     return(0);
 }
 
-int	execute_program(char **arg_vec, char *path, t_minishell *m)
+int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m)
 {
     int i;
 
@@ -711,13 +708,13 @@ int	execute_program(char **arg_vec, char *path, t_minishell *m)
         printf("Arg_vec : %s\n", arg_vec[i]);
         i++;
     }
-    printf("Path is : %s\n", path);
+    printf("Path is : %s\n", cmd->path);
 
-    if (execve(path, arg_vec, NULL) == -1)
+    if (execve(cmd->path, arg_vec, NULL) == -1)
     {
         (void)m;
-        if (path)
-            free(path);
+        if (cmd->path)
+            free(cmd->path);
         if (arg_vec)
             free_env(arg_vec);
         free_all(*m);
@@ -725,7 +722,8 @@ int	execute_program(char **arg_vec, char *path, t_minishell *m)
             free(m->path_buf);
         if (m->child_id)
             free(m->child_id);
-
+        free_filename(cmd->in_redirects.file_name);
+        free_filename(cmd->out_redirects.file_name);
         free_pipes(m);
         perror("Could not execute");
         exit(1);
