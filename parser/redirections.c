@@ -18,17 +18,17 @@ that increments with each call;
 converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename
 */
-static char	*create_heredoc_file(void)
-{
-	static int	index;
-	char		*filename;
-	char		*str;
 
-	index = 0;
-	str = ft_itoa(index++);
-	filename = ft_strjoin("/tmp/.heredoc_", str);
-	return (filename);
-}
+// static char *create_heredoc_file(void)
+// {
+//     static int index = 0;
+//     char        *filename;
+//     char        *str;
+
+//     str = ft_itoa(index++);
+//     filename = ft_strjoin(".heredoc_", str);
+//     return(filename);
+// }
 
 /* e.g. < for input redirection: wc -l < file2 returns the amount of words 
 in one file
@@ -52,8 +52,9 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 	if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
 	{
 		free_filename(tmp_cmd->in_redirects.stop_heredoc);
+		free_filename(tmp_cmd->in_redirects.new_heredoc_file);
 		tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
-		tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
+		//tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
 		tmp_cmd->in_redirects.file_name = NULL;
 	}
 	else if (tmp_cmd->input_redir_type == REDIRECT_IN)

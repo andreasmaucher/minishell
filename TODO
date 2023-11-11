@@ -1,7 +1,38 @@
-<infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
 
-dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO); //issue with <infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
- is the issue here? multiple_cmds()
+ List of issues for parser/lexer
+
+ 1. redirections without command
+ "<infile" ,  "<<infile" , "<infile <infile" or ">out" or "> out >> out" 
+ if no cmd is specified , just redirections or heredocs, can we initiate the cmd variables, like cmd->args or cmd->args[0] to NULL?
+ Otherwise i am not freeing all the memory and getting invalid reads
 
 
- <ifni cat | <infile cat <-- Def lost memory,  filename 1 occurence
+ 2. empty line - syntax error near unexpected token
+
+ 3. setting everything, even the cmd stuff (like cmd->in_redirects.file_name) initially to NULL if it is being used
+ if this is implemented we can do a super cool logic to free everything and save a lot of lines of code
+
+ Builtins
+
+1. Clear <-TERM environment variable not set.
+
+
+List of issues for execution, redirections
+1. Multiple heredocs, signals in heredocs
+2. multiple output redirections
+
+
+ Mem leaks
+ 1. Heredocs
+
+
+Issues already fixed
+ 1. "< ls"
+ fixed, everything freed
+
+
+ What is working and no mem leaks
+
+ 1. Single cmd
+ 2. Piped cmds
+ 3. Infile with single and multiple cmds.  Multiple infiles
