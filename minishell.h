@@ -265,6 +265,7 @@ char	*get_path(t_minishell *m, char *search_path);
 /* execution */
 int		executor(t_minishell m, char **envp);
 int		single_cmd(t_minishell *m, t_command *cmd);
+int		multiple_cmd(t_minishell *m);
 int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
@@ -283,6 +284,8 @@ void	free_arr_to_null(char **arr);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 void	free_filename(char *filename);
+int		restore_stdin_stdout(void);
+
 
 
 

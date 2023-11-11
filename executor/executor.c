@@ -573,12 +573,24 @@ int single_cmd(t_minishell *m, t_command *cmd)
         printf("cmd->in_redirects.file_name is %s\n", cmd->in_redirects.file_name);
 
         in_redirections_per_cmd(m, cmd);
+        if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            output_redirect(cmd);
         printf("in_redirections_per_cmd(m, cmd) finished\n");
 
         printf("cmd->path is %s\n", cmd->path);
         printf("m->path_buf is %s\n", m->path_buf[0]);
         printf("cmd->args[0] is %s\n", cmd->args[0]);
         // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
+        if (cmd->type == BUILTIN)
+        {
+            if (cmd->path != NULL)
+            {
+                free(cmd->path);
+                cmd->path = NULL;
+            }
+            printf("this is def a builtin\n");
+            execute_builtins(m, cmd);
+        }
         cmd->path = valid_path(m->path_buf, cmd->args[0]);
         
         //printf("cmd->path is %s", cmd->path);
@@ -609,17 +621,19 @@ int single_cmd(t_minishell *m, t_command *cmd)
         }
         write(1, "Cmd->path isnt NULL\n", 21);
 
-        if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-        {
-            output_redirect(cmd);
-        }
+        
         if (cmd->type != BUILTIN)
             execute_program(cmd->args, cmd, m);
-        if (cmd->type == BUILTIN)
-        {
-            printf("this is def a builtin\n");
-            execute_builtins(m, cmd);
-        }
+        // if (cmd->type == BUILTIN)
+        // {
+        //     if (cmd->path != NULL)
+        //     {
+        //         free(cmd->path);
+        //         cmd->path = NULL;
+        //     }
+        //     printf("this is def a builtin\n");
+        //     execute_builtins(m, cmd);
+        // }
     }
     free_filename(cmd->in_redirects.file_name);
     free_filename(cmd->out_redirects.file_name);
@@ -763,16 +777,11 @@ int multiple_cmd(t_minishell *m)
         {
             cmd->path = NULL;
             if (current_process_id == 0 )
-            {
-                
                 dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-            }
             else if (current_process_id == m->pipe_n )
-            {
                 dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
                 // if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
                 //     output_redirect(cmd);
-            }
             else
             {
                 write(1, "are we entering this dup2 condition\n", 37);
@@ -961,46 +970,24 @@ int executor(t_minishell m, char **envp)
     t_command *cmd;
     cmd = NULL;
 
-    int	old_stdin;
-    int	old_stdout;
-    printf("m.pipe_n is %d\n", m.pipe_n);
     if (m.pipe_n == 0)
     {
-        m.forked = 1;
         while(m.clist)
         {
-        printf("Entered m.clist loop\n");
         cmd = (t_command *) m.clist->value;
         if (m.pipe_n == 0 && cmd->type == BUILTIN)
         {
-            printf("Entering m.pipe_n=0 and Builtin condition statement\n");
             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-            {
-                old_stdin = dup(STDIN_FILENO);
-                old_stdout = dup(STDOUT_FILENO);
                 output_redirect(cmd);
-            }
             execute_single_builtins(&m, cmd);
-            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-            {
-                dup2(old_stdin, STDIN_FILENO);
-                close(old_stdin);
-                dup2(old_stdout, STDOUT_FILENO);
-                close(old_stdout);  
-            }
         }
         else
-        {
-            printf("Entering single_cmd ()\n");
             single_cmd(&m, cmd);
-        }
         m.clist = m.clist->next;
         }
     }
     if (m.pipe_n > 0)
     {
-        m.forked = 1;
-        
         initialize_pipes(&m);
         multiple_cmd(&m);
    		free_pipes(&m);
@@ -1012,3 +999,66 @@ int executor(t_minishell m, char **envp)
     free(m.child_id);
     return (0);
 }
+
+//old executor
+
+// int executor(t_minishell m, char **envp)
+// {
+//     m.pipe_n = command_count(m.tlist) - 1;
+//     m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
+//     m.path_buf = find_path_executor(envp);
+
+//     t_command *cmd;
+//     cmd = NULL;
+
+//     int	old_stdin;
+//     int	old_stdout;
+//     printf("m.pipe_n is %d\n", m.pipe_n);
+//     if (m.pipe_n == 0)
+//     {
+//         m.forked = 1;
+//         while(m.clist)
+//         {
+//         printf("Entered m.clist loop\n");
+//         cmd = (t_command *) m.clist->value;
+//         if (m.pipe_n == 0 && cmd->type == BUILTIN)
+//         {
+//             printf("Entering m.pipe_n=0 and Builtin condition statement\n");
+//             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+//             {
+//                 old_stdin = dup(STDIN_FILENO);
+//                 old_stdout = dup(STDOUT_FILENO);
+//                 output_redirect(cmd);
+//             }
+//             execute_single_builtins(&m, cmd);
+//             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+//             {
+//                 dup2(old_stdin, STDIN_FILENO);
+//                 close(old_stdin);
+//                 dup2(old_stdout, STDOUT_FILENO);
+//                 close(old_stdout);  
+//             }
+//         }
+//         else
+//         {
+//             printf("Entering single_cmd ()\n");
+//             single_cmd(&m, cmd);
+//         }
+//         m.clist = m.clist->next;
+//         }
+//     }
+//     if (m.pipe_n > 0)
+//     {
+//         m.forked = 1;
+        
+//         initialize_pipes(&m);
+//         multiple_cmd(&m);
+//    		free_pipes(&m);
+//         // wait_processes(&m); // Here is a traditional way to place wait
+//     }
+//     wait_processes(&m); // Here is a traditional way to place wait
+//     if (m.path_buf)
+// 		free_env(m.path_buf);
+//     free(m.child_id);
+//     return (0);
+// }

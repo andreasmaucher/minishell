@@ -14,6 +14,28 @@
 
 int g_exit_code;
 
+int restore_stdin_stdout(void)
+{
+	int default_stdin; // Duplicate stdin (file descriptor 0)
+    int default_stdout; // Duplicate stdout (file descriptor 1)
+	
+	default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
+    default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
+	if (dup2(default_stdin, 0) == -1 || dup2(default_stdout, 1) == -1)
+    {
+        perror("Failed to restore stdin or stdout");
+        return (1);
+    }
+	close(default_stdin);
+	// if (dup2(default_stdout, 1) == -1)
+    // {
+    //     perror("Failed to restore stdout");
+    //     return (1);
+    // }
+	close(default_stdout);
+	return (0);
+}
+
 /* 
 shell is only created if there is exactly one argument
 (name of the executable);
@@ -26,35 +48,31 @@ that there's no more input and closes the shell
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
+	// int default_stdin; // Duplicate stdin (file descriptor 0)
+    // int default_stdout; // Duplicate stdout (file descriptor 1)
 
 	(void)av;
 	if (ac != 1)
 		return (1);
 	init_minishell_struct_and_signals(&m, envp);
-	int default_stdin; // Duplicate stdin (file descriptor 0)
-    int default_stdout; // Duplicate stdout (file descriptor 1)
-
-	// t_command *cmd;
-    // t_list *tmp;
-    
-    // cmd = NULL;
 	while(1)
 	{
-		//!input not being restored after command "<out98 cat"
-		default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
-    	default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
-		if (dup2(default_stdin, 0) == -1)
-        {
-            perror("Failed to restore stdin");
-            return (1);
-        }
-		close(default_stdin);
-		if (dup2(default_stdout, 1) == -1)
-        {
-            perror("Failed to restore stdout");
-            return (1);
-        }
-		close(default_stdout);
+		if (restore_stdin_stdout() != 0)
+			exit(42);
+		// default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
+    	// default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
+		// if (dup2(default_stdin, 0) == -1)
+        // {
+        //     perror("Failed to restore stdin");
+        //     return (1);
+        // }
+		// close(default_stdin);
+		// if (dup2(default_stdout, 1) == -1)
+        // {
+        //     perror("Failed to restore stdout");
+        //     return (1);
+        // }
+		// close(default_stdout);
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
@@ -63,7 +81,6 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		
 		executor(m, envp);
 		if (m.line)
 			m.line = set_pt_to_null(m.line);

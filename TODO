@@ -36,3 +36,4 @@ Issues already fixed
  1. Single cmd
  2. Piped cmds
  3. Infile with single and multiple cmds.  Multiple infiles
+ 4. single heredocs
