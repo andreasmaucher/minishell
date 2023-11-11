@@ -30,10 +30,14 @@ void	*ft_memset(void *s, int c, size_t n)
 to zero by using memset;create libaries for the envp fields, one containing
 the full information and one only the parameter name, which is later being
 used as a search keyword */
-void	init_minishell_struct_and_signals(t_minishell *m, char **envp)
+t_command *init_minishell_struct_and_signals(t_minishell *m, char **envp)
 {
+    t_command *cmd;
+
+	cmd = NULL; // make a function to set everything in a cmd to null
 	init_signals();
 	ft_memset(m, 0, sizeof(t_minishell));
 	g_exit_code = 0;
 	m->envp = create_envp_list(envp);
+	return (cmd);
 }

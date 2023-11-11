@@ -46,12 +46,14 @@ void	free_arr_to_null(char **arr)
 	int	i;
 
 	i = 0;
+	
 	while (arr[i] != NULL)
 	{
 		free(arr[i]);
 		i++;
 	}
 	free(arr);
+	
 	arr = NULL;
 }
 
@@ -108,6 +110,13 @@ void free_filename(char *filename)
 	if (filename != NULL)
         free(filename);
     filename = NULL;
+}
+
+void free_to_null(char *var)
+{
+	if (var || var != NULL)
+        free(var);
+    var = NULL;
 }
 
 void	free_all_the_og(t_minishell m)

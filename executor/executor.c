@@ -390,7 +390,6 @@ int out_redirections(t_minishell *m)
 
 int output_redirect(t_command *cmd)
 {
-    
     if (cmd->output_redir_type == REDIRECT_OUT && cmd->args != NULL)
     {
         write(1, "Output redirection function running\n", 37);
@@ -416,7 +415,6 @@ int output_redirect(t_command *cmd)
         write(1, "No cmd bro\n", 12);
     }
     free_filename(cmd->out_redirects.file_name);
-
     return(0);
 }
 
@@ -558,88 +556,70 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 //     return (0);
 // }
 
-int single_cmd(t_minishell *m, t_command *cmd)
-//int single_cmd(t_minishell *m)
+void no_cmd(t_command *cmd, t_minishell *m)
 {
-    // t_command *cmd = (t_command *)m->clist->value;
-    
-    m->child_id[0] = fork();
-    if (m->child_id[0] == 0)
-    {
-        printf("------Child process N %d running---------\n", m->pipe_n);
-        printf("Is this runnign?\n");
-        //in_redirections(m);
-        cmd->path = NULL;
-        printf("cmd->in_redirects.file_name is %s\n", cmd->in_redirects.file_name);
+if (cmd->path == NULL)
+{
+    write(1, "Cmd->path is NULL\n", 19);
+    free_filename(cmd->in_redirects.file_name);
+    free_filename(cmd->out_redirects.file_name);
+    free_filename(cmd->in_redirects.new_heredoc_file);
+    free_filename(cmd->in_redirects.stop_heredoc);
+    // free_arr_to_null(m->path_buf); 
+    if (m->path_buf)
+        free_env(m->path_buf);
+    free_to_null(cmd->path);
+    free_to_null(m->line);
+	if (m->tlist)
+		ft_lstclear(&m->tlist, delete_token);
+	if (m->clist)
+		ft_lstclear(&m->clist, delete_cmd);
+	if (m->envp)
+		ft_lstclear(&m->envp, delete_envp);
+    //m->line = set_pt_to_null(m->line);//free(m->child_id);
+    free(m->child_id);
+    exit(42);
+}
+}
 
-        in_redirections_per_cmd(m, cmd);
-        if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-            output_redirect(cmd);
-        printf("in_redirections_per_cmd(m, cmd) finished\n");
-
-        printf("cmd->path is %s\n", cmd->path);
-        printf("m->path_buf is %s\n", m->path_buf[0]);
-        printf("cmd->args[0] is %s\n", cmd->args[0]);
-        // cmd->path = validate_path(m->path_buf, cmd->args[0], envp);
-        if (cmd->type == BUILTIN)
-        {
-            if (cmd->path != NULL)
-            {
-                free(cmd->path);
-                cmd->path = NULL;
-            }
-            printf("this is def a builtin\n");
-            execute_builtins(m, cmd);
-        }
-        cmd->path = valid_path(m->path_buf, cmd->args[0]);
-        
-        //printf("cmd->path is %s", cmd->path);
-        if (cmd->path == NULL)
-        {
-            write(1, "Cmd->path is NULL\n", 19);
-            free_filename(cmd->in_redirects.file_name);
-            free_filename(cmd->out_redirects.file_name);
-       		free_filename(cmd->in_redirects.new_heredoc_file);
-            free_filename(cmd->in_redirects.stop_heredoc);
-            if (m->path_buf)
-                free_env(m->path_buf);
-            if (cmd->path != NULL)
-            {
-                free(cmd->path);
-                cmd->path = NULL;
-            }
-            if (m->line)
-		        m->line = set_pt_to_null(m->line);
-	        if (m->tlist)
-		        ft_lstclear(&m->tlist, delete_token);
-	        if (m->clist)
-		        ft_lstclear(&m->clist, delete_cmd);
-	        if (m->envp)
-		        ft_lstclear(&m->envp, delete_envp);
-            free(m->child_id);
-            exit(42);
-        }
-        write(1, "Cmd->path isnt NULL\n", 21);
-
-        
-        if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd, m);
-        // if (cmd->type == BUILTIN)
-        // {
-        //     if (cmd->path != NULL)
-        //     {
-        //         free(cmd->path);
-        //         cmd->path = NULL;
-        //     }
-        //     printf("this is def a builtin\n");
-        //     execute_builtins(m, cmd);
-        // }
-    }
+void free_all_filenames(t_command *cmd)
+{
     free_filename(cmd->in_redirects.file_name);
     free_filename(cmd->out_redirects.file_name);
     free_filename(cmd->in_redirects.new_heredoc_file);
     free_filename(cmd->in_redirects.new_heredoc_file);
     free_filename(cmd->in_redirects.stop_heredoc);
+}
+
+
+
+int single_cmd(t_minishell *m, t_command *cmd)
+{    
+    m->child_id[0] = fork();
+    if (m->child_id[0] == 0)
+    {
+        printf("------Child process N %d running---------\n", m->pipe_n);
+        cmd->path = NULL;
+        printf("cmd->in_redirects.file_name is %s\n", cmd->in_redirects.file_name);
+        in_redirections_per_cmd(m, cmd);
+        if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            output_redirect(cmd);
+        if (cmd->type == BUILTIN)
+        {
+            //free_to_null(cmd->path);
+            write(1, "entering execute builtins\n", 27);
+            //execute_builtins(m, cmd);
+            execute_single_builtins(m, cmd);
+            write(1, "entering execute builtins\n", 27);
+
+        }
+        cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        if (cmd->path == NULL)
+            no_cmd(cmd, m);
+        if (cmd->type != BUILTIN)
+            execute_program(cmd->args, cmd, m);
+    }
+    free_all_filenames(cmd);
     return (0);
 }
 
@@ -760,80 +740,84 @@ int single_cmd(t_minishell *m, t_command *cmd)
 // old piping
 
 
-int multiple_cmd(t_minishell *m)
+int multiple_cmd(t_minishell *m, t_command *cmd)
 {
-    int current_process_id;
+    m->forked = 1;
 
-    current_process_id = 0;
-    t_command *cmd;
-    t_list *tmp;
-    tmp = m->clist;
-    cmd = NULL;
-    while(tmp)//(m->clist)
+    // int current_process_id;
+
+    // current_process_id = 0;
+    // t_command *cmd;
+    // t_list *tmp;
+    // tmp = m->clist;
+    // cmd = NULL;
+    // while(tmp)//(m->clist)
+    // {
+    //     cmd = (t_command *) tmp->value;//m->clist->value;
+    m->child_id[m->current_process_id] = fork();
+
+    if (m->child_id[m->current_process_id] == 0)
     {
-        cmd = (t_command *) tmp->value;//m->clist->value;
-        m->child_id[current_process_id] = fork();
-        if (m->child_id[current_process_id] == 0)
-        {
-            cmd->path = NULL;
-            if (current_process_id == 0 )
-                dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
-            else if (current_process_id == m->pipe_n )
-                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO);
+        cmd->path = NULL;
+        if (m->current_process_id == 0 )
+            dup2(m->pipes[m->current_process_id][1], STDOUT_FILENO);
+        else if (m->current_process_id == m->pipe_n )
+            dup2(m->pipes[m->current_process_id - 1][0], STDIN_FILENO);
                 // if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
                 //     output_redirect(cmd);
-            else
+        else
+        {
+            write(1, "are we entering this dup2 condition\n", 37);
+            dup2(m->pipes[m->current_process_id - 1][0], STDIN_FILENO); //issue with <infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
+            dup2(m->pipes[m->current_process_id][1], STDOUT_FILENO);
+        }
+        in_redirections_per_cmd(m, cmd);
+        output_redirect(cmd);
+        close_pipes(m);
+        printf("------Child process N %d running---------\n", m->current_process_id);
+        cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        if (cmd->path == NULL)
+        {
+            if (m->path_buf)
+                free_env(m->path_buf);
+            if (cmd->path != NULL)
             {
-                write(1, "are we entering this dup2 condition\n", 37);
-                dup2(m->pipes[current_process_id - 1][0], STDIN_FILENO); //issue with <infile cat | <main.c cat <-- displays the contents of the 1st file, not the second one as it should
-                dup2(m->pipes[current_process_id][1], STDOUT_FILENO);
+                free(cmd->path);
+                cmd->path = NULL;
             }
-            in_redirections_per_cmd(m, cmd);
-            output_redirect(cmd);
-            close_pipes(m);
-            printf("------Child process N %d running---------\n", current_process_id);
-            cmd->path = valid_path(m->path_buf, cmd->args[0]);
-            if (cmd->path == NULL)
-            {
-                if (m->path_buf)
-                    free_env(m->path_buf);
-                if (cmd->path != NULL)
-                {
-                    free(cmd->path);
-                    cmd->path = NULL;
-                }
-                if (m->line)
-		            m->line = set_pt_to_null(m->line);
-	            if (m->tlist)
-		            ft_lstclear(&m->tlist, delete_token);
-	            if (m->clist)
-		            ft_lstclear(&m->clist, delete_cmd); ////!!!!
-	            if (m->envp)
-		            ft_lstclear(&m->envp, delete_envp);
-                free(m->child_id);
-                free_pipes(m);
-                exit(42);
-            }
-            if (cmd->type != BUILTIN)
-                execute_program(cmd->args, cmd, m);
-            if (cmd->type == BUILTIN)
-            {
+            if (m->line)
+		        m->line = set_pt_to_null(m->line);
+	        if (m->tlist)
+		        ft_lstclear(&m->tlist, delete_token);
+	        if (m->clist)
+		        ft_lstclear(&m->clist, delete_cmd); ////!!!!
+	        if (m->envp)
+		        ft_lstclear(&m->envp, delete_envp);
+            free(m->child_id);
+            free_pipes(m);
+            exit(42);
+        }
+        if (cmd->type != BUILTIN)
+            execute_program(cmd->args, cmd, m);
+        if (cmd->type == BUILTIN)
+        {
             printf("this is def a builtin\n");
             if (cmd->path)
                 free(cmd->path);
             execute_builtins(m, cmd);
-            }
-        current_process_id++; //? can i delete this since it just runs in the child who already finished
         }
-        printf("------Child process N %d finished---------\n", current_process_id);
-        free_filename(cmd->in_redirects.file_name);
-        free_filename(cmd->out_redirects.file_name);
-        tmp = tmp->next;//m->clist = m->clist->next;
-        current_process_id++;
+        //m->current_process_id++; //? can i delete this since it just runs in the child who already finished
     }
-    close_pipes(m);
+
+    printf("------Child process N %d finished---------\n", m->current_process_id);
+    free_filename(cmd->in_redirects.file_name);
+    free_filename(cmd->out_redirects.file_name);
+        //tmp = tmp->next;//m->clist = m->clist->next;
+    m->current_process_id++;
+    // close_pipes(m);
     return (0);
 }
+
 // can delete or rewrite
 int free_execve_fail(t_minishell *m)
 {
@@ -944,59 +928,91 @@ int check_file_rights(char *filename)
 }
 
 
-void	term_processes(t_minishell m)
+void	term_processes(t_minishell *m)
 {
 	int	j;
 
 	j = 0;
-	if (m.forked == 1)
+	if (m->forked == 1)
 	{
-		while (j <= m.pipe_n)
+		while (j <= m->pipe_n)
 		{
-			kill(m.child_id[j], SIGTERM);
+			kill(m->child_id[j], SIGTERM);
 			j++;
 		}
+        m->forked = 0;
 	}
-    m.forked =0;
+}
+
+int init_executor(t_minishell *m, char **envp)
+{
+    m->current_process_id = 0;
+    m->pipe_n = command_count(m->tlist) - 1;
+    m->child_id = malloc(sizeof(int) * (m->pipe_n +1));
+    m->path_buf = find_path_executor(envp);
+    if (m->pipe_n > 0)
+    {
+        initialize_pipes(m);
+        m->forked = 1;
+    }
+    return (0);
+}
+
+int exit_executor(t_minishell *m)
+{
+    if (m->pipe_n > 0)
+    {
+        close_pipes(m);
+        free_pipes(m);
+    }
+    wait_processes(m); // Here is a traditional way to place wait
+    if (m->path_buf)
+		free_env(m->path_buf);
+    free(m->child_id);
+    return (0);
 }
 
 
-int executor(t_minishell m, char **envp)
+
+int executor(t_minishell m, char **envp, t_command *cmd)
 {
-    m.pipe_n = command_count(m.tlist) - 1;
-    m.child_id = malloc(sizeof(int) * (m.pipe_n +1));
-    m.path_buf = find_path_executor(envp);
-
-    t_command *cmd;
-    cmd = NULL;
-
-    if (m.pipe_n == 0)
+    t_list *tmp;
+    int	old_stdin;
+    int	old_stdout;
+    
+    init_executor(&m, envp);
+    tmp = m.clist;
+    while(tmp)
     {
-        while(m.clist)
+        cmd = (t_command *) tmp->value;
+        if (m.pipe_n == 0)
         {
-        cmd = (t_command *) m.clist->value;
-        if (m.pipe_n == 0 && cmd->type == BUILTIN)
-        {
+            if (cmd->type == BUILTIN)
+            {
             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            {
+                old_stdin = dup(STDIN_FILENO);
+                old_stdout = dup(STDOUT_FILENO);
                 output_redirect(cmd);
+            }
             execute_single_builtins(&m, cmd);
+            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            {
+                dup2(old_stdin, STDIN_FILENO);
+                close(old_stdin);
+                dup2(old_stdout, STDOUT_FILENO);
+                close(old_stdout);  
+            }
+            }
+            else
+                single_cmd(&m, cmd);
         }
-        else
-            single_cmd(&m, cmd);
-        m.clist = m.clist->next;
-        }
-    }
-    if (m.pipe_n > 0)
-    {
-        initialize_pipes(&m);
-        multiple_cmd(&m);
-   		free_pipes(&m);
+        if (m.pipe_n > 0)
+            multiple_cmd(&m, cmd);
         // wait_processes(&m); // Here is a traditional way to place wait
+        tmp = tmp->next;
     }
-    wait_processes(&m); // Here is a traditional way to place wait
-    if (m.path_buf)
-		free_env(m.path_buf);
-    free(m.child_id);
+    exit_executor(&m);
     return (0);
 }
 

@@ -24,17 +24,29 @@ int restore_stdin_stdout(void)
 	if (dup2(default_stdin, 0) == -1 || dup2(default_stdout, 1) == -1)
     {
         perror("Failed to restore stdin or stdout");
-        return (1);
+        exit (42);
     }
 	close(default_stdin);
-	// if (dup2(default_stdout, 1) == -1)
-    // {
-    //     perror("Failed to restore stdout");
-    //     return (1);
-    // }
 	close(default_stdout);
 	return (0);
 }
+
+void free_lists(t_minishell *m)
+{
+	if (m->tlist)
+		ft_lstclear(&m->tlist, delete_token);
+	if (m->clist)
+		ft_lstclear(&m->clist, delete_cmd);
+}
+
+void free_memory_for_next_line(t_minishell *m)
+{
+	if (m->line)
+		m->line = set_pt_to_null(m->line);
+	free_lists(m);
+	term_processes(m); // is this needed?
+}
+
 
 /* 
 shell is only created if there is exactly one argument
@@ -48,57 +60,24 @@ that there's no more input and closes the shell
 int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
-	// int default_stdin; // Duplicate stdin (file descriptor 0)
-    // int default_stdout; // Duplicate stdout (file descriptor 1)
+	t_command *cmd;
 
 	(void)av;
 	if (ac != 1)
 		return (1);
-	init_minishell_struct_and_signals(&m, envp);
+	cmd = init_minishell_struct_and_signals(&m, envp);
 	while(1)
 	{
 		if (restore_stdin_stdout() != 0)
 			exit(42);
-		// default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
-    	// default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
-		// if (dup2(default_stdin, 0) == -1)
-        // {
-        //     perror("Failed to restore stdin");
-        //     return (1);
-        // }
-		// close(default_stdin);
-		// if (dup2(default_stdout, 1) == -1)
-        // {
-        //     perror("Failed to restore stdout");
-        //     return (1);
-        // }
-		// close(default_stdout);
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
-		//printf("Passed m.line\n");
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		executor(m, envp);
-		if (m.line)
-			m.line = set_pt_to_null(m.line);
-		if (m.tlist)
-			ft_lstclear(&m.tlist, delete_token);
-		if (m.clist)
-			ft_lstclear(&m.clist, delete_cmd);
-		//if (m.child_id)
-		// tmp = m.clist;
-		// while(tmp)//(m->clist)
-    	// {
-        // cmd = (t_command *) tmp->value;//m->clist->value;
-		// if (cmd->in_redirects.file_name)
-        //     free(cmd->in_redirects.file_name);
-		// tmp = tmp->next;
-		// }
-
-		//printf("End of main M.line is :|%s|\n", m.line);
-		term_processes(m); // is this needed?
+		executor(m, envp, cmd);
+		free_memory_for_next_line(&m);
 	}
 }

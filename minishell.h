@@ -120,6 +120,7 @@ typedef struct s_minishell
 	int					stdin_original;
 	int					stdout_original;
 	int					forked;
+	int					current_process_id;
 }	t_minishell;
 
 /* str_utils */
@@ -154,7 +155,7 @@ t_list	*parser(t_minishell m);
 char	*ft_itoa(int n);
 
 /* initialization */
-void	init_minishell_struct_and_signals(t_minishell *m, char **envp);
+t_command *init_minishell_struct_and_signals(t_minishell *m, char **envp);
 void	*ft_memset(void *s, int c, size_t n);
 void	init_signals(void);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
@@ -263,16 +264,16 @@ void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
 
 /* execution */
-int		executor(t_minishell m, char **envp);
+int		executor(t_minishell m, char **envp, t_command *cmd);
 int		single_cmd(t_minishell *m, t_command *cmd);
-int		multiple_cmd(t_minishell *m);
+int		multiple_cmd(t_minishell *m, t_command *cmd);
 int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
 void	free_env(char **env);
 int		free_execve_fail(t_minishell *m);
-void	term_processes(t_minishell m);
+void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
@@ -285,6 +286,10 @@ void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 void	free_filename(char *filename);
 int		restore_stdin_stdout(void);
+void	free_filename(char *filename);
+void	free_to_null(char *var);
+
+
 
 
 

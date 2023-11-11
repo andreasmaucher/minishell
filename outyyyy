@@ -1,58 +1,17 @@
-Im here
-Correct path is : /usr/bin/ls 
-Arg_vec : ls
-Path is : /usr/bin/ls
-Makefile
-README.md
-TODO
-a.out
-builtins
-executor
-f3
-file
-file2
-file3
-ile
-infile
-lexer
-main.c
-main.o
-minishell
-minishell.h
-ou12
-out
-out0
-out1
-out1234
-out2
-out3
-out33
-out4
-out44
-out444
-out5
-out6
-out7
-out76
-out77
-out98
-out99
-outfile99
-outi
-outlsls
-outlsnl
-outnl
-outnlnl
-outo
-outot
-outout1
-outtwo
-outyy
-parser
-suppressions.supp
-tuo
-utils
-=/usr/share/applications/code.desktop
+GJS_DEBUG_TOPICS=JS ERROR;JS LOG
+MAIL=mrizakov@student.42berlin.de
+USER=mrizakov
+XDG_SESSION_TYPE=x11
+GIT_ASKPASS=/usr/share/code/resources/app/extensions/git/dist/askpass.sh
+SHLVL=1
+LD_LIBRARY_PATH=/usr/lib/debug
+HOME=/home/mrizakov
+CHROME_DESKTOP=code-url-handler.desktop
+OLDPWD=/home/mrizakov/Desktop/Projects/minishell
+LESS=-R
+DESKTOP_SESSION=ubuntu
+TERM_PROGRAM_VERSION=1.84.1
+GIO_LAUNCHED_DESKTOP_FILE=/usr/share/applications/code.desktop
 ZSH=/home/mrizakov/.oh-my-zsh
 LSCOLORS=Gxfxcxdxbxegedabagacad
 GTK_MODULES=gail:atk-bridge
@@ -110,3 +69,4 @@ XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
 ZDOTDIR=/home/mrizakov
 GLIBCXX_FORCE_NEW=1
 LD_PRELOAD=/usr/libexec/valgrind/vgpreload_core-amd64-linux.so:/usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+[?2004hMyshell: ^Z[?2004l[?2004h^Z[?2004l[?2004h[KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: 
