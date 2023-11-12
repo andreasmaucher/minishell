@@ -281,13 +281,21 @@ void	free_args(char **args);
 int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
-void	free_arr_to_null(char **arr);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
-void	free_filename(char *filename);
 int		restore_stdin_stdout(void);
+void	ft_heredoc(char *filename, char *eof, t_minishell *m);
+
+
+//freeing 
+void	free_intp_to_null(int *var);
+void 	free_to_null(char *var);
+void	free_arr_to_null(char **arr);
+void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
-void	free_to_null(char *var);
+
+
+
 
 
 

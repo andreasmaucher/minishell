@@ -83,7 +83,7 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 {
 	int	ac;
 	int	i;
-
+	printf("Exit is working\n");
 	ac = arg_count(cmd->args);
 	i = 1;
 	if (ac == 1)
@@ -101,3 +101,28 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 	}
 	return (0);
 }
+
+//old exit_builtin
+
+// int	exit_builtin(t_minishell *m, t_command *cmd)
+// {
+// 	int	ac;
+// 	int	i;
+
+// 	ac = arg_count(cmd->args);
+// 	i = 1;
+// 	if (ac == 1)
+// 	{
+// 		g_exit_code = 0;
+// 		exit_shell(*m);
+// 	}
+// 	else if (ac != 1)
+// 	{
+// 		while (cmd->args[i] != NULL)
+// 		{
+// 			exit_conditions(cmd, ac, i);
+// 			i++;
+// 		}
+// 	}
+// 	return (0);
+// }

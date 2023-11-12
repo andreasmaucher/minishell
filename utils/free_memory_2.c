@@ -46,14 +46,15 @@ void	free_arr_to_null(char **arr)
 	int	i;
 
 	i = 0;
-	
-	while (arr[i] != NULL)
+	if (arr != NULL)
 	{
-		free(arr[i]);
-		i++;
+		while (arr[i] != NULL)
+		{
+			free(arr[i]);
+			i++;
+		}
+		free(arr);
 	}
-	free(arr);
-	
 	arr = NULL;
 }
 
@@ -107,12 +108,19 @@ void	free_all(t_minishell m)
 
 void free_filename(char *filename)
 {
-	if (filename != NULL)
+	if (filename || filename != NULL)
         free(filename);
     filename = NULL;
 }
 
 void free_to_null(char *var)
+{
+	if (var || var != NULL)
+        free(var);
+    var = NULL;
+}
+
+void free_intp_to_null(int *var)
 {
 	if (var || var != NULL)
         free(var);

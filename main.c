@@ -19,8 +19,8 @@ int restore_stdin_stdout(void)
 	int default_stdin; // Duplicate stdin (file descriptor 0)
     int default_stdout; // Duplicate stdout (file descriptor 1)
 	
-	default_stdin = dup(0); // Duplicate stdin (file descriptor 0)
-    default_stdout = dup(1); // Duplicate stdout (file descriptor 1)
+	default_stdin = dup(STDIN_FILENO); // Duplicate stdin (file descriptor 0)
+    default_stdout = dup(STDOUT_FILENO); // Duplicate stdout (file descriptor 1)
 	if (dup2(default_stdin, 0) == -1 || dup2(default_stdout, 1) == -1)
     {
         perror("Failed to restore stdin or stdout");

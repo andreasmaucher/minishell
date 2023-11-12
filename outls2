@@ -1,3 +1,5 @@
+Im here
+Correct path is : /usr/bin/ls 
 Arg_vec : ls
 Path is : /usr/bin/ls
 Makefile
@@ -6,37 +8,17 @@ TODO
 a.out
 builtins
 executor
-f3
 file
-file2
-file3
-ile
 infile
 lexer
 main.c
 main.o
 minishell
 minishell.h
-ou12
-out
-out0
 out1
 out2
-out3
-out33
-out4
-out44
-out444
-out5
-out6
-out7
-out77
-out98
-out99
-outi
-outo
-outyy
+outls
+outls2
 parser
 suppressions.supp
-tuo
 utils

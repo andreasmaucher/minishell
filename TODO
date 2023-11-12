@@ -18,12 +18,13 @@
 
 
 List of issues for execution, redirections
-1. Multiple heredocs, signals in heredocs
-2. multiple output redirections
+1. Multiple heredocs, signals in heredocs <<1 cat | <<2 cat doesnt work
+2. multiple output redirections - >out1 >out2  <-out1 isnt being created
 
 
  Mem leaks
  1. Heredocs
+ 2. <badfile cat | <badfile cat - leaking memoryy
 
 
 Issues already fixed

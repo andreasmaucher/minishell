@@ -1,0 +1,6 @@
+------Child process N 2 running---------
+Im here
+Correct path is : /usr/bin/cat 
+Arg_vec : cat
+Path is : /usr/bin/cat
+this is file

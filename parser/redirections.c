@@ -19,16 +19,17 @@ converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename
 */
 
-// static char *create_heredoc_file(void)
-// {
-//     static int index = 0;
-//     char        *filename;
-//     char        *str;
+static char *create_heredoc_file(void)
+{
+    static int index = 0;
+    char        *filename;
+    char        *str;
 
-//     str = ft_itoa(index++);
-//     filename = ft_strjoin(".heredoc_", str);
-//     return(filename);
-// }
+    str = ft_itoa(index++);
+    filename = ft_strjoin(".heredoc_", str);
+	free(str); //forgot to clear this malloc
+    return(filename);
+}
 
 /* e.g. < for input redirection: wc -l < file2 returns the amount of words 
 in one file
@@ -51,15 +52,15 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 	tmp_cmd->in_redirects.fd = -1;
 	if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
 	{
-		free_filename(tmp_cmd->in_redirects.stop_heredoc);
-		free_filename(tmp_cmd->in_redirects.new_heredoc_file);
+		free_to_null(tmp_cmd->in_redirects.stop_heredoc);
+		free_to_null(tmp_cmd->in_redirects.new_heredoc_file);
 		tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
-		//tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
+		tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
 		tmp_cmd->in_redirects.file_name = NULL;
 	}
 	else if (tmp_cmd->input_redir_type == REDIRECT_IN)
 	{
-		free_filename(tmp_cmd->in_redirects.file_name);
+		free_to_null(tmp_cmd->in_redirects.file_name);
 		tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
 		tmp_cmd->in_redirects.stop_heredoc = NULL;
 		tmp_cmd->in_redirects.new_heredoc_file = NULL;
