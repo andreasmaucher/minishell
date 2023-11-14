@@ -511,23 +511,64 @@ return (0);
 
 int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 {
-        if (cmd->input_redir_type == REDIRECT_IN) //&& cmd->args != NULL
+    //1. Looping until the i get to the element previous to the last, checking if the file exists. 
+    //If an invalid input file is found - error and exit
+    //2. After that, the last file is checked for rights and only it is being run
+    //Known issues - cmd->in_file->value is not a string, it is a node so freeing it is a bit tricky. We need a function which will free each node
+
+    while (cmd->in_file->next != NULL)
+    {
+        if (check_file_rights((char *)cmd->in_file->value) == 0)
         {
-            if (check_file_rights(cmd->in_redirects.file_name) == 0)
+            free(cmd->in_file->value); //!!! incorrect free, insert correct one
+        }
+        else
+        {
+            perror("Cant read from input file, permission denied\n");
+            if (cmd->in_file->value)
             {
-                cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+                //if a non-existent file is encountered, loop until the end and free any filenames along the list
+                while (cmd->in_file->next != NULL)
+                {
+                free_to_null((char *)cmd->in_file->value); //!!! incorrect free, insert correct one
+                cmd->in_file = cmd->in_file->next;
+                }
+
+                free_arr_to_null(m->path_buf);
+                free_to_null(cmd->path);
+                free_to_null(m->line);
+	            if (m->tlist)
+		            ft_lstclear(&m->tlist, delete_token);
+	            if (m->clist)
+		            ft_lstclear(&m->clist, delete_cmd);
+	            if (m->envp)
+		            ft_lstclear(&m->envp, delete_envp);
+                free_pipes(m);
+                free_intp_to_null(m->child_id);
+                exit(42);
+            }
+        }
+        cmd->in_file = cmd->in_file->next;
+    }
+
+    if (check_file_rights((char *)cmd->in_file->value) == 0)
+            {
+                cmd->in_redirects.fd_write = open((char *)cmd->in_file->value, O_RDONLY, 0777);
+                //cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
                 if (cmd->in_redirects.fd_write == -1)
                     perror("Cant open the file\n");
                 if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                     perror("Input IN-redirection isn't working\n");
                 close(cmd->in_redirects.fd_write);
+                free(cmd->in_file->value); //!!! incorrect free, insert correct one
+
             }
             else
             {
                 perror("Cant read from input file, permission denied\n");
-                if (cmd->in_redirects.file_name)
+                if (cmd->in_file->value)
                 {
-                    free_to_null(cmd->in_redirects.file_name);
+                    free_to_null((char *)cmd->in_file->value); //!!! incorrect free, insert correct one
                     free_arr_to_null(m->path_buf);
                     free_to_null(cmd->path);
                     free_to_null(m->line);
@@ -542,11 +583,48 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
                     exit(42);
                 }
             }
-        }
-        if (cmd->input_redir_type == REDIRECT_HEREDOC)
-            redirect_heredoc(cmd->in_redirects.new_heredoc_file);
-            //ft_heredoc(cmd->in_redirects.new_heredoc_file, cmd->in_redirects.stop_heredoc);
-            // here_docs(cmd, m);
+
+
+        // if (cmd->input_redir_type == REDIRECT_IN) //&& cmd->args != NULL
+        // {
+        //     // if (check_file_rights(cmd->in_file->value) == 0)
+        //     // {
+        //     //     cmd->in_redirects.fd_write = open(cmd->in_file->value, O_RDONLY, 0777);
+
+        //     //     //cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
+        //     //     if (cmd->in_redirects.fd_write == -1)
+        //     //         perror("Cant open the file\n");
+        //     //     if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+        //     //         perror("Input IN-redirection isn't working\n");
+        //     //     close(cmd->in_redirects.fd_write);
+        //     // }
+        //     // else
+        //     // {
+        //     //     perror("Cant read from input file, permission denied\n");
+        //     //     if (cmd->in_file->value)
+        //     //     {
+        //     //         free_to_null(cmd->in_file->value);
+        //     //         free_arr_to_null(m->path_buf);
+        //     //         free_to_null(cmd->path);
+        //     //         free_to_null(m->line);
+	    //     //         if (m->tlist)
+		//     //             ft_lstclear(&m->tlist, delete_token);
+	    //     //         if (m->clist)
+		//     //             ft_lstclear(&m->clist, delete_cmd);
+	    //     //         if (m->envp)
+		//     //             ft_lstclear(&m->envp, delete_envp);
+        //     //         free_pipes(m);
+        //     //         free_intp_to_null(m->child_id);
+        //     //         exit(42);
+        //     //     }
+        //     // }
+        // }
+        // if (cmd->input_redir_type == REDIRECT_HEREDOC)
+        //     redirect_heredoc(cmd->in_redirects.new_heredoc_file);
+        //     //ft_heredoc(cmd->in_redirects.new_heredoc_file, cmd->in_redirects.stop_heredoc);
+        //     // here_docs(cmd, m);
+
+        
     return (0);
 }
 

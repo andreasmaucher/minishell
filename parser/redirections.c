@@ -61,11 +61,20 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 		tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
 		tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
 		tmp_cmd->in_redirects.file_name = NULL;
+		file = malloc(sizeof(t_file));
+		if (!file)
+			return ;
+		file->file_name = ft_strdup(tmp_token->str);
+		new_node = create_new_node(file->file_name);
+		if (!tmp_cmd->in_file)
+			tmp_cmd->in_file = new_node;
+		else
+			insert_at_tail(tmp_cmd->in_file, new_node);
 	}
 	else if (tmp_cmd->input_redir_type == REDIRECT_IN)
 	{
-		free_to_null(tmp_cmd->in_redirects.file_name);
-		tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
+		//free_to_null(tmp_cmd->in_redirects.file_name);
+		//tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
 		tmp_cmd->in_redirects.stop_heredoc = NULL;
 		tmp_cmd->in_redirects.new_heredoc_file = NULL;
 		file = malloc(sizeof(t_file));
