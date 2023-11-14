@@ -73,6 +73,8 @@ int main(int ac, char **av, char **envp)
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
+		else if (*m.line == '\0')
+			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
 		printlist(m.tlist); //! only for testing

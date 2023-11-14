@@ -52,6 +52,8 @@ t_command	*ft_create_cmd(void)
 	cmd->in_redirects.file_name = NULL;
 	cmd->in_redirects.stop_heredoc = NULL;
 	cmd->in_redirects.new_heredoc_file = NULL;
+	cmd->out_file = NULL;
+	cmd->in_file = NULL;
 	return (cmd);
 }
 

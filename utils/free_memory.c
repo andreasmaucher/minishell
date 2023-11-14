@@ -52,6 +52,18 @@ void	free_args(char **args)
 	free(args);
 }
 
+void	delete_file(void *content)
+{
+	t_file	*file;
+
+	file = (t_file *)content;
+	if (content == NULL)
+		return ;
+	if (file->file_name != NULL)
+		free_to_null(file->file_name);
+	free (file);
+}
+
 /*
 deletes a command node and all args in it;
 */
@@ -62,6 +74,8 @@ void	delete_cmd(void *arg)
 	command = (t_command *)arg;
 	if (command->args)
 		free_args(command->args);
+	if (command->out_file)
+		ft_lstclear(&command->out_file, delete_file);
 	 // is this the issue for <nope cat | infile
 	command = set_pt_to_null(command);
 }
@@ -81,7 +95,7 @@ int	exit_shell(t_minishell m)
 	if (m.clist)
 		ft_lstclear(&m.clist, delete_cmd);
 	if (m.envp)
-		ft_lstclear(&m.envp, delete_envp);
+		ft_lstclear(&m.envp, delete_envp); //! check again for file
 	if (m.child_id)
 		free(m.child_id);
 	if (m.path_buf)

@@ -94,9 +94,11 @@ typedef struct s_command
 	t_type				input_redir_type;
 	t_type				output_redir_type;
 	char				**args;
-	t_file				out_redirects;
-	t_file				in_redirects;
+	t_file				out_redirects; //!
+	t_file				in_redirects; //!
 	char				*path;
+	t_list				*out_file;
+	t_list				*in_file;
 }					t_command;
 
 typedef struct s_minishell

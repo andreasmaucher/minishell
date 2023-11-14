@@ -20,8 +20,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/amaucher/minishell",
-      "program": "/home/amaucher/minishell/build/Debug/outDebug",
+      "cwd": "/home/amaucher/mm",
+      "program": "/home/amaucher/mm/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

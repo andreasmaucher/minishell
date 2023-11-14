@@ -42,9 +42,13 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 {
 	t_command	*tmp_cmd;
 	t_token		*tmp_token;
+	t_list		*new_node;
+	t_file		*file;
 
 	tmp_cmd = (t_command *) clist->value;
 	tmp_token = (t_token *)(*tlist)->value;
+	file = NULL;
+	new_node = NULL;
 	tmp_cmd->input_redir_type = tmp_token->type;
 	if (*tlist != NULL)
 		*tlist = (*tlist)->next;
@@ -64,6 +68,15 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 		tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
 		tmp_cmd->in_redirects.stop_heredoc = NULL;
 		tmp_cmd->in_redirects.new_heredoc_file = NULL;
+		file = malloc(sizeof(t_file));
+		if (!file)
+			return ;
+		file->file_name = ft_strdup(tmp_token->str);
+		new_node = create_new_node(file->file_name);
+		if (!tmp_cmd->in_file)
+			tmp_cmd->in_file = new_node;
+		else
+			insert_at_tail(tmp_cmd->in_file, new_node);
 	}
 }
 
@@ -84,6 +97,8 @@ void	cmd_output_redirection(t_list **tlist, t_list *clist)
 {
 	t_command	*tmp_cmd;
 	t_token		*tmp_token;
+	t_list		*new_node;
+	t_file		*file;
 
 	tmp_cmd = (t_command *) clist->value;
 	tmp_token = (t_token *)(*tlist)->value;
@@ -92,5 +107,14 @@ void	cmd_output_redirection(t_list **tlist, t_list *clist)
 	if (*tlist != NULL)
 		*tlist = (*tlist)->next;
 	tmp_token = (t_token *)(*tlist)->value;
-	tmp_cmd->out_redirects.file_name = ft_strdup(tmp_token->str);
+	tmp_cmd->out_redirects.file_name = ft_strdup(tmp_token->str); //! del
+	file = malloc(sizeof(t_file));
+	if (!file)
+		return ;
+	file->file_name = ft_strdup(tmp_token->str);
+	new_node = create_new_node(file->file_name);
+	if (!tmp_cmd->out_file)
+		tmp_cmd->out_file = new_node;
+	else
+		insert_at_tail(tmp_cmd->out_file, new_node);
 }
