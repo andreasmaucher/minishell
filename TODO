@@ -6,12 +6,18 @@
  if no cmd is specified , just redirections or heredocs, can we initiate the cmd variables, like cmd->args or cmd->args[0] to NULL?
  Otherwise i am not freeing all the memory and getting invalid reads
 
+ 2. empty space in new cmd
 
- 2. empty line - syntax error near unexpected token
 
- 3. setting everything, even the cmd stuff (like cmd->in_redirects.file_name) initially to NULL if it is being used
+ 3. setting everything, even the cmd stuff (like cmd->in_redirects.file_na initially to NULL if it is being used
  if this is implemented we can do a super cool logic to free everything and save a lot of lines of code
 
+ 4.exit codes
+
+ 5. signals amd signals in heredocs
+
+
+ 
  Builtins
 
 1. Clear <-TERM environment variable not set.
