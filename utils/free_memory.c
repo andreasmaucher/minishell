@@ -64,6 +64,32 @@ void	delete_file(void *content)
 	free (file);
 }
 
+void	free_out_file_list(t_list *out_file) 
+{
+    t_list *current;
+	t_list *next;
+	
+	current = out_file;
+    while (current != NULL) 
+	{
+		//free(file->file_name);
+		/* if (file->stop_heredoc)
+			free(file->stop_heredoc);  // Free additional fields if they are allocated
+		if (file->new_heredoc_file)
+			free(file->new_heredoc_file);  // Free additional fields if they are allocated */
+		free(current->value);
+		next = current->next;
+		free(current);
+		current = next;
+        /* file = (t_file *)current->value;
+        free(file->file_name); // Free the file name
+        free(file); // Free the file structure
+    	next = current->next;
+        free(current); // Free the list node
+        current = next; */
+    }
+}
+
 /*
 deletes a command node and all args in it;
 */
@@ -75,7 +101,9 @@ void	delete_cmd(void *arg)
 	if (command->args)
 		free_args(command->args);
 	if (command->out_file)
-		ft_lstclear(&command->out_file, delete_file);
+		free_out_file_list(command->out_file);
+	if (command->in_file)
+		free_out_file_list(command->in_file);
 	 // is this the issue for <nope cat | infile
 	command = set_pt_to_null(command);
 }
@@ -100,8 +128,6 @@ int	exit_shell(t_minishell m)
 		free(m.child_id);
 	if (m.path_buf)
 		free_env(m.path_buf);
-
-
 	//? more stuff
 	exit(g_exit_code);
 }

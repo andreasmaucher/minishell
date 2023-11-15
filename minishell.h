@@ -209,6 +209,8 @@ void	delete_token(void *content);
 void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	free_all(t_minishell m);
+void	delete_file(void *content);
+void	free_out_file_list(t_list *out_file);
 
 /* env */
 char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);
