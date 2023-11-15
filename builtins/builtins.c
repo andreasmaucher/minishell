@@ -68,6 +68,11 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
 		free(m->child_id);
 	if (m->path_buf)
 		free_env(m->path_buf);
+    if (cmd->in_file != NULL)
+		ft_file_name_clear(cmd->in_file);
+	// if (cmd->in_file)
+	// 	ft_lstclear(&cmd->in_file, free);
+
 	// if (cmd->args)
     // free_args(cmd->args);
 	

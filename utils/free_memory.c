@@ -78,8 +78,10 @@ void	free_out_file_list(t_list *out_file)
 		if (file->new_heredoc_file)
 			free(file->new_heredoc_file);  // Free additional fields if they are allocated */
 		free(current->value);
+		current->value = NULL;
 		next = current->next;
 		free(current);
+		//current = NULL;
 		current = next;
         /* file = (t_file *)current->value;
         free(file->file_name); // Free the file name
@@ -88,6 +90,7 @@ void	free_out_file_list(t_list *out_file)
         free(current); // Free the list node
         current = next; */
     }
+	//current = NULL;
 }
 
 /*
@@ -102,8 +105,11 @@ void	delete_cmd(void *arg)
 		free_args(command->args);
 	if (command->out_file)
 		free_out_file_list(command->out_file);
-	if (command->in_file)
-		free_out_file_list(command->in_file);
+	if (command->in_file != NULL)
+		ft_file_name_clear(command->in_file);
+	// if (command->in_file)
+	// 	ft_lstclear(&command->in_file, free);
+		//free_out_file_list(command->in_file);
 	 // is this the issue for <nope cat | infile
 	command = set_pt_to_null(command);
 }

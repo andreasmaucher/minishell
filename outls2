@@ -14,9 +14,13 @@ minishell.h
 out
 out1
 out2
+out2ls
+out3ls
 outls
 outls2
 outls3
+outls4
+outls5
 outlsexi
 parser
 suppressions.supp

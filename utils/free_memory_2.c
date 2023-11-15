@@ -66,8 +66,34 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
 	if (!del)
 		return ;
+	//printf("-->>lst->value is %s\n", (char*)lst->value);
 	del(lst->value);
 	free(lst);
+}
+
+
+/*
+deletes an entire linked list
+*/
+void	ft_file_name_clear(t_list *lst)
+{
+	t_list	*temp;
+
+	while (lst)
+	{
+		temp = lst->next;
+		//printf("-->>lst->value is %s\n", (char*)lst->value);
+		if (lst->value != NULL)
+			free(lst->value);
+		if (lst->eof != NULL)
+			free(lst->eof);
+
+		free(lst);
+
+		//ft_lstdelone(*lst, del);
+		lst = temp;
+	}
+	lst = NULL;
 }
 
 /*

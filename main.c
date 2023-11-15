@@ -31,6 +31,8 @@ int restore_stdin_stdout(void)
 	return (0);
 }
 
+
+
 void free_lists(t_minishell *m)
 {
 	if (m->tlist)
