@@ -78,9 +78,9 @@ int main(int ac, char **av, char **envp)
 		m.tlist = split_line_into_tokens(m);
 		//printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		cmd = m.clist->value;
-		execute_single_builtins(&m, cmd);
-		//executor(m, envp, cmd);
+		//cmd = m.clist->value;
+		//execute_single_builtins(&m, cmd);
+		executor(m, cmd);
 		free_memory_for_next_line(&m);
 	}
 }

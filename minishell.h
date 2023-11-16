@@ -271,7 +271,7 @@ void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
 
 /* execution */
-int		executor(t_minishell m, char **envp, t_command *cmd);
+int		executor(t_minishell m, t_command *cmd);
 int		single_cmd(t_minishell *m, t_command *cmd);
 int		multiple_cmd(t_minishell *m, t_command *cmd);
 int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m);

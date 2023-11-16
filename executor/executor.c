@@ -71,7 +71,28 @@ char	*join_strings(const char *str1, const char *str2, const char *str3)
     return (result);
 }
 
-char	**find_path_executor(char **envp)
+char	**find_path_executor(t_list *envp)
+{
+	char	*path;
+	char	**path_buf;
+	t_list	*tmp;
+	t_dict	*dict;
+
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
+	{
+		tmp = tmp->next;
+		dict = tmp->value;
+	}
+	path = ft_strstr(dict->value, "=");
+	if (path == NULL)
+		return (NULL);
+	path_buf = ft_split(++path, ':');
+	return (path_buf);
+}
+
+/* char	**find_path_executor(char **envp)
 {
     int		i;
     char	*path;
@@ -83,7 +104,7 @@ char	**find_path_executor(char **envp)
     path = ft_strstr(envp[i], "/");
     path_buf = ft_split(path, ':');
     return (path_buf);
-}
+} */
 
 
 char	*valid_path(char **path, char *argv)
@@ -1269,12 +1290,12 @@ void	term_processes(t_minishell *m)
 	}
 }
 
-int init_executor(t_minishell *m, char **envp)
+int init_executor(t_minishell *m)
 {
     m->current_process_id = 0;
     m->pipe_n = command_count(m->tlist) - 1;
     m->child_id = malloc(sizeof(int) * (m->pipe_n +1));
-    m->path_buf = find_path_executor(envp);
+    m->path_buf = find_path_executor(m->envp);
     if (m->pipe_n > 0)
     {
         initialize_pipes(m);
@@ -1297,26 +1318,28 @@ int exit_executor(t_minishell *m)
     return (0);
 }
 
-int executor(t_minishell m, char **envp, t_command *cmd)
+
+int executor(t_minishell m, t_command *cmd)
 {
     t_list *tmp;
     
-    init_executor(&m, envp);
+    init_executor(&m);
     tmp = m.clist;
     while(tmp)
     {
         cmd = (t_command *) tmp->value;
         if (cmd->input_redir_type == REDIRECT_HEREDOC || cmd->input_redir_type == REDIRECT_IN)
             ft_heredoc(cmd->in_file, &m);
-        // if (cmd->input_redir_type == REDIRECT_HEREDOC)
-        //     ft_heredoc(cmd->in_file->value, cmd->in_file->eof, &m);
-///            ft_heredoc(cmd->in_redirects.new_heredoc_file, cmd->in_redirects.stop_heredoc, &m);
-        if (m.pipe_n == 0)
+        if (cmd->type == BUILTIN && m.pipe_n == 0)
         {
-            if (cmd->type == BUILTIN && ft_strcmp(cmd->args[0], "exit") == 0)
-                exit_builtin(&m, cmd);
-            single_cmd(&m, cmd);
+            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+                output_redirect(cmd);
+            execute_single_builtins(&m, cmd);
         }
+        else if (m.pipe_n == 0)
+            // if (cmd->type == BUILTIN && ft_strcmp(cmd->args[0], "exit") == 0)
+            //     exit_builtin(&m, cmd);
+            single_cmd(&m, cmd);
         if (m.pipe_n > 0)
             multiple_cmd(&m, cmd);
         // wait_processes(&m); // Here is a traditional way to place wait
