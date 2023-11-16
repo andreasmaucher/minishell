@@ -52,3 +52,37 @@ void	ft_lstremove(t_list **lst, t_list *node, void (*del)(void *))
 		prev->next = node->next;
 	ft_lstdelone(node, del);
 }
+
+/*
+creates a new node for in_filenames(that is to be added to a list 
+in subsequent function)
+*/
+t_list	*create_new_filename_node(void *value, char *eof)
+{
+	t_list	*newnode;
+	newnode = malloc(sizeof(t_list));
+	if (newnode == NULL)
+		return (NULL);
+	newnode->value = value;
+	newnode->eof = eof;
+	newnode->is_heredoc = 0;
+	newnode->next = NULL;
+	return (newnode);
+}
+
+/*
+creates a new node for in_filenames(that is to be added to a
+list in subsequent function)
+*/
+t_list	*create_new_append_node(void *value)
+{
+	t_list	*newnode;
+
+	newnode = malloc(sizeof(t_list));
+	if (newnode == NULL)
+		return (NULL);
+	newnode->value = value;
+	newnode->is_append = 0;
+	newnode->next = NULL;
+	return (newnode);
+}

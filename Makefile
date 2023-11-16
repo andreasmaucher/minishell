@@ -22,7 +22,7 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 		builtins/builtins.c builtins/echo.c builtins/pwd.c builtins/unset.c \
 		builtins/cd.c builtins/exit.c builtins/env.c builtins/export.c \
 		utils/signals.c lexer/lexer_env_path.c builtins/export_env.c \
-		builtins/cd_utils.c \
+		builtins/cd_utils.c utils/free_memory_3.c \
 
 OBJS = $(SOURCES:.c=.o)
 

@@ -284,42 +284,27 @@ void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
-//int 	in_redirections(t_minishell *m);
 int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
-//void	ft_heredoc(char *filename, char *eof, t_minishell *m);
 void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
 
-
-//freeing 
+/* free memory */
 void	free_intp_to_null(int *var);
 void 	free_to_null(char *var);
 void	free_arr_to_null(char **arr);
 void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void	delete_token(void *content);
+void	*set_pt_to_null(void *ptr);
+void	free_intp_to_null(int *var);
+void	free_all_the_og(t_minishell m);
+void	free_cmd_the_og(t_command *cmd);
 
 #endif
