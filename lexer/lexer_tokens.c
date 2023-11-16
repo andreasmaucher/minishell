@@ -66,11 +66,8 @@ char	*whitespace_token(char *line, int *i, t_type *token_type)
 
 	*token_type = WHITESPACE;
 	start_index = *i;
-	printf("start index whitespace: %d\n", start_index);
 	while ((line[*i] == ' ' || line[*i] == '\t') && line[*i])
 		(*i)++;
-	printf("i wihtin whitespace: %d\n", (*i));
 	end_index = *i - start_index;
-	printf("end index whitespace: %d\n", end_index);
 	return (ft_substr(line, start_index, end_index));
 }
