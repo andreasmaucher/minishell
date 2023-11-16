@@ -84,7 +84,6 @@ void	printlist_envp(t_list *head)
 
 	i = 0;
 	temporary = head;
-	printf("\n--- ENVP LIST ---\n");
 	while (temporary != NULL)
 	{
 		token = (t_dict *)temporary->value;
