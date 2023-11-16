@@ -31,8 +31,6 @@ int restore_stdin_stdout(void)
 	return (0);
 }
 
-
-
 void free_lists(t_minishell *m)
 {
 	if (m->tlist)
@@ -48,7 +46,6 @@ void free_memory_for_next_line(t_minishell *m)
 	free_lists(m);
 	term_processes(m); // is this needed?
 }
-
 
 /* 
 shell is only created if there is exactly one argument
@@ -79,7 +76,7 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		printlist(m.tlist); //! only for testing
+		//printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
 		executor(m, envp, cmd);
 		free_memory_for_next_line(&m);

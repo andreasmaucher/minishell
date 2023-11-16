@@ -55,8 +55,27 @@ static void	add_attributes_to_command_list(t_minishell m)
 }
 
 /* 
+check if the line is emtpy, meaning it only consists of whitespace
+*/
+bool	check_empty_line(char *line)
+{
+	int	i;
+
+	i = 0;
+
+	while (line[i])
+	{
+		if (line[i] != ' ' && line[i] != '\t')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+/* 
 if the input fullfills the parser syntax the command list clist
 is created anf dilled with elements;
+if the line consists only of whitespace no error message is printed
 For testing: print_command_list(m.clist);
 */
 t_list	*parser(t_minishell m)
@@ -72,8 +91,10 @@ t_list	*parser(t_minishell m)
 	}
 	else
 	{
-		printf("syntax error near unexpected token");
 		g_exit_code = 2;
+		if (check_empty_line(m.line) == true)
+			return (NULL);
+		printf("syntax error near unexpected token\n");
 		return (NULL);
 	}
 }

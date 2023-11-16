@@ -23,6 +23,10 @@ t_list	*split_line_into_tokens(t_minishell m)
 
 	i = 0;
 	m.tlist = NULL;
+	while (m.line[i] == ' ') //|| m.line[i] == '\t')) && m.line[i])
+	{
+		i++;
+	}
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')
