@@ -19,16 +19,52 @@ converting the index to a string so that it can be joined with the path;
 each iteration creates a unique filename
 */
 
-static char *create_heredoc_file(void)
+static char	*create_heredoc_file(void)
 {
-    static int index = 0;
-    char        *filename;
-    char        *str;
+	static int	index = 0;
+	char		*filename;
+	char		*str;
 
-    str = ft_itoa(index++);
-    filename = ft_strjoin(".heredoc_", str);
-	free(str); //forgot to clear this malloc
-    return(filename);
+	str = ft_itoa(index++);
+	filename = ft_strjoin(".heredoc_", str);
+	free(str);
+	return (filename);
+}
+
+void	init_heredoc(t_command *tmp_cmd, t_token *tmp_token)
+{
+	t_list		*new_node;
+	char		*file_name;
+	char		*eof;
+
+	free_to_null(tmp_cmd->in_redirects.stop_heredoc);
+	free_to_null(tmp_cmd->in_redirects.new_heredoc_file);
+	tmp_cmd->in_redirects.file_name = NULL;
+	file_name = create_heredoc_file();
+	eof = ft_strdup(tmp_token->str);
+	new_node = create_new_filename_node(file_name, eof);
+	new_node->is_heredoc = 1;
+	if (!tmp_cmd->in_file)
+		tmp_cmd->in_file = new_node;
+	else
+		insert_at_tail(tmp_cmd->in_file, new_node);
+}
+
+void	init_input_redir(t_command *tmp_cmd, t_token *tmp_token)
+{
+	t_list		*new_node;
+	char		*file_name;
+	char		*eof;
+
+	tmp_cmd->in_redirects.stop_heredoc = NULL;
+	tmp_cmd->in_redirects.new_heredoc_file = NULL;
+	file_name = ft_strdup(tmp_token->str);
+	eof = NULL;
+	new_node = create_new_filename_node(file_name, eof);
+	if (!tmp_cmd->in_file)
+		tmp_cmd->in_file = new_node;
+	else
+		insert_at_tail(tmp_cmd->in_file, new_node);
 }
 
 /* e.g. < for input redirection: wc -l < file2 returns the amount of words 
@@ -43,7 +79,6 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 	t_command	*tmp_cmd;
 	t_token		*tmp_token;
 	t_list		*new_node;
-	char		*file_name;
 	char		*eof;
 
 	eof = NULL;
@@ -56,46 +91,9 @@ void	cmd_input_redirection(t_list **tlist, t_list *clist)
 	tmp_token = (t_token *)(*tlist)->value;
 	tmp_cmd->in_redirects.fd = -1;
 	if (tmp_cmd->input_redir_type == REDIRECT_HEREDOC)
-	{
-		free_to_null(tmp_cmd->in_redirects.stop_heredoc);
-		free_to_null(tmp_cmd->in_redirects.new_heredoc_file);
-		// tmp_cmd->in_redirects.stop_heredoc = ft_strdup(tmp_token->str);
-		// tmp_cmd->in_redirects.new_heredoc_file = create_heredoc_file();
-		tmp_cmd->in_redirects.file_name = NULL;
-		// file_name = ft_strdup(tmp_token->str);
-		file_name = create_heredoc_file();
-		eof = ft_strdup(tmp_token->str);
-		printf("HEREDOCS filename is %s\n", file_name);
-
-		new_node = create_new_filename_node(file_name, eof);
-		//new_node->value = file_name;
-		//new_node->eof = ft_strdup(tmp_token->str);
-		new_node->is_heredoc = 1;
-		if (!tmp_cmd->in_file)
-			tmp_cmd->in_file = new_node;
-		else
-			insert_at_tail(tmp_cmd->in_file, new_node);
-		//free(file_name);
-		//free(eof);
-	}
+		init_heredoc(tmp_cmd, tmp_token);
 	else if (tmp_cmd->input_redir_type == REDIRECT_IN)
-	{
-		//free_to_null(tmp_cmd->in_redirects.file_name);
-		//tmp_cmd->in_redirects.file_name = ft_strdup(tmp_token->str);
-		tmp_cmd->in_redirects.stop_heredoc = NULL;
-		tmp_cmd->in_redirects.new_heredoc_file = NULL;
-		file_name = ft_strdup(tmp_token->str);
-		//new_node->value = ft_strdup(tmp_token->str);
-		//free(eof);
-		eof = NULL;
-		new_node = create_new_filename_node(file_name, eof);
-		//new_node->is_heredoc = 0;
-		if (!tmp_cmd->in_file)
-			tmp_cmd->in_file = new_node;
-		else
-			insert_at_tail(tmp_cmd->in_file, new_node);
-		//free(file_name);
-	}
+		init_input_redir(tmp_cmd, tmp_token);
 }
 
 /* 
@@ -128,7 +126,6 @@ void	cmd_output_redirection(t_list **tlist, t_list *clist)
 	tmp_token = (t_token *)(*tlist)->value;
 	file_name = ft_strdup(tmp_token->str);
 	new_node = create_new_append_node(file_name);
-	printf("type: %d\n", tmp_token->type);
 	if (tmp_cmd->output_redir_type == REDIRECT_APPEND)
 		new_node->is_append = 1;
 	if (tmp_cmd->output_redir_type == REDIRECT_OUT)
@@ -137,5 +134,4 @@ void	cmd_output_redirection(t_list **tlist, t_list *clist)
 		tmp_cmd->out_file = new_node;
 	else
 		insert_at_tail(tmp_cmd->out_file, new_node);
-	//free(file_name);
 }

@@ -89,6 +89,7 @@ static char	*standard_path(t_minishell *m, t_command *cmd)
 	else
 	{
 		current_dir = get_path(m, "PWD");
+		printf("current_dir %s\n", current_dir);
 		path_with_slash = ft_strjoin(current_dir, "/");
 		final_path = ft_strjoin(path_with_slash, cmd->args[1]);
 		free(current_dir);
@@ -121,7 +122,6 @@ int	update_paths(char *new_path, t_minishell *m)
 	}
 	getcwd(cwd, PATH_MAX);
 	new_path_returned_from_cwd = ft_strdup(cwd);
-	printf("PWD: %s\n", new_path_returned_from_cwd);
 	delete_node(m, "PWD");
 	delete_node(m, "OLDPWD");
 	add_specific_envs(m, new_path_returned_from_cwd, "PWD");
@@ -159,6 +159,11 @@ int	cd(t_minishell *m, t_command *cmd)
 	{
 		if (ft_strcmp(cmd->args[1], "-") == 0)
 			path = go_back_to_last_directory(m, cmd->args[1]);
+		else if (cmd->args[1][0] == '/' && ft_strlen(cmd->args[1]) > 2)
+		{
+			path = ft_strdup(cmd->args[1]);
+			return(update_paths(path, m));
+		}
 		else if (ft_strcmp(cmd->args[1], "--") == 0
 			|| ft_strcmp(cmd->args[1], "~") == 0)
 			path = go_back_to_home(m, path);

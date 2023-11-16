@@ -13,6 +13,21 @@
 #include "../minishell.h"
 
 /*
+in case of whitespace before the first command it needs to be skipped
+*/
+int	skip_whitespace(t_minishell m)
+{
+	int	i;
+
+	i = 0;
+	while (m.line[i] == ' ')
+	{
+		i++;
+	}
+	return (i);
+}
+
+/*
 iterates through line and splits it into tokens;
 splitting occurs whenever a symbol specified in the if conditions appears;
 the line is iterated (i) within the token functions;
@@ -21,12 +36,8 @@ t_list	*split_line_into_tokens(t_minishell m)
 {
 	int	i;
 
-	i = 0;
 	m.tlist = NULL;
-	while (m.line[i] == ' ') //|| m.line[i] == '\t')) && m.line[i])
-	{
-		i++;
-	}
+	i = skip_whitespace(m);
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')

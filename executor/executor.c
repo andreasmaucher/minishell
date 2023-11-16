@@ -92,25 +92,6 @@ char	**find_path_executor(t_list *envp)
 	return (path_buf);
 }
 
-//
-/home/amaucher/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-//
-
-/* char	**find_path_executor(char **envp)
-{
-    int		i;
-    char	*path;
-    char	**path_buf;
-
-    i = 0;
-    while (ft_strnstr(envp[i], "PATH=", 5) == NULL)
-        i++;
-    path = ft_strstr(envp[i], "/");
-    path_buf = ft_split(path, ':');
-    return (path_buf);
-} */
-
-
 char	*valid_path(char **path, char *argv)
 {
     int		i;
@@ -994,7 +975,8 @@ int single_cmd(t_minishell *m, t_command *cmd)
             output_redirect(cmd);
         if (cmd->type == BUILTIN)
             execute_builtins(m, cmd);
-        cmd->path = valid_path(m->path_buf, cmd->args[0]);
+		if (cmd->args)
+       		cmd->path = valid_path(m->path_buf, cmd->args[0]);
         if (cmd->path == NULL)
             no_cmd(cmd, m);
         if (cmd->type != BUILTIN)
