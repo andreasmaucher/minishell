@@ -126,6 +126,7 @@ typedef struct s_minishell
 	int					stdout_original;
 	int					forked;
 	int					current_process_id;
+	int					status_code;
 }	t_minishell;
 
 /* str_utils */
@@ -271,10 +272,10 @@ void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
 
 /* execution */
-int		executor(t_minishell m, t_command *cmd);
-int		single_cmd(t_minishell *m, t_command *cmd);
-int		multiple_cmd(t_minishell *m, t_command *cmd);
-int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m);
+int		executor(t_minishell m, t_command *cmd, char **envp);
+int		single_cmd(t_minishell *m, t_command *cmd, char **envp);
+int		multiple_cmd(t_minishell *m, t_command *cmd, char **envp);
+int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);

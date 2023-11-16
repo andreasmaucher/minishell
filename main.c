@@ -80,7 +80,7 @@ int main(int ac, char **av, char **envp)
 		m.clist = parser(m);
 		//cmd = m.clist->value;
 		//execute_single_builtins(&m, cmd);
-		executor(m, cmd);
+		executor(m, cmd, envp);
 		free_memory_for_next_line(&m);
 	}
 }

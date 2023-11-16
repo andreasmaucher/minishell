@@ -80,17 +80,32 @@ char	**find_path_executor(t_list *envp)
 
 	tmp = envp;
 	dict = (t_dict *)tmp->value;
-	while (tmp != NULL && ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
+	while (ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
 	{
-		dict = tmp->value;
 		tmp = tmp->next;
+		dict = tmp->value;
 	}
-	path = ft_strstr((char*)dict->value, "=");
+	path = ft_strstr(dict->value, "=");
 	if (path == NULL)
 		return (NULL);
 	path_buf = ft_split(++path, ':');
 	return (path_buf);
 }
+
+/* char	**find_path_executor(char **envp)
+{
+    int		i;
+    char	*path;
+    char	**path_buf;
+
+    i = 0;
+    while (ft_strnstr(envp[i], "PATH=", 5) == NULL)
+        i++;
+    path = ft_strstr(envp[i], "/");
+    path_buf = ft_split(path, ':');
+    return (path_buf);
+} */
+
 
 char	*valid_path(char **path, char *argv)
 {
@@ -123,16 +138,50 @@ char	*valid_path(char **path, char *argv)
 int wait_processes(t_minishell *m)
 {
     int i;
-    int status;
+    int wstatus;
+    pid_t w;
     (void)m;
 
     i = 0;
-    while (i <= m->pipe_n)
+    while (i <= m->pipe_n && m->forked == 1)
     {
         //waitpid(-1, &status, 0); //another option for waiting for all processes
-        wait(&status);
+        // wait(&status);
+        w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
+        if (w == -1) 
+        {
+            perror("waitpid");
+            exit(EXIT_FAILURE);
+        }
+        if (WIFEXITED(wstatus)) 
+        {
+            printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+            g_exit_code = WEXITSTATUS(wstatus);
+        } 
+        else if (WIFSIGNALED(wstatus)) 
+        {
+            printf("killed by signal %d\n", WTERMSIG(wstatus));
+            g_exit_code = WTERMSIG(wstatus);
+        } 
+        else if (WIFSTOPPED(wstatus)) 
+        {
+            printf("stopped by signal %d\n", WSTOPSIG(wstatus));
+            g_exit_code = WSTOPSIG(wstatus);
+        } 
+        else if (WIFCONTINUED(wstatus)) 
+        {
+            printf("continued\n");
+            g_exit_code = WSTOPSIG(wstatus);
+
+        }
+        //g_exit_code = wstatus;
         i++;
     }
+    
+
+    // while (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus));
+    //            exit(EXIT_SUCCESS);
+
     return(0);
 }
 
@@ -688,7 +737,7 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 		            ft_lstclear(&m->envp, delete_envp);
                 free_pipes(m);
                 free_intp_to_null(m->child_id);
-                exit(42);
+                exit(EXIT_FAILURE);
             }
         }
         tmp = tmp->next;
@@ -723,7 +772,7 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
 		                ft_lstclear(&m->envp, delete_envp);
                     free_pipes(m);
                     free_intp_to_null(m->child_id);
-                    exit(42);
+                    exit(EXIT_FAILURE);
                 }
         }
 
@@ -945,7 +994,11 @@ void no_cmd(t_command *cmd, t_minishell *m)
 		    ft_lstclear(&m->envp, delete_envp);
         free_pipes(m);
         free_intp_to_null(m->child_id);
-        exit(42);
+        if (m->current_process_id == m->pipe_n)
+            m->status_code = 127;
+        if (m->current_process_id == m->pipe_n)
+            m->status_code = 127;
+        exit(m->status_code);
     }
 }
 
@@ -960,9 +1013,15 @@ void free_all_filenames(t_command *cmd)
 
 
 
-int single_cmd(t_minishell *m, t_command *cmd)
+int single_cmd(t_minishell *m, t_command *cmd, char **envp)
 {   
+    m->forked = 1;
     m->child_id[0] = fork();
+    if (m->child_id[0] == -1) 
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
     if (m->child_id[0] == 0)
     {
         printf("------Child process N %d running---------\n", m->pipe_n);
@@ -973,14 +1032,14 @@ int single_cmd(t_minishell *m, t_command *cmd)
             in_redirections_per_cmd(m, cmd);
         if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
             output_redirect(cmd);
-        if (cmd->type == BUILTIN)
-            execute_builtins(m, cmd);
-		if (cmd->args)
-       		cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        // if (cmd->type == BUILTIN)
+        //     execute_builtins(m, cmd);
+        if (cmd->args)
+            cmd->path = valid_path(m->path_buf, cmd->args[0]);
         if (cmd->path == NULL)
             no_cmd(cmd, m);
         if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd, m);
+            execute_program(cmd->args, cmd, m, envp);
     }
     
     // if (cmd->in_file)
@@ -1125,10 +1184,15 @@ int single_cmd(t_minishell *m, t_command *cmd)
 
         // }
 
-int multiple_cmd(t_minishell *m, t_command *cmd)
+int multiple_cmd(t_minishell *m, t_command *cmd, char **envp)
 {
     m->forked = 1;
     m->child_id[m->current_process_id] = fork();
+    if (m->child_id[m->current_process_id] == -1) 
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
     if (m->child_id[m->current_process_id] == 0)
     {
         cmd->path = NULL;
@@ -1145,7 +1209,9 @@ int multiple_cmd(t_minishell *m, t_command *cmd)
             in_redirections_per_cmd(m, cmd);
         output_redirect(cmd);
         close_pipes(m);
-        cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        if (cmd->args)
+            cmd->path = valid_path(m->path_buf, cmd->args[0]);
+        // cmd->path = valid_path(m->path_buf, cmd->args[0]);
         if (cmd->path == NULL)
             no_cmd(cmd, m);
         if (cmd->type == BUILTIN)
@@ -1155,7 +1221,7 @@ int multiple_cmd(t_minishell *m, t_command *cmd)
             execute_builtins(m, cmd);
         }
         if (cmd->type != BUILTIN)
-            execute_program(cmd->args, cmd, m);
+            execute_program(cmd->args, cmd, m, envp);
     }
     free_all_filenames(cmd);
     m->current_process_id++;
@@ -1171,20 +1237,19 @@ int free_execve_fail(t_minishell *m)
     return(0);
 }
 
-int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m)
+int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp)
 {
     int i;
 
     i = 0;
     while (arg_vec[i])
         i++;
-    if (execve(cmd->path, arg_vec, NULL) == -1)
+    if (execve(cmd->path, arg_vec, envp) == -1)
     {
         if (cmd->in_file)
 		    ft_file_name_clear(cmd->in_file);
         // if (cmd->in_file)
 		//     ft_lstclear(&cmd->in_file, free);
-
         free_to_null(cmd->path);
         free_arr_to_null(arg_vec);
         free_all(*m);
@@ -1193,7 +1258,11 @@ int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m)
         free_all_filenames(cmd);
         free_pipes(m);
         perror("Could not execute");
-        exit(1);
+        // if (m->current_process_id == m->pipe_n)
+        //     m->status_code = 127;
+        // if (m->current_process_id == m->pipe_n)
+        //     m->status_code = 127;
+        exit(EXIT_SUCCESS);
     }
     return (0);
 }
@@ -1255,7 +1324,9 @@ int check_file_rights(char *filename)
 
 //    filename_path = ft_strjoin(pwd_path(), filename);
    if (access(filename, R_OK | W_OK) != 0)
+   {
        return(1);
+   }
    return(0);
 }
 
@@ -1292,22 +1363,25 @@ int init_executor(t_minishell *m)
 
 int exit_executor(t_minishell *m)
 {
+    int status;
     if (m->pipe_n > 0)
     {
         close_pipes(m);
         free_pipes(m);
     }
-    wait_processes(m); // Here is a traditional way to place wait
+    status = wait_processes(m); // Here is a traditional way to place wait
     if (m->path_buf)
 		free_env(m->path_buf);
     free(m->child_id);
-    return (0);
+    m->forked = 0;
+    return (status);
 }
 
 
-int executor(t_minishell m, t_command *cmd)
+int executor(t_minishell m, t_command *cmd, char **envp)
 {
     t_list *tmp;
+    // int status;
     
     init_executor(&m);
     tmp = m.clist;
@@ -1325,9 +1399,9 @@ int executor(t_minishell m, t_command *cmd)
         else if (m.pipe_n == 0)
             // if (cmd->type == BUILTIN && ft_strcmp(cmd->args[0], "exit") == 0)
             //     exit_builtin(&m, cmd);
-            single_cmd(&m, cmd);
+            single_cmd(&m, cmd, envp);
         if (m.pipe_n > 0)
-            multiple_cmd(&m, cmd);
+            multiple_cmd(&m, cmd, envp);
         // wait_processes(&m); // Here is a traditional way to place wait
         tmp = tmp->next;
     }

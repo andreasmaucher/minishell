@@ -55,12 +55,12 @@ int	exit_conditions(t_command *cmd, int ac, int i)
 	}
 	else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false)
 	{
-		printf("exit: %s: numeric argument required", cmd->args[1]);
+		printf("exit: %s: numeric argument required\n", cmd->args[1]);
 		return (g_exit_code = 2);
 	}
 	else
 	{
-		printf("exit: too many arguments");
+		perror("exit: too many arguments\n");
 		return (g_exit_code = 1);
 	}
 }
