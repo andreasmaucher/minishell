@@ -46,7 +46,7 @@ typedef enum type
 typedef struct s_dict
 {
 	char	*key;
-	void	*value;
+	char	*value;
 }	t_dict;
 
 /* value needs to be void since we want to be 

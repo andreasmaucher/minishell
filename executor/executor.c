@@ -80,17 +80,21 @@ char	**find_path_executor(t_list *envp)
 
 	tmp = envp;
 	dict = (t_dict *)tmp->value;
-	while (ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
+	while (tmp != NULL && ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
 	{
-		tmp = tmp->next;
 		dict = tmp->value;
+		tmp = tmp->next;
 	}
-	path = ft_strstr(dict->value, "=");
+	path = ft_strstr((char*)dict->value, "=");
 	if (path == NULL)
 		return (NULL);
 	path_buf = ft_split(++path, ':');
 	return (path_buf);
 }
+
+//
+/home/amaucher/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+//
 
 /* char	**find_path_executor(char **envp)
 {

@@ -119,7 +119,6 @@ int	export(t_minishell *m, t_command *cmd)
 	{
 		delete_double_envs(m, cmd);
 		add_new_envs(m, cmd);
-		printlist_envp(m->envp);
 		return (0);
 	}
 	return (1);
