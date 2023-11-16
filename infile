@@ -1,7 +1,3 @@
-m->path_buf is /home/amaucher/bin
-Makefile
-README.md
-TODO
 builtins
 eof
 executor
@@ -11,6 +7,7 @@ infile
 lexer
 main.c
 main.o
+Makefile
 minishell
 minishell.h
 out
@@ -28,6 +25,8 @@ outls5
 outls6
 outlsexi
 parser
+README.md
 suppressions.supp
 tets
+TODO
 utils

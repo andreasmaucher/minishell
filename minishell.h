@@ -126,6 +126,7 @@ typedef struct s_minishell
 	int					stdout_original;
 	int					forked;
 	int					current_process_id;
+	int					status_code;
 }	t_minishell;
 
 /* str_utils */
@@ -271,10 +272,10 @@ void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
 
 /* execution */
-int		executor(t_minishell m, t_command *cmd);
-int		single_cmd(t_minishell *m, t_command *cmd);
-int		multiple_cmd(t_minishell *m, t_command *cmd);
-int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m);
+int		executor(t_minishell m, t_command *cmd, char **envp);
+int		single_cmd(t_minishell *m, t_command *cmd, char **envp);
+int		multiple_cmd(t_minishell *m, t_command *cmd, char **envp);
+int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
@@ -284,15 +285,18 @@ void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
+//int 	in_redirections(t_minishell *m);
 int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
+//void	ft_heredoc(char *filename, char *eof, t_minishell *m);
 void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
+void	handle_sigint_within_child(int signal);
 
 /* free memory */
 void	free_intp_to_null(int *var);

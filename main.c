@@ -67,7 +67,7 @@ int main(int ac, char **av, char **envp)
 	cmd = init_minishell_struct_and_signals(&m, envp);
 	while(1)
 	{
-		if (restore_stdin_stdout() != 0)
+			if (restore_stdin_stdout() != 0)
 			exit(42);
 		m.line = readline("Myshell: ");
 		if (!m.line)
@@ -80,7 +80,7 @@ int main(int ac, char **av, char **envp)
 		m.clist = parser(m);
 		//cmd = m.clist->value;
 		//execute_single_builtins(&m, cmd);
-		executor(m, cmd);
+		executor(m, cmd, envp);
 		free_memory_for_next_line(&m);
 	}
 }
