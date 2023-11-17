@@ -295,7 +295,8 @@ void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
 //void	ft_heredoc(char *filename, char *eof, t_minishell *m);
-void	ft_heredoc(t_list *in_file, t_minishell *m);
+void	ft_heredoc(t_minishell *m, t_command *cmd);
+//void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
 

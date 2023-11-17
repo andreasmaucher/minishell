@@ -16,6 +16,12 @@ echo with only one opened „ segfaultq -> say its an uneven number
 echo „“ segfaults
 „“ segfaults
 
+Weird edge case handling
+Please add cases to parses to catch them:
+". " or "     . "   -exit code 126
+"/" or "   /" or "    ///"   -exit code 126
+"./" or "  ./" -exit code 2
+return error code, free and exit
 
 
 HEREDOCS

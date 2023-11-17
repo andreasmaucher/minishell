@@ -114,29 +114,39 @@ char	*valid_path(char **path, char *argv)
 
     i = 0;
     correct_path = NULL;
-    if (argv != NULL && argv[0] == '.' && argv[1] == '/')
-    {
-        argv +=2;
-        if (access(argv, X_OK) == 0)
-            return (argv);
-    }
-    else
+    // if (argv != NULL && argv[0] == '/')
+    // {
+    //     if (access(argv, X_OK) == 0)
+    //         return (argv);
+    // }
+    // if (argv != NULL && argv[0] == '.' && argv[1] == '/')
+    // {
+    //     argv +=2;
+    //     if (access(argv, X_OK) == 0)
+    //         return (argv);
+    // }
+    // else
         while (path[i])
         {
             correct_path = join_strings(path[i], "/", argv);
             if (access(correct_path, X_OK) == 0)
+            {
+                g_exit_code = errno;
                 return (correct_path);
+            }
             else
+            {
                 free(correct_path);
+            }
             i++;
         }
-        if (errno == ENOENT)
-            perror("File does not exist.\n");
-        else if (errno == EACCES)  
-            perror("Permission denied to execute the file\n");
-        else
-            perror("Error!\n");
-        g_exit_code = errno;
+        // if (errno == ENOENT)
+        //     perror("File does not exist.\n");
+        // else if (errno == EACCES)  
+        //     perror("Permission denied to execute the file\n");
+        // else
+        //     perror("Error!\n");
+    g_exit_code = errno;
     return (NULL);
 }
   
@@ -148,35 +158,37 @@ int wait_processes(t_minishell *m)
     (void)m;
 
     i = 0;
-    while (i <= m->pipe_n && m->forked == 1)
+    // while (i <= m->pipe_n && m->forked == 1)
+    while (i <= m->pipe_n)
     {
         w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
-        if (w == -1) 
-        {
-            perror("waitpid");
-            exit(EXIT_FAILURE);
-        }
-        if (WIFEXITED(wstatus)) 
-        {
-            printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-            g_exit_code = WEXITSTATUS(wstatus);
-        } 
-        else if (WIFSIGNALED(wstatus)) 
-        {
-            printf("killed by signal %d\n", WTERMSIG(wstatus));
-            g_exit_code = WTERMSIG(wstatus);
-        } 
-        else if (WIFSTOPPED(wstatus)) 
-        {
-            printf("stopped by signal %d\n", WSTOPSIG(wstatus));
-            g_exit_code = WSTOPSIG(wstatus);
-        } 
-        else if (WIFCONTINUED(wstatus)) 
-        {
-            printf("continued\n");
-            g_exit_code = WSTOPSIG(wstatus);
+        //printf("ERROR!!\n");
+        // if (w == -1) 
+        // {
+        //     perror("waitpid");
+        //     exit(EXIT_FAILURE);
+        // }
+        // if (WIFEXITED(wstatus)) 
+        // {
+        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+        //     g_exit_code = WEXITSTATUS(wstatus);
+        // } 
+        // else if (WIFSIGNALED(wstatus)) 
+        // {
+        //     printf("killed by signal %d\n", WTERMSIG(wstatus));
+        //     g_exit_code = WTERMSIG(wstatus);
+        // } 
+        // else if (WIFSTOPPED(wstatus)) 
+        // {
+        //     printf("stopped by signal %d\n", WSTOPSIG(wstatus));
+        //     g_exit_code = WSTOPSIG(wstatus);
+        // } 
+        // else if (WIFCONTINUED(wstatus)) 
+        // {
+        //     printf("continued\n");
+        //     g_exit_code = WSTOPSIG(wstatus);
 
-        }
+        // }
         //g_exit_code = wstatus;
         i++;
     }
@@ -258,8 +270,10 @@ void redirect_heredoc(char *filename)
 
 
 
+void 
+ft_heredoc(t_minishell *m, t_command *cmd)
 
-void ft_heredoc(t_list *in_file, t_minishell *m)
+//void ft_heredoc(t_list *in_file, t_minishell *m, t_command *cmd)
 //void ft_heredoc(char *filename, char *eof, t_minishell *m)
 {
     pid_t   pid;
@@ -268,31 +282,30 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
     t_list *tmp;
     char *tmp_line;
 
-    tmp = in_file;
+    //tmp = in_file;
+    tmp = cmd->in_file;
     while (tmp != NULL)
     {
         if (tmp->is_heredoc == 1)
         {
             pid = fork();
             if (pid == -1) 
-            {
-                perror("fork");
-                g_exit_code = EXIT_FAILURE;
-                exit(g_exit_code);
-            }
+                error_handling_and_exit("Fork issue");
             if (pid == 0)
             {
                 if (access(tmp->value, R_OK | W_OK) == 0)
                 {
-                    if (unlink(tmp->value) == 0)
-                    printf("File '%s' removed successfully.\n", (char *)tmp->value);
-                    else 
-                    perror("Error removing file");
+                    if (unlink(tmp->value) != 0)
+                        error_handling_and_exit("Error removing file");
+                    // printf("File '%s' removed successfully.\n", (char *)tmp->value);
+                    // else 
+                    // perror("Error removing file");
                 }
                 fd = open(tmp->value, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR | S_IRWXO); // S_IRUSR | S_IWUSR
                 if (fd == -1) 
                 {
-                    perror("Error opening file");
+                    //error_handling_and_exit("Error opening heredocs");
+                    // perror("Error opening file");
                     exit(EXIT_FAILURE);
                 }
                 line = NULL;
@@ -316,6 +329,7 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
                         free_intp_to_null(m->child_id);
                         free_pipes(m);
                         close(fd);
+                        //error_handling_and_exit("Error opening heredocs");
                         g_exit_code = EXIT_SUCCESS;
                         exit(EXIT_SUCCESS);
                     }
@@ -324,9 +338,10 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
                 }
             }
         }
+        wait(NULL);
     tmp = tmp->next;
     }
-    wait(NULL);
+    //wait(NULL);
 }
 
 int out_redirections(t_minishell *m)
@@ -462,6 +477,8 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
     tmp = cmd->in_file;
     while (tmp->next != NULL)
     {
+        // write(1, (char *)tmp->value, strlen((char *)tmp->value));
+        // write(1, "\n", 1);
         if (check_file_rights((char *)tmp->value) == 0)
         {
             //free_out_file_list(cmd->in_file); //!!! incorrect free, insert correct one
@@ -471,12 +488,6 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
             perror("Cant read from input file, permission denied\n");
             if (tmp->value)
             {
-                //if a non-existent file is encountered, loop until the end and free any filenames along the list
-                // while (tmp->in_file->next != NULL)
-                // {
-                // //free_out_file_list(cmd->in_file); //!!! incorrect free, insert correct one
-                // tmp->in_file = tmp->in_file->next;
-                // }
                 free_arr_to_null(m->path_buf);
                 free_to_null(cmd->path);
                 free_to_null(m->line);
@@ -494,25 +505,25 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
         }
         tmp = tmp->next;
     }
+    // write(1, (char *)tmp->value, strlen((char *)tmp->value));
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
 
     if (check_file_rights((char *)tmp->value) == 0)
         {
             cmd->in_redirects.fd_write = open((char *)tmp->value, O_RDONLY, 0777);
-            //cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
             if (cmd->in_redirects.fd_write == -1)
                 perror("Cant open the file\n");
             if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                 perror("Input IN-redirection isn't working\n");
             close(cmd->in_redirects.fd_write);
-            //free_out_file_list(cmd->in_file->value); //!!! incorrect free, insert correct one
-
         }
         else
         {
             perror("Cant read from input file, permission denied\n");
             if (tmp->value)
                 {
-                    //free_to_null((char *)cmd->in_file->value); //!!! incorrect free, insert correct one
                     free_arr_to_null(m->path_buf);
                     free_to_null(cmd->path);
                     free_to_null(m->line);
@@ -548,13 +559,13 @@ int in_redirections(t_minishell *m)
         //     printf("Byebye!\n");
         //     //exit(42);
         // }
-        printf("------Entered in redir loop for process N %d---------\n", m->pipe_n);
-        write(1, "Entered in_redir function\n", 27);
+        //printf("------Entered in redir loop for process N %d---------\n", m->pipe_n);
+        //write(1, "Entered in_redir function\n", 27);
 
         while (cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL) 
         {
-            printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
-            write(1, "Running input redirection\n", 27);
+            //printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
+            //write(1, "Running input redirection\n", 27);
             if (check_file_rights(cmd->in_redirects.file_name) == 0)
             {
                 cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
@@ -563,7 +574,7 @@ int in_redirections(t_minishell *m)
                 if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                     perror("Input IN-redirection isn't working\n");
                 close(cmd->in_redirects.fd_write);
-                printf("cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL loop\n");
+                //printf("cmd->input_redir_type == REDIRECT_IN && cmd->args == NULL loop\n");
             }
             else
             {
@@ -575,8 +586,8 @@ int in_redirections(t_minishell *m)
         if (cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL) 
         {
 
-            printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
-            write(1, "Running input redirection\n", 27);
+            //printf("------Running in redir loop for process N %d---------\n", m->pipe_n);
+            //write(1, "Running input redirection\n", 27);
             if (check_file_rights(cmd->in_redirects.file_name) == 0)
             {
                 cmd->in_redirects.fd_write = open(cmd->in_redirects.file_name, O_RDONLY, 0777);
@@ -585,7 +596,7 @@ int in_redirections(t_minishell *m)
                 if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
                     perror("Input IN-redirection isn't working\n");
                 close(cmd->in_redirects.fd_write);
-                printf("cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL loop\n");
+                //printf("cmd->input_redir_type == REDIRECT_IN && cmd->args != NULL loop\n");
             }
             else
             {
@@ -884,7 +895,9 @@ int executor(t_minishell m, t_command *cmd, char **envp)
     {
         cmd = (t_command *) tmp->value;
         if (cmd->input_redir_type == REDIRECT_HEREDOC || cmd->input_redir_type == REDIRECT_IN)
-            ft_heredoc(cmd->in_file, &m);
+            ft_heredoc(&m, cmd);
+
+            //ft_heredoc(cmd->in_file, &m);
         if (cmd->type == BUILTIN && m.pipe_n == 0)
         {
             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)

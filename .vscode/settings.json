@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "sstream": "c",
-    "stdarg.h": "c"
+    "stdarg.h": "c",
+    "type_traits": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
