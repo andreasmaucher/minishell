@@ -273,7 +273,7 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
 
     if (tmp->is_heredoc == 1)
     {
-
+	/* signal(SIGINT, handle_sigint_within_heredoc); */ //! SIGNALS will be ignored
     pid = fork();
     if (pid == 0)
     {
@@ -293,20 +293,15 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
         line = NULL;
         while (1)
         {
-			handle_sigint_within_child(SIGINT); //! SIGNALS
+			signal(SIGINT, handle_sigint_within_heredoc); //! SIGNALS
             line = readline("heredoc> ");
             line = ft_strjoin(line, "\n");
-            if (ft_strncmp(line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
-                ft_strlen(tmp->eof) == ft_strlen(line) - 1)
+            if ((ft_strncmp(line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
+                ft_strlen(tmp->eof) == ft_strlen(line) - 1) || g_exit_code == 130)
             {
+				//! exit code condition still needed?
                 free(line);
-                //free(tmp->eof);
-                // if (cmd->in_file != NULL)
-		        //     ft_file_name_clear(cmd->in_file);
-                //free_to_null(tmp->value);
-                //free_to_null(tmp->eof);
                 free_arr_to_null(m->path_buf);
-               // free_to_null(cmd->path);
                 free_to_null(m->line);
 	            if (m->tlist)
 	    	        ft_lstclear(&m->tlist, delete_token);
@@ -317,21 +312,20 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
                 free_intp_to_null(m->child_id);
                 free_pipes(m);
                 close(fd);
+				//signal(SIGINT, handle_sigint_child); //! signals
                 exit(EXIT_SUCCESS);
             }
             write(fd, line, ft_strlen(line));
             free(line);
         }
     }
-    
-    // free_to_null(tmp->eof);
-
-
     }
 
     tmp = tmp->next;
 
     }
+	//init_signals(); //! SIGNALS
+
     // if (in_file->value != NULL)
     //     free(in_file->value);
     // if (in_file->eof != NULL)
@@ -340,6 +334,8 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
     //close(fd);
     //dup2(fd, STDIN_FILENO);
     wait(NULL);
+	//signal(SIGINT, handle_sigint_parent);
+	//init_signals(); //! SIGNALS
 }
 
 
@@ -1018,6 +1014,7 @@ int single_cmd(t_minishell *m, t_command *cmd, char **envp)
 {   
     m->forked = 1;
     m->child_id[0] = fork();
+	signal(SIGINT, handle_sigint_parent);
     if (m->child_id[0] == -1) 
     {
         perror("fork");
@@ -1025,6 +1022,7 @@ int single_cmd(t_minishell *m, t_command *cmd, char **envp)
     }
     if (m->child_id[0] == 0)
     {
+		signal(SIGINT, handle_sigint_child);
         printf("------Child process N %d running---------\n", m->pipe_n);
         cmd->path = NULL;
         printf("cmd->in_redirects.file_name is %s\n", cmd->in_redirects.file_name);
@@ -1041,8 +1039,9 @@ int single_cmd(t_minishell *m, t_command *cmd, char **envp)
             no_cmd(cmd, m);
         if (cmd->type != BUILTIN)
             execute_program(cmd->args, cmd, m, envp);
+    	//handle_sigint_ignore(SIGINT); //! SIGNAL
     }
-    
+    //handle_sigint_ignore(SIGINT); //! SIGNAL
     // if (cmd->in_file)
 	// 	ft_lstclear(&cmd->in_file, free);
     // if (cmd->in_file->value != NULL)
@@ -1224,6 +1223,7 @@ int multiple_cmd(t_minishell *m, t_command *cmd, char **envp)
         if (cmd->type != BUILTIN)
             execute_program(cmd->args, cmd, m, envp);
     }
+
     free_all_filenames(cmd);
     m->current_process_id++;
     return (0);
@@ -1388,6 +1388,7 @@ int executor(t_minishell m, t_command *cmd, char **envp)
     tmp = m.clist;
     while(tmp)
     {
+		signal(SIGINT, handle_sigint_parent); //! SIGNAL PARENT
         cmd = (t_command *) tmp->value;
         if (cmd->input_redir_type == REDIRECT_HEREDOC || cmd->input_redir_type == REDIRECT_IN)
             ft_heredoc(cmd->in_file, &m);

@@ -296,7 +296,11 @@ int		restore_stdin_stdout(void);
 void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
-void	handle_sigint_within_child(int signal);
+void	handle_sigint_within_heredoc(int signal);
+void	handle_sigint_ignore(int signum);
+void	handle_sigint_child(int signum);
+void	handle_sigint(int signal);
+void	handle_sigint_parent(int signum);
 
 /* free memory */
 void	free_intp_to_null(int *var);
