@@ -26,11 +26,14 @@ void	join_str_and_del_old_node(t_list *tlist, t_list *current_node,
 	previous_token = previous_node->value;
 	if (previous_token->type == WORD)
 	{
-		new_joined_str = ft_strjoin(previous_token->str,
+		if (previous_token->str != NULL && ((t_token *)current_node->value)->str != NULL)
+		{
+			new_joined_str = ft_strjoin(previous_token->str,
 				((t_token *)current_node->value)->str); 
-		free(((t_token *)previous_node->value)->str);
-		((t_token *)previous_node->value)->str = new_joined_str;
-		ft_lstremove(&tlist, current_node, delete_token);
+			free(((t_token *)previous_node->value)->str);
+			((t_token *)previous_node->value)->str = new_joined_str;
+			ft_lstremove(&tlist, current_node, delete_token);
+		}
 	}
 }
 

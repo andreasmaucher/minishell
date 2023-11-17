@@ -28,6 +28,31 @@ int	skip_whitespace(t_minishell m)
 }
 
 /*
+in case the amount of double quotes is uneven an error message is
+printed to the terminal
+*/
+char	*check_uneven_amount_of_quotes(char *line, t_minishell *m)
+{
+	int	counter;
+	int	i;
+
+	(void)m;
+	i = 0;
+	counter = 0;
+	while (line[i])
+	{
+		if (line[i] == '"')
+			counter++;
+		i++;
+	}
+	if (counter % 2 != 0)
+	{
+		printf("uneven amount of quotes: dquotes not handled\n");
+	}
+	return (NULL);
+}
+
+/*
 iterates through line and splits it into tokens;
 splitting occurs whenever a symbol specified in the if conditions appears;
 the line is iterated (i) within the token functions;
@@ -38,6 +63,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 
 	m.tlist = NULL;
 	i = skip_whitespace(m);
+	check_uneven_amount_of_quotes(m.line, &m);
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')

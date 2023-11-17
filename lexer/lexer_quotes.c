@@ -43,6 +43,7 @@ char	*double_quote_to_string(char *line, int *i, t_minishell m)
 	char	*env_expanded;
 
 	str_between_quotes = NULL;
+	printf("within quotes\n");
 	while (line[*i] != '"' && line[*i] != '\0')
 	{
 		if (line[*i] == '$')
