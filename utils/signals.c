@@ -16,20 +16,50 @@
 if the minishell is called inside minishell signals to the parent need to
 be ignored
 */
-void	handle_sigint_within_child(int signal)
+void	handle_sigint_within_heredoc(int signum)
 {
-	if (signal == SIGINT)
-		return ;
+	signal(SIGINT, SIG_IGN);
+	if (signum == SIGINT)
+	{
+		//printf("SIGNAL in heredoc\n");
+		//ioctl(0, TIOCSTI, "\n");
+		//return ;
+		g_exit_code = 130;
+		//return ;
+		//exit(EXIT_SUCCESS);
+	}
+}
+
+/* void	sig_handler_heredoc(int signum)
+{
+	signal(SIGINT, SIG_IGN);
+	if (signum == SIGINT)
+	{
+		g_last_exit = 130;
+	}
+} */
+
+void	handle_sigint_child(int signum)
+{
+	if (signum == SIGINT)
+	{
+		g_exit_code = 130;
+		exit (130);
+	}
 }
 
 /*
 after the execution in the child is finished the parent needs to handle
 the signals again
 */
-void	handle_sigint_ignore(int signal)
+void	handle_sigint_parent(int signum)
 {
-	if (signal == SIGINT)
+	if (signum == SIGINT)
+	{
+		//printf("sigint parent function\n");
 		printf("\n");
+		g_exit_code = 130;
+	}
 }
 
 /*
