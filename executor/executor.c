@@ -266,6 +266,7 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
     int     fd;
     char *line;
     t_list *tmp;
+    char *tmp_line;
 
     tmp = in_file;
     while (tmp != NULL)
@@ -298,11 +299,12 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
                 while (1)
                 {
                     line = readline("heredoc> ");
-                    line = ft_strjoin(line, "\n");
-                    if (ft_strncmp(line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
-                        ft_strlen(tmp->eof) == ft_strlen(line) - 1)
+                    tmp_line = ft_strjoin(line, "\n");
+                    free(line);
+                    if (ft_strncmp(tmp_line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
+                        ft_strlen(tmp->eof) == ft_strlen(tmp_line) - 1)
                     {
-                        free(line);
+                        free(tmp_line);
                         free_arr_to_null(m->path_buf);
                         free_to_null(m->line);
                         if (m->tlist)
@@ -317,8 +319,8 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
                         g_exit_code = EXIT_SUCCESS;
                         exit(EXIT_SUCCESS);
                     }
-                    write(fd, line, ft_strlen(line));
-                    free(line);
+                    write(fd, tmp_line, ft_strlen(tmp_line));
+                    free(tmp_line);
                 }
             }
         }
