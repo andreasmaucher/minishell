@@ -80,10 +80,10 @@ char	**find_path_executor(t_list *envp)
 
 	tmp = envp;
 	dict = (t_dict *)tmp->value;
-	while (ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
+	while (tmp != NULL && ft_strnstr(dict->value, "PATH", ft_strlen("PATH")) == NULL)
 	{
-		tmp = tmp->next;
 		dict = tmp->value;
+        tmp = tmp->next;
 	}
 	path = ft_strstr(dict->value, "=");
 	if (path == NULL)

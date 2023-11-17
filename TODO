@@ -2,7 +2,7 @@ New TODO
 
 Builtins:
 
-unset PATH segfaults <---maybe MR issue? e
+unset PATH segfaults <---maybe MR issue? - fixed !
 
 echo -nnnnnnnnnn
 export declare -x
