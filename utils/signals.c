@@ -19,7 +19,10 @@ be ignored
 void	handle_sigint_within_child(int signal)
 {
 	if (signal == SIGINT)
+	{
+		//ioctl(0, TIOCSTI, "\n");
 		return ;
+	}
 }
 
 /*
