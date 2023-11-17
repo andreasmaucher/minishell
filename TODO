@@ -1,3 +1,50 @@
+New TODO
+
+Builtins:
+
+unset PATH segfaults <---maybe MR issue? e
+
+echo -nnnnnnnnnn
+export declare -x
+If there is one valid env to export it needs to be added to the list
+exit ough 124 -> should exit but still give error message
+exit 123 should exit
+
+
+Parser/Lexer
+echo with only one opened „ segfaultq -> say its an uneven number
+echo „“ segfaults
+„“ segfaults
+
+
+
+HEREDOCS
+heredocs Leak
+<<eof <- no cmd doesnt run properly
+cat << test leaks
+signals <- lower priority
+
+
+EXIT STATUS
+hallo should return 127
+
+Execution
+env | grep USER Leaks
+/ gives valgrind errors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  List of issues for parser/lexer
 

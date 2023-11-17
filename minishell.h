@@ -26,7 +26,9 @@
 # include <limits.h>
 # include <sys/ioctl.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
 # include <fcntl.h>
+# include <errno.h>
 
 extern int	g_exit_code;
 
@@ -298,6 +300,8 @@ t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
 
 
+
+
 //freeing 
 void	free_intp_to_null(int *var);
 void 	free_to_null(char *var);
@@ -305,6 +309,9 @@ void	free_arr_to_null(char **arr);
 void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
+
+//exiting and error handling
+void error_handling_and_exit(char *error_msg);
 
 
 
