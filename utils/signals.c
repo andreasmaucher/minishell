@@ -27,18 +27,61 @@ void	handle_sigint_within_heredoc(int signum)
 	}
 } 
 
-void	handle_sigint_child(int signum)
+void	handle_sigint_child(int signum)//, t_minishell *m, char *tmp_line, int fd)
 {
 	if (signum == SIGINT)
 	{
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, "\n");
-		//ioctl(STDIN_FILENO, TIOCSTI, "\n");
-		rl_on_new_line();
 		g_exit_code = 130;
-		//return ;
+		g_signal_switch = 1;
+		/* (void)tmp_line;
+		//free(tmp_line);
+		(void)m;
+		(void)fd;
+		free_m(m);
+		free_pipes(m);
+		close(fd); */
 		exit (130);
 	}
 }
+
+void	handle_sigint_switch(int signum)
+{
+	if (signum == SIGINT)
+	{
+		g_signal_switch = 1;
+		printf("Signals switched off in heredocs\n");
+		// printf("child free by signal\n");
+		// //ioctl(STDOUT_FILENO, TIOCGWINSZ, "\n");
+		// g_exit_code = 130;
+		// (void)tmp_line;
+		// //free(tmp_line);
+		// (void)m;
+		// (void)fd;
+		// free_m(m);
+		// free_pipes(m);
+		// close(fd);
+		//exit (130);
+	}
+}
+
+/* void	handle_sigint_child_free(int signum, t_minishell *m, char *tmp_line, int fd)
+{
+	if (signum == SIGINT)
+	{
+		printf("child free by signal\n");
+		//ioctl(STDOUT_FILENO, TIOCGWINSZ, "\n");
+		g_exit_code = 130;
+		(void)tmp_line;
+		free(tmp_line);
+		(void)m;
+		(void)fd;
+		free_m(m);
+		free_pipes(m);
+		close(fd);
+		//exit (130);
+	}
+} */
 
 /* after the execution in the child is finished the parent needs to handle
 the signals again */

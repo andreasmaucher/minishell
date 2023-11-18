@@ -271,6 +271,8 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
     t_list *tmp;
     char *tmp_line;
 
+	tmp_line = NULL;
+	fd = -1;
     tmp = cmd->in_file;
     while (tmp != NULL)
     {
@@ -279,13 +281,13 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
             //stop signals here
             pid = fork();
             //stop signals here
-			signal(SIGINT, handle_sigint_child); //!SIGNALS
             if (pid == -1) 
                 error_handling_and_exit("Fork issue");
             if (pid == 0)
             {
                 //start heredoc specific signals here
-
+				//signal(SIGINT, handle_sigint_switch);
+				signal(SIGINT, handle_sigint_child);
                 if_file_exists_delete(tmp->value);
                 // if (access(tmp->value, R_OK | W_OK) != 0)
                 //     error_handling_and_exit("Error removing file");
@@ -297,7 +299,22 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
                 line = NULL;
                 while (1)
                 {
+					printf("g_signal_switch = %d\n", g_signal_switch);
+
+					/* if (g_signal_switch == 1)
+					{
+						printf("signals should be turned off now\n");
+						//handle_sigint_child_free(SIGINT, m, tmp_line, fd);
+						//signal(SIGINT, handle_sigint_child);
+						// if (tmp_line != NULL)
+						// 	free(tmp_line);
+						free_m(m);
+						free_pipes(m);
+						close(fd);
+						exit (130);
+					}  */
                     line = readline("heredoc> ");
+					/* signal(SIGINT, handle_sigint_child); */
                     tmp_line = ft_strjoin(line, "\n");
                     free(line);
                     if (ft_strncmp(tmp_line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
@@ -327,8 +344,13 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
                     free(tmp_line);
                 }
             }
+			// parent 
         }
         wait(NULL); //make a waitpid function to catch signals and restore minishell signals
+		// parent 
+		//signal(SIGINT, handle_sigint_parent);
+		//init_signals();
+		g_signal_switch = 0;
     tmp = tmp->next;
     }
     //wait(NULL);

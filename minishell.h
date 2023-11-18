@@ -31,6 +31,8 @@
 # include <errno.h>
 
 extern int	g_exit_code;
+extern int	g_signal_switch;
+
 
 typedef enum type
 {
@@ -307,7 +309,12 @@ void	ft_heredoc(t_minishell *m, t_command *cmd);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
 void	handle_child_signals(void);
-void	handle_sigint_child(int signum);
+void	handle_sigint_child(int signum);//, t_minishell *m, char *tmp_line, int fd);
+void	handle_sigint_child_free(int signum, t_minishell *m, char *tmp_line, int fd);
+void	handle_sigint_switch(int signum);
+void	handle_sigint_parent(int signum);
+
+
 
 /* freeing */ 
 void	free_intp_to_null(int *var);

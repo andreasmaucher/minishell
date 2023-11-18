@@ -23,7 +23,7 @@ void free_m(t_minishell *m)
 	if (m->tlist)
         ft_lstclear(&m->tlist, delete_token);
     if (m->clist)
-        ft_lstclear(&m->clist, delete_cmd);
+        ft_lstclear(&m->clist, delete_cmd); //! Only uncommented for signals
     if (m->envp)
 		ft_lstclear(&m->envp, delete_envp);
 	//free_to_null(cmd->path);

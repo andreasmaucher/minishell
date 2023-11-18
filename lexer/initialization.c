@@ -12,6 +12,8 @@
 
 #include "../minishell.h"
 
+int	g_signal_switch;
+
 void	*ft_memset(void *s, int c, size_t n)
 {
 	unsigned char	*p;
@@ -34,6 +36,7 @@ t_command	*init_minishell_struct_and_signals(t_minishell *m, char **envp)
 {
 	t_command	*cmd;
 
+	g_signal_switch = 0;
 	cmd = NULL;
 	init_signals();
 	ft_memset(m, 0, sizeof(t_minishell));

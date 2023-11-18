@@ -103,6 +103,7 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
 	t_list	*temp;
 
+	temp = NULL;
 	if (!del)
 		return ;
 	while (lst && *lst)
