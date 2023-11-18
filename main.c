@@ -14,7 +14,7 @@
 
 int	g_exit_code;
 
-int	estore_stdin_stdout(void)
+int	restore_stdin_stdout(void)
 {
 int		default_stdin;
 int		default_stdout;

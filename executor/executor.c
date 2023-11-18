@@ -279,7 +279,7 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
             //stop signals here
             pid = fork();
             //stop signals here
-			handle_child_signals(); //!SIGNALS
+			signal(SIGINT, handle_sigint_child); //!SIGNALS
             if (pid == -1) 
                 error_handling_and_exit("Fork issue");
             if (pid == 0)
