@@ -2,8 +2,8 @@
 
 void error_handling_and_exit(char *error_msg)
 {
-    errno = g_exit_code;
-
+    // errno = g_exit_code;
+    //m->status_code;
     //perror(error_msg);
     write(STDERR_FILENO, error_msg, ft_strlen(error_msg));
     //printf("Error code: %d, Error message: %s\n", errno, strerror(errno));

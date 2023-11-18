@@ -219,7 +219,8 @@ void	delete_file(void *content);
 void	free_out_file_list(t_list *out_file);
 
 /* env */
-char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);
+char	*env_token(char *line, int *i, t_type *token_type,
+			t_list *env_list, t_minishell *m);
 char	*extract_env_name(char *line, int *i);
 char	*env_within_double_quotes(char *line, int *i);
 bool	check_if_part_of_library(t_list *envp, char *search_str);

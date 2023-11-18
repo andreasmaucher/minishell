@@ -45,7 +45,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 		else if (m.line[i] == '<' || m.line[i] == '>')
 			m.token_str = redirection_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '$')
-			m.token_str = env_token(m.line, &i, &m.token_type, m.envp);
+			m.token_str = env_token(m.line, &i, &m.token_type, m.envp, &m);
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.token_str = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')

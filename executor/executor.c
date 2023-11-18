@@ -139,40 +139,44 @@ int wait_processes(t_minishell *m)
 {
     int i;
     int wstatus;
-    pid_t w;
+    //pid_t w;
     (void)m;
+    //int exit_status;
 
     i = 0;
     // while (i <= m->pipe_n && m->forked == 1)
     while (i <= m->pipe_n)
     {
-        w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
+        if (waitpid(-1, &wstatus, 0) != -1)
+        {     
+        //w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
         //printf("ERROR!!\n");
         // if (w == -1) 
         // {
         //     perror("waitpid");
         //     exit(EXIT_FAILURE);
         // }
-        // if (WIFEXITED(wstatus)) 
-        // {
-        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-        //     g_exit_code = WEXITSTATUS(wstatus);
-        // } 
-        // else if (WIFSIGNALED(wstatus)) 
-        // {
-        //     printf("killed by signal %d\n", WTERMSIG(wstatus));
-        //     g_exit_code = WTERMSIG(wstatus);
-        // } 
-        // else if (WIFSTOPPED(wstatus)) 
-        // {
-        //     printf("stopped by signal %d\n", WSTOPSIG(wstatus));
-        //     g_exit_code = WSTOPSIG(wstatus);
-        // } 
-        // else if (WIFCONTINUED(wstatus)) 
-        // {
-        //     printf("continued\n");
-        //     g_exit_code = WSTOPSIG(wstatus);
-
+        if (WIFEXITED(wstatus)) 
+        {
+            printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+            m->status_code = WEXITSTATUS(wstatus);
+        } 
+        else if (WIFSIGNALED(wstatus)) 
+        {
+            printf("killed by signal %d\n", WTERMSIG(wstatus));
+            m->status_code = WTERMSIG(wstatus);
+        } 
+        else if (WIFSTOPPED(wstatus)) 
+        {
+            printf("stopped by signal %d\n", WSTOPSIG(wstatus));
+            m->status_code = WSTOPSIG(wstatus);
+        } 
+        else if (WIFCONTINUED(wstatus)) 
+        {
+            printf("continued\n");
+            m->status_code = WSTOPSIG(wstatus);
+        }
+        }
         // }
         //g_exit_code = wstatus;
         i++;
@@ -272,11 +276,16 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
     {
         if (tmp->is_heredoc == 1)
         {
+            //stop signals here
             pid = fork();
+            //stop signals here
+
             if (pid == -1) 
                 error_handling_and_exit("Fork issue");
             if (pid == 0)
             {
+                //start heredoc specific signals here
+
                 if_file_exists_delete(tmp->value);
                 // if (access(tmp->value, R_OK | W_OK) != 0)
                 //     error_handling_and_exit("Error removing file");
@@ -310,6 +319,8 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
                         //error_handling_and_exit("Error closing heredocs");
                         errno = 0;
                         // g_exit_code = EXIT_SUCCESS;
+
+                        //turn off heredoc signals
                         exit(errno);
                     }
                     write(fd, tmp_line, ft_strlen(tmp_line));
@@ -317,7 +328,7 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
                 }
             }
         }
-        wait(NULL);
+        wait(NULL); //make a waitpid function to catch signals and restore minishell signals
     tmp = tmp->next;
     }
     //wait(NULL);
