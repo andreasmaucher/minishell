@@ -52,19 +52,19 @@ int	exit_conditions(t_command *cmd, int ac, int i, t_minishell *m)
 	{
 		printf("exit\n");
 		g_exit_code = 1;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 	else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false)
 	{
 		printf("exit: %s: numeric argument required\n", cmd->args[1]);
 		g_exit_code = 2;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 	else
 	{
 		perror("exit: too many arguments\n");
 		g_exit_code = 1;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 }
 
@@ -86,7 +86,7 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 {
 	int	ac;
 	int	i;
-	printf("Exit is working\n");
+
 	ac = arg_count(cmd->args);
 	i = 1;
 	if (ac == 1)

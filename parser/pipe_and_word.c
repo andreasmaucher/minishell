@@ -34,17 +34,16 @@ if not the command path needs to be searched for during execution
 */
 void	check_if_builtin(t_token *tmp_token, t_command *tmp_command)
 {
-	
 	if (tmp_token->str != NULL)
 	{
 		printf("test\n");
 		if (!ft_strcmp(tmp_token->str, "echo")
-		|| !ft_strcmp(tmp_token->str, "cd")
-		|| !ft_strcmp(tmp_token->str, "pwd")
-		|| !ft_strcmp(tmp_token->str, "export")
-		|| !ft_strcmp(tmp_token->str, "unset")
-		|| !ft_strcmp(tmp_token->str, "env")
-		|| !ft_strcmp(tmp_token->str, "exit"))
+			|| !ft_strcmp(tmp_token->str, "cd")
+			|| !ft_strcmp(tmp_token->str, "pwd")
+			|| !ft_strcmp(tmp_token->str, "export")
+			|| !ft_strcmp(tmp_token->str, "unset")
+			|| !ft_strcmp(tmp_token->str, "env")
+			|| !ft_strcmp(tmp_token->str, "exit"))
 			tmp_command->type = BUILTIN;
 		else
 			tmp_command->type = PATH;

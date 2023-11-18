@@ -84,23 +84,6 @@ bool	check_equal_sign(char *str)
 	return (false);
 }
 
-int	print_export_list(t_minishell *m)
-{
-	t_list	*tmp;
-	t_dict	*dict;
-
-	tmp = m->envp;
-	dict = (t_dict *)tmp->value;
-	while (tmp != NULL)
-	{
-		dict = (t_dict *)tmp->value;
-		printf("declare -x ");
-		printf("%s\n", (char *)dict->value);
-		tmp = tmp->next;
-	}
-	return (0);
-}
-
 /*
 function that mimics the behavior of the 'export' command;
 export is used to set or export environment variables;
@@ -125,7 +108,7 @@ Function below only adds variables if all variables have the format MY_VAR=
 */
 int	export(t_minishell *m, t_command *cmd)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	if (ft_strcmp(cmd->args[0], "export") == 0 && (arg_count(cmd->args) == 1))

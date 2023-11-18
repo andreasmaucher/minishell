@@ -163,7 +163,9 @@ t_list	*parser(t_minishell m);
 char	*ft_itoa(int n);
 
 /* initialization */
-t_command *init_minishell_struct_and_signals(t_minishell *m, char **envp);
+t_command	*init_minishell_struct_and_signals(t_minishell *m, char **envp);
+
+/* initialization */
 void	*ft_memset(void *s, int c, size_t n);
 void	init_signals(void);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
@@ -175,6 +177,10 @@ void	printlist_envp(t_list *head);
 
 /* lexer */
 t_list	*split_line_into_tokens(t_minishell m);
+void	check_weird_input(char *line, int *i);
+void	check_for_dot(char *line, int *i);
+void	check_for_slash(char *line, int *i);
+void	check_for_dot_slash(char *line, int *i);
 
 /* env_library */
 char	**create_envp_library(char **envp);
@@ -219,7 +225,7 @@ void	delete_file(void *content);
 void	free_out_file_list(t_list *out_file);
 
 /* env */
-char	*env_token(char *line, int *i, t_type *token_type,
+char	*env_token(int *i, t_type *token_type,
 			t_list *env_list, t_minishell *m);
 char	*extract_env_name(char *line, int *i);
 char	*env_within_double_quotes(char *line, int *i);
@@ -247,6 +253,7 @@ int		command_count(t_list *tlist);
 void	add_token_to_command_list(t_list **token_list, char *token_info);
 bool	check_parser_input(t_list *tlist);
 int		token_count_tlist(t_list *tlist);
+int		print_export_list(t_minishell *m);
 
 /* builtins */
 int		arg_count(char **args);
@@ -273,12 +280,14 @@ char	*go_back_to_last_directory(t_minishell *m, char *path);
 void	delete_node(t_minishell *m, char *search_key);
 void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
+int		check_arg_count(t_command *cmd);
 
 /* execution */
 int		executor(t_minishell m, t_command *cmd, char **envp);
 int		single_cmd(t_minishell *m, t_command *cmd, char **envp);
 int		multiple_cmd(t_minishell *m, t_command *cmd, char **envp);
-int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
+int		execute_program(char **arg_vec, t_command *cmd,
+			t_minishell *m, char **envp);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
@@ -288,54 +297,30 @@ void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
-//int 	in_redirections(t_minishell *m);
-int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
+int		in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
-//void	ft_heredoc(char *filename, char *eof, t_minishell *m);
 void	ft_heredoc(t_minishell *m, t_command *cmd);
-//void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
+void	handle_child_signals(void);
 
-
-
-
-//freeing 
+/* freeing */ 
 void	free_intp_to_null(int *var);
-void 	free_to_null(char *var);
+void	free_to_null(char *var);
 void	free_arr_to_null(char **arr);
 void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
 void	free_m(t_minishell *m);
 
+/* exiting and error handling */
+void	error_handling_and_exit(char *error_msg);
 
-//exiting and error handling
-void error_handling_and_exit(char *error_msg);
-
-//file_handling
-void if_file_exists_delete(void *filename);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* file_handling */
+void	if_file_exists_delete(void *filename);
 
 #endif

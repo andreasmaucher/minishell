@@ -12,6 +12,23 @@
 
 #include "../minishell.h"
 
+int	print_export_list(t_minishell *m)
+{
+	t_list	*tmp;
+	t_dict	*dict;
+
+	tmp = m->envp;
+	dict = (t_dict *)tmp->value;
+	while (tmp != NULL)
+	{
+		dict = (t_dict *)tmp->value;
+		printf("declare -x ");
+		printf("%s\n", (char *)dict->value);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
 /* 
 checks if the current key matches with the key in the user input;
 if true the corresponding node is deleted and free 

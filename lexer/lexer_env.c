@@ -99,7 +99,7 @@ extract the env_str from the input;
 if theres a single dollar sign it's supposed to be printed;
 '$?' -> returns the last exit code;
 */
-char	*env_token(char *line, int *i, t_type *token_type,
+char	*env_token(int *i, t_type *token_type,
 			t_list *env_list, t_minishell *m)
 {
 	char	*env_final;
@@ -109,13 +109,13 @@ char	*env_token(char *line, int *i, t_type *token_type,
 	*token_type = WORD;
 	env_final = NULL;
 	j = (*i);
-	if (line[*i] == '?' && (line[j + 1] == 32 || line[j + 1] == '\0'))
+	if (m->line[*i] == '?' && (m->line[j + 1] == 32 || m->line[j + 1] == '\0'))
 	{
 		(*i)++;
 		env_final = ft_itoa(m->status_code);
 		return (env_final);
 	}
 	else
-		env_final = env_token_expansion(line, i, token_type, env_list);
+		env_final = env_token_expansion(m->line, i, token_type, env_list);
 	return (env_final);
 }
