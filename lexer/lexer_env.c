@@ -88,7 +88,7 @@ char	*env_token_expansion(char *line, int *i, t_type *token_type,
 	}
 	else 
 	{
-		env_final = *find_path_after_key(env_list, search_str);
+		env_final = find_path_after_key(env_list, search_str);
 		free(search_str);
 	}
 	return (env_final);

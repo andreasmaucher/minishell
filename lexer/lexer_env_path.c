@@ -51,10 +51,10 @@ bool	check_if_part_of_library(t_list *envp, char *search_str)
 /*
 returns the path after the key, meaning everything after '='
 */
-char	**find_path_after_key(t_list *envp, char *search_str)
+char	*find_path_after_key(t_list *envp, char *search_str)
 {
 	char	*path;
-	char	**path_buf;
+	char	*path_buf;
 	t_list	*tmp;
 	t_dict	*dict;
 
@@ -63,11 +63,12 @@ char	**find_path_after_key(t_list *envp, char *search_str)
 	while (ft_strnstr(dict->value, search_str, ft_strlen(search_str)) == NULL)
 	{
 		tmp = tmp->next;
-		dict = tmp->value;
+		dict = tmp->value;// maybe change the order?
 	}
 	path = ft_strstr(dict->value, "=");
 	if (path == NULL)
 		return (NULL);
-	path_buf = ft_split(++path, '\0');
+	path++;
+	path_buf = ft_strdup(path);
 	return (path_buf);
 }

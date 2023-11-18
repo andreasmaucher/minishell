@@ -38,6 +38,10 @@ Execution
 env | grep USER Leaks
 / gives valgrind errors
 
+<<1 env | cat| ls | lsa
+
+env | cat | ls | lsa
+
 
 
 
