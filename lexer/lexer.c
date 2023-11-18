@@ -52,6 +52,53 @@ char	*check_uneven_amount_of_quotes(char *line, t_minishell *m)
 	return (NULL);
 }
 
+void	check_for_dot(char *line, int *i)
+{
+	while (line[*i] == '.' && line[*i])
+		(*i)++;
+	if (line[*i] == '\0')
+	{
+		errno = 2;
+		g_exit_code = errno;
+		printf("Error code: %d, Error message: %s\n", errno, strerror(errno));
+	}
+}
+
+void	check_for_slash(char *line, int *i)
+{
+	while (line[*i] == '/' && line[*i])
+		(*i)++;
+	if (line[*i] == '\0')
+	{
+		errno = 126;
+		g_exit_code = errno;
+		printf("Error code: %d, Error message: %s\n", errno, strerror(errno));
+	}
+}
+
+void	check_for_dot_slash(char *line, int *i)
+{
+	while (line[*i] == '.' && line[*i])
+		(*i)++;
+	while (line[*i] == '/' && line[*i])
+		(*i)++;
+	if (line[*i] == '\0')
+	{
+		errno = 126;
+		g_exit_code = errno;
+		printf("Error code: %d, Error message: %s\n", errno, strerror(errno));
+	}
+}
+
+void	check_weird_input(char *line, int *i)
+{
+	check_for_dot(line, i);
+	if (errno == 0)
+		check_for_slash(line, i);
+	if (errno == 0)
+		check_for_dot_slash(line, i);
+}
+
 /*
 iterates through line and splits it into tokens;
 splitting occurs whenever a symbol specified in the if conditions appears;
@@ -64,6 +111,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 	m.tlist = NULL;
 	i = skip_whitespace(m);
 	check_uneven_amount_of_quotes(m.line, &m);
+	check_weird_input(m.line, &i);
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')

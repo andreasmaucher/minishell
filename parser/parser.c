@@ -90,10 +90,14 @@ t_list	*parser(t_minishell m)
 	}
 	else
 	{
-		g_exit_code = 2;
-		if (check_empty_line(m.line) == true)
+		if (errno == 0)
+		{
+			g_exit_code = 2;
+			if (check_empty_line(m.line) == true)
+				return (NULL);
+			printf("syntax error near unexpected token\n");
 			return (NULL);
-		printf("syntax error near unexpected token\n");
-		return (NULL);
+		}
 	}
+	return (NULL);
 }

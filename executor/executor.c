@@ -272,6 +272,7 @@ void ft_heredoc(t_list *in_file, t_minishell *m)
     {
         if (tmp->is_heredoc == 1)
         {
+			//signal(SIGINT, handle_sigint_within_heredoc);
             pid = fork();
             if (pid == -1) 
             {

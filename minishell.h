@@ -31,6 +31,7 @@
 # include <errno.h>
 
 extern int	g_exit_code;
+extern int	g_signal;
 
 typedef enum type
 {
@@ -298,7 +299,7 @@ int		restore_stdin_stdout(void);
 void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
-
+void	handle_sigint_within_heredoc(int signum);
 
 
 

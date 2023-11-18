@@ -13,6 +13,7 @@
 #include "minishell.h"
 
 int g_exit_code;
+int	g_signal;
 
 int restore_stdin_stdout(void)
 {
@@ -76,7 +77,7 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		//printlist(m.tlist); //! only for testing
+		printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
 		//cmd = m.clist->value;
 		//execute_single_builtins(&m, cmd);
