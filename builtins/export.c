@@ -12,9 +12,9 @@
 
 #include "../minishell.h"
 
-bool	invalid_identifier(char **args, int i)
+bool	invalid_identifier(char *args)
 {
-	printf("export '%s' : not a valid identifier\n", args[i]);
+	printf("export '%s' : not a valid identifier\n", args);
 	return (false);
 }
 
@@ -22,28 +22,21 @@ bool	invalid_identifier(char **args, int i)
 first letter needs to be _ or a character;
 in the key only characters, digits & _ is allowed;
 */
-bool	check_valid_export_input(char **args)
+bool	check_valid_export_input(char *args)
 {
-	int		i;
 	int		j;
 
-	i = 1;
 	j = 0;
-	while (args[i] != NULL)
+	while (args[j] != '\0' && args[j] != '=')
 	{
-		j = 0;
-		while (args[i][j] != '\0' && args[i][j] != '=')
-		{
-			if (args[i][0] != '_' && ft_isalpha(args[i][0]) == false)
-				return (invalid_identifier(args, i));
-			else if (args[i][j] == '=')
-				break ;
-			else if (ft_isalpha(args[i][j]) == false
-				&& ft_is_digit(args[i][j]) == false && args[i][j] != '_')
-				return (invalid_identifier(args, i));
-			j++;
-		}
-		i++;
+		if (args[0] != '_' && ft_isalpha(args[0]) == false)
+			return (invalid_identifier(args));
+		else if (args[j] == '=')
+			break ;
+		else if (ft_isalpha(args[j]) == false
+			&& ft_is_digit(args[j]) == false && args[j] != '_')
+			return (invalid_identifier(args));
+		j++;
 	}
 	return (true);
 }
@@ -132,12 +125,15 @@ Function below only adds variables if all variables have the format MY_VAR=
 */
 int	export(t_minishell *m, t_command *cmd)
 {
+	int i;
+
+	i = 1;
 	if (ft_strcmp(cmd->args[0], "export") == 0 && (arg_count(cmd->args) == 1))
 	{
 		print_export_list(m);
 		return (0);
 	}
-	else if (check_valid_export_input(cmd->args) == true)
+	else if (check_valid_export_input(cmd->args[i]) == true)
 	{
 		delete_double_envs(m, cmd);
 		add_new_envs(m, cmd);
