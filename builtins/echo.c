@@ -25,14 +25,22 @@ int echo(t_minishell m, t_command *cmd)
 {
     bool    n_flag;
     int     i;
+	int		j;
+
+	j = 0;
     i = 1;
     n_flag = false;
     if (cmd->args[i] != NULL)
     {
-        if (ft_strcmp(cmd->args[i], "-n") == 0)
+        if (cmd->args[1][j] == '-' && cmd->args[1][++j] == 'n')
         {
-            n_flag = true;
-            i = 2;
+			while (cmd->args[1][j] == 'n' && cmd->args[1][j])
+				j++;
+			if (cmd->args[1][j] == '\0')
+			{
+				n_flag = true;
+            	i = 2;
+			}
         }
         while (cmd->args[i] != NULL)
         {
