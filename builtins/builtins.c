@@ -64,12 +64,17 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
 	// 	ft_lstclear(&m->clist, delete_cmd);
 	// if (m->envp)
 	// 	ft_lstclear(&m->envp, delete_envp);
-	if (m->child_id)
-		free(m->child_id);
-	if (m->path_buf)
-		free_env(m->path_buf);
-    if (cmd->in_file != NULL)
-		ft_file_name_clear(cmd->in_file);
+	// if (m->child_id)
+	// 	free(m->child_id);
+	// if (m->path_buf)
+	// 	free_env(m->path_buf);
+	free_m(m);
+
+
+    // if (cmd->in_file != NULL)
+	// 	ft_file_name_clear(cmd->in_file);
+
+
 	// if (cmd->in_file)
 	// 	ft_lstclear(&cmd->in_file, free);
 
@@ -77,7 +82,7 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
     // free_args(cmd->args);
 	
 	free_pipes(m);
-	free_all(*m);
+	// free_all(*m);
 
 	// if (cmd->args)
 	// {

@@ -31,7 +31,6 @@
 # include <errno.h>
 
 extern int	g_exit_code;
-extern int	g_signal;
 
 typedef enum type
 {
@@ -220,7 +219,8 @@ void	delete_file(void *content);
 void	free_out_file_list(t_list *out_file);
 
 /* env */
-char	*env_token(char *line, int *i, t_type *token_type, t_list *env_list);
+char	*env_token(char *line, int *i, t_type *token_type,
+			t_list *env_list, t_minishell *m);
 char	*extract_env_name(char *line, int *i);
 char	*env_within_double_quotes(char *line, int *i);
 bool	check_if_part_of_library(t_list *envp, char *search_str);
@@ -228,7 +228,7 @@ char	*env_within_double_quotes(char *line, int *i);
 char	*extract_env_name(char *line, int *i);
 char	*extract_key_from_envp(char *envp);
 void	add_new_envs(t_minishell *m, t_command *cmd);
-char	**find_path_after_key(t_list *envp, char *search_str);
+char	*find_path_after_key(t_list *envp, char *search_str);
 
 /* ft_split */
 char	**ft_split(char const *s, char c);
@@ -296,10 +296,11 @@ void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
 //void	ft_heredoc(char *filename, char *eof, t_minishell *m);
-void	ft_heredoc(t_list *in_file, t_minishell *m);
+void	ft_heredoc(t_minishell *m, t_command *cmd);
+//void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
-void	handle_sigint_within_heredoc(int signum);
+
 
 
 
@@ -310,9 +311,15 @@ void	free_arr_to_null(char **arr);
 void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
+void	free_m(t_minishell *m);
+
 
 //exiting and error handling
 void error_handling_and_exit(char *error_msg);
+
+//file_handling
+void if_file_exists_delete(void *filename);
+
 
 
 
