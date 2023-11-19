@@ -92,6 +92,23 @@ char	**find_path_executor(t_list *envp)
 	return (path_buf);
 }
 
+int check_if_file_or_dir(char *path)
+{
+    struct stat fileStat;
+
+    if (stat(path, &fileStat) == 0) 
+    {
+        if (S_ISREG(fileStat.st_mode)) 
+            return(0);
+        else if (S_ISDIR(fileStat.st_mode)) 
+            return(1);
+        else 
+            return(2);
+    } 
+    return(3);
+}
+
+
 char	*valid_path(char **path, char *argv)
 {
     int		i;
@@ -99,53 +116,95 @@ char	*valid_path(char **path, char *argv)
 
     i = 0;
     correct_path = NULL;
-
-
-	//!! check if it is a directory or file
-	//!! ./ and / cases
-
-
-    if (argv != NULL && argv[0] == '/')
+    if (argv != NULL && (argv[0] == '/' || (argv[0] == '.' && argv[1] == '/')))
     {
-        if (access(argv, X_OK) == 0)
-            return (argv);
-		else
-			return(NULL);
-    }
-    // if (argv != NULL && argv[0] == '.' && argv[1] == '/')
-    // {
-    //     argv +=2;
-    //     if (access(argv, X_OK) == 0)
-    //         return (argv);
-    // }
-    // else
-
-		//!! check if it is a directory or file
-		//!! ./ and / cases
-
-        while (path[i])
+        if (check_if_file_or_dir(argv) == 1)
         {
-            correct_path = join_strings(path[i], "/", argv);
-            if (access(correct_path, X_OK) == 0)
-            {
-                //g_exit_code = errno;
-                return (correct_path);
-            }
-            else
-            {
-                free(correct_path);
-            }
-            i++;
+            errno = 126;
+            return (NULL);
         }
-        // if (errno == ENOENT)
-        //     perror("Filepw does not exist.\n");
-        // else if (errno == EACCES)  
-        //     perror("Permission denied to execute the file\n");
-        // else
-        //     perror("Error!\n");
-    //g_exit_code = errno;
+        if (access(argv, X_OK) == 0)
+        {
+            printf("returning argv as =%s to cmd->path\n", argv);
+            return (argv);
+        }
+		else
+        {
+            printf("returning NULL to cmd->path\n");
+			return(NULL);
+        }
+    }
+    while (path[i])
+    {
+        correct_path = join_strings(path[i], "/", argv);
+        if (check_if_file_or_dir(correct_path) == 1)
+        {
+            errno = 126;
+            return (NULL);
+        }
+        if (access(correct_path, X_OK) == 0)
+            return (correct_path);
+        else
+            free(correct_path);
+        i++;
+    }
     return (NULL);
 }
+
+// char	*valid_path(char **path, char *argv)
+// {
+//     int		i;
+//     char	*correct_path;
+
+//     i = 0;
+//     correct_path = NULL;
+//     if (argv != NULL && argv[0] == '/')
+//     {
+//         if (access(argv, X_OK) == 0)
+//             return (argv);
+
+//     }
+//     // if (argv != NULL && argv[0] == '.' && argv[1] == '/')
+//     // {
+//     //     argv +=2;
+//     //     if (access(argv, X_OK) == 0)
+//     //         return (argv);
+//     // }
+//     // else
+//     // if (argv != NULL && argv[0] == '/')
+//     // {
+//     //     if (access(argv, X_OK) == 0)
+//     //     {
+//     //         printf("This runs\n");
+//     //         return (argv);
+//     //     }
+//     //     else
+//     //         return(NULL);
+//     // }
+    
+//         while (path[i])
+//         {
+//             correct_path = join_strings(path[i], "/", argv);
+//             if (access(correct_path, X_OK) == 0)
+//             {
+//                 //g_exit_code = errno;
+//                 return (correct_path);
+//             }
+//             else
+//             {
+//                 free(correct_path);
+//             }
+//             i++;
+//         }
+//         // if (errno == ENOENT)
+//         //     perror("File does not exist.\n");
+//         // else if (errno == EACCES)  
+//         //     perror("Permission denied to execute the file\n");
+//         // else
+//         //     perror("Error!\n");
+//     //g_exit_code = errno;
+//     return (NULL);
+// }
   
 int wait_processes(t_minishell *m)
 {
@@ -161,16 +220,42 @@ int wait_processes(t_minishell *m)
     // while (i <= m->pipe_n )
     while (i <= m->pipe_n && m->forked == 1)
     {
+        //if (waitpid(-1, &wstatus, 0) != -1)
         pid = wait(&wstatus);
-        // if (pid == m->child_id[i])
-        // {
-            printf("Process %d is finished\n", i);
+        if (pid == m->child_id[m->pipe_n])
+        {
+            //printf("Process %d is finished with wstatus %d\n", i, wstatus);
             // if (i == m->pipe_n)
                 // m->status_code += wstatus;
+            m->status_code2 = wstatus;
             if (WIFEXITED(wstatus)) 
             {
-            m->status_code2 = WEXITSTATUS(wstatus);
+                // printf("exited, m->status_code on process exit is2=%d\n", WEXITSTATUS(wstatus));
+                m->status_code2 = WEXITSTATUS(wstatus);
+                //printf("In Wait_processes() m->status_code2 is =%d\n", m->status_code2);
             }
+            if (WIFSIGNALED(wstatus)) 
+            {
+                // printf("killed by signal %d\n", WIFSIGNALED(wstatus));
+                // printf("killed by signal %d\n", WTERMSIG(wstatus));
+                m->status_code2 = WTERMSIG(wstatus);
+                m->status_code2 = WIFSIGNALED(wstatus);
+
+            }
+            
+            // if (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus))
+            //     m->status_code2 = EXIT_SUCCESS;
+        }
+
+        m->status_code2 = m->status_code2 % 255;
+        // printf("\n");
+        // printf("Exit code is --->>>\n");
+        // write(STDERR_FILENO, strerror(m->status_code2), ft_strlen(strerror(m->status_code2)));
+        // printf("\n");
+        // printf("Exit code is --->>>\n");
+
+        printf("\n");
+
 
         i++;
     }
@@ -428,73 +513,57 @@ int output_redirect(t_minishell *m, t_command *cmd)
 {
     t_list *tmp;
     int     fd;
+    // int original_stdout = dup(STDOUT_FILENO);
+
 
     tmp = cmd->out_file;
     while (tmp != NULL)
     {
-        // printf("is output working?\n");
         if (tmp->next == NULL)
         {
             if (tmp->is_append == 0)
-        // if (tmp->is_append == 0 && cmd->args != NULL)
             {
-            // printf("This should not be appending\n");
                 if_file_exists_delete(tmp->value);
-
-            // if (access(tmp->value, R_OK | W_OK) == 0)
-            // {
-            //     if (unlink(tmp->value) == 0)
-            //     printf("File '%s' removed successfully.\n", (char *)tmp->value);
-            // else 
-            //     perror("Error removing file");
-            // }
-            // write(1, "Output redirection function running\n", 37);
                 cmd->out_redirects.fd_write = open(tmp->value, O_CREAT | O_RDWR, 0777);
                 if (cmd->out_redirects.fd_write == -1)
                     perror("Could not open output file\n");
                 dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
                 close(cmd->out_redirects.fd_write);
-            // free_filename(cmd->out_redirects.file_name);
+
+                // dup2(original_stdout, STDOUT_FILENO); //
+                // close(original_stdout);
+                
+
             }
-        // if (tmp->is_append == 1 && cmd->args != NULL)
             if (tmp->is_append == 1)
             {
-            //printf("This SHOULD be appending\n");
-
                 write(1, "Output redirection function running\n", 37);
                 cmd->out_redirects.fd_write = open(tmp->value, O_CREAT | O_RDWR | O_APPEND, 0777);
                 if (cmd->out_redirects.fd_write == -1)
                     perror("Could not open output file\n");
                 dup2(cmd->out_redirects.fd_write, STDOUT_FILENO);
                 close(cmd->out_redirects.fd_write);
-        // free_filename(cmd->out_redirects.file_name);
+                //dup2(1, STDOUT_FILENO);
             }
+            
+
         }
         else
         {
             if_file_exists_delete(tmp->value);
-            // if (access(tmp->value, R_OK | W_OK) == 0)
-            // {
-            //     if (unlink(tmp->value) == 0)
-            //     printf("File '%s' removed successfully.\n", (char *)tmp->value);
-            // else 
-            //     perror("Error removing file");
-            // }
             fd = open(tmp->value, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR | S_IRWXO); // S_IRUSR | S_IWUSR
             if (fd == -1) 
             {
                 perror("Error opening file");
-                m->status_code = errno;
+                //m->status_code2 = errno;
                 free_m(m);
                 free_pipes(m);
-                exit(m->status_code);
+                exit(errno);
             }
             close(fd);
-
         }
         tmp = tmp->next;
     }
-
     free_filename(cmd->out_redirects.file_name);
     return(0);
 }
@@ -515,6 +584,93 @@ int free_in_redirects_file(t_minishell *m)
         tmp = tmp->next;//m->clist = m->clist->next;
     }
 return (0);
+}
+
+int in_redirections_per_cmd_single_builtins(t_minishell *m, t_command *cmd)
+{
+    //1. Looping until the i get to the element previous to the last, checking if the file exists. 
+    //If an invalid input file is found - error and exit
+    //2. After that, the last file is checked for rights and only it is being run
+    //Known issues - cmd->in_file->value is not a string, it is a node so freeing it is a bit tricky. We need a function which will free each node
+    //t_command *tmp;
+    t_list *tmp;
+
+    tmp = cmd->in_file;
+    while (tmp->next != NULL)
+    {
+        // write(1, (char *)tmp->value, strlen((char *)tmp->value));
+        // write(1, "\n", 1);
+        if (check_file_rights((char *)tmp->value) == 0)
+        {
+            //free_out_file_list(cmd->in_file); //!!! incorrect free, insert correct one
+        }
+        else
+        {
+            perror("Cant read from input file, permission denied\n");
+            if (tmp->value)
+            {
+                free_m(m);
+                //free_to_null(cmd->path);
+                free_pipes(m);
+                //g_exit_code = EXIT_FAILURE;
+                m->status_code2 = errno;
+                //exit(m->status_code);
+
+                // free_arr_to_null(m->path_buf);
+                // free_to_null(m->line);
+	            // if (m->tlist)
+		        //     ft_lstclear(&m->tlist, delete_token);
+	            // if (m->clist)
+		        //     ft_lstclear(&m->clist, delete_cmd);
+	            // if (m->envp)
+		        //     ft_lstclear(&m->envp, delete_envp);
+                // free_intp_to_null(m->child_id);
+               
+            }
+        }
+        tmp = tmp->next;
+    }
+    // write(1, (char *)tmp->value, strlen((char *)tmp->value));
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
+
+    if (check_file_rights((char *)tmp->value) == 0)
+        {
+            cmd->in_redirects.fd_write = open((char *)tmp->value, O_RDONLY, 0777);
+            if (cmd->in_redirects.fd_write == -1)
+                perror("Cant open the file\n");
+            if (dup2(cmd->in_redirects.fd_write, STDIN_FILENO) == -1)
+                perror("Input IN-redirection isn't working\n");
+            close(cmd->in_redirects.fd_write);
+        }
+        else
+        {
+            perror("Cant read from input file, permission denied\n");
+            if (tmp->value)
+                {
+                    free_m(m);
+                    //free_to_null(cmd->path);
+                    free_pipes(m);
+                    // g_exit_code = EXIT_FAILURE;
+                    m->status_code2 = errno;
+                    //exit(m->status_code);
+                    // free_arr_to_null(m->path_buf);
+                    // free_to_null(cmd->path);
+                    // free_to_null(m->line);
+	                // if (m->tlist)
+		            //     ft_lstclear(&m->tlist, delete_token);
+	                // if (m->clist)
+		            //     ft_lstclear(&m->clist, delete_cmd);
+	                // if (m->envp)
+		            //     ft_lstclear(&m->envp, delete_envp);
+                    // free_pipes(m);
+                    // free_intp_to_null(m->child_id);
+                    // g_exit_code = EXIT_FAILURE;
+                    // exit(g_exit_code);
+                }
+        }
+    return (0);
 }
 
 
@@ -542,7 +698,7 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
             if (tmp->value)
             {
                 free_m(m);
-                free_to_null(cmd->path);
+                //free_to_null(cmd->path);
                 free_pipes(m);
                 //g_exit_code = EXIT_FAILURE;
                 m->status_code = errno;
@@ -908,6 +1064,8 @@ int init_executor(t_minishell *m)
     m->pipe_n = command_count(m->tlist) - 1;
     m->child_id = malloc(sizeof(int) * (m->pipe_n +1));
     m->path_buf = find_path_executor(m->envp);
+    //m->stdin_original = dup(STDIN_FILENO);
+    // m->stdout_original = dup(STDOUT_FILENO);
     if (m->pipe_n > 0)
     {
         initialize_pipes(m);
@@ -927,6 +1085,8 @@ int exit_executor(t_minishell *m)
     // if (m->pipe_n != 0)
     // {
     m->status_code2 = wait_processes(m); // Here is a traditional way to place wait
+	//printf("m->status_code2 after_wait process in exit)executor  is %d\n", m->status_code2);
+
     //}
    	free_arr_to_null(m->path_buf);
 
@@ -942,7 +1102,9 @@ int exit_executor(t_minishell *m)
 int executor(t_minishell m, t_command *cmd, char **envp)
 {
     t_list *tmp;
-    
+    //int original_stdout = dup(STDOUT_FILENO);
+
+  
     init_executor(&m);
     tmp = m.clist;
     while(tmp)
@@ -952,9 +1114,21 @@ int executor(t_minishell m, t_command *cmd, char **envp)
             ft_heredoc(&m, cmd);
         if (cmd->type == BUILTIN && m.pipe_n == 0)
         {
-            if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-                output_redirect(&m, cmd);
-            execute_single_builtins(&m, cmd);
+            // if (cmd->input_redir_type == REDIRECT_IN || cmd->input_redir_type == REDIRECT_HEREDOC)
+            //     in_redirections_per_cmd(&m, cmd);
+            // if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
+            //     output_redirect(&m, cmd);
+            m.status_code2 = execute_single_builtin_logic(&m, cmd);
+            //restore_stdin_stdout(&m);
+            // restore_stdin_stdout_main();
+
+            // dup2(original_stdout, STDOUT_FILENO); //
+            // close(original_stdout);
+
+            // if (restore_stdin_stdout() != 0)
+			//     exit(42);
+        	//printf("m->status_code2 in executor after running single_bulitins() is = %d\n", m.status_code2);
+
         }
         if (m.pipe_n == 0 && cmd->type != BUILTIN)
             single_cmd(&m, cmd, envp);
@@ -963,5 +1137,7 @@ int executor(t_minishell m, t_command *cmd, char **envp)
         tmp = tmp->next;
     }
     m.status_code2 = exit_executor(&m);
+    //printf("m->status_code after exit_executor in main is %d\n", m.status_code2);
+
     return (m.status_code2);
 }

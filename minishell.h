@@ -280,6 +280,7 @@ void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
 int		count_cd_args(t_minishell *m, t_command *cmd);
 bool	invalid_identifier(char *args);
+int		execute_single_builtin_logic(t_minishell *m, t_command *cmd);
 
 /* execution */
 int		executor(t_minishell m, t_command *cmd, char **envp);
@@ -310,6 +311,7 @@ void	handle_sigint_child(int signum);
 void	handle_sigint_switch(int signum);
 void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
+int		in_redirections_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
 
 /* freeing */ 
 void	free_intp_to_null(int *var);

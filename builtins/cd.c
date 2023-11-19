@@ -89,7 +89,6 @@ static char	*standard_path(t_minishell *m, t_command *cmd)
 	else
 	{
 		current_dir = get_path(m, "PWD");
-		printf("current_dir %s\n", current_dir);
 		path_with_slash = ft_strjoin(current_dir, "/");
 		final_path = ft_strjoin(path_with_slash, cmd->args[1]);
 		free(current_dir);
