@@ -119,7 +119,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 		else if (m.line[i] == '<' || m.line[i] == '>')
 			m.token_str = redirection_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '$')
-			m.token_str = env_token(m.line, &i, &m.token_type, m.envp);
+			m.token_str = env_token(m.line, &i, &m.token_type, m.envp, &m);
 		else if (m.line[i] == ' ' || m.line[i] == '\t')
 			m.token_str = whitespace_token(m.line, &i, &m.token_type);
 		else if (m.line[i] == '\'' || m.line[i] == '\"')
@@ -127,6 +127,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 		else
 			m.token_str = check_for_word_token(m.line, &i, &m.token_type);
 		m.tlist = add_token_to_list(&m.tlist, m.token_str, m.token_type);
+		printf(" m->status_code in split_line_into_tokens is %d\n", m.status_code2);
 	}
 	cleanup_token_list(m.tlist);
 	return (m.tlist);

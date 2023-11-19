@@ -37,8 +37,8 @@ t_command	*init_minishell_struct_and_signals(t_minishell *m, char **envp)
 	cmd = NULL;
 	init_signals();
 	ft_memset(m, 0, sizeof(t_minishell));
-	g_exit_code = 0;
-	m->status_code = 0;
+	//g_exit_code = 0;
+	m->status_code2 = 0;
 	m->envp = create_envp_list(envp);
 	return (cmd);
 }

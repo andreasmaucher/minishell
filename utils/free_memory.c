@@ -135,5 +135,5 @@ int	exit_shell(t_minishell m)
 	if (m.path_buf)
 		free_env(m.path_buf);
 	//? more stuff
-	exit(g_exit_code);
+	exit(m.status_code);
 }

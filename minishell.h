@@ -129,6 +129,8 @@ typedef struct s_minishell
 	int					forked;
 	int					current_process_id;
 	int					status_code;
+	int					status_code2;
+
 }	t_minishell;
 
 /* str_utils */
@@ -278,7 +280,7 @@ char	*get_path(t_minishell *m, char *search_path);
 int		executor(t_minishell m, t_command *cmd, char **envp);
 int		single_cmd(t_minishell *m, t_command *cmd, char **envp);
 int		multiple_cmd(t_minishell *m, t_command *cmd, char **envp);
-int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
+int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
@@ -300,6 +302,8 @@ void	ft_heredoc(t_minishell *m, t_command *cmd);
 //void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
+int		output_redirect(t_minishell *m, t_command *cmd);
+
 
 
 

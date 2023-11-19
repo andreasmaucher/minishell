@@ -1,3 +1,10 @@
+New issues 18.11
+Leaks
+echo ~
+exit 1
+
+
+
 New TODO
 
 Builtins:

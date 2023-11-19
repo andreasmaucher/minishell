@@ -61,6 +61,7 @@ int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
 	t_command *cmd;
+	//m.status_code2 = 0;
 
 	(void)av;
 	if (ac != 1)
@@ -70,6 +71,7 @@ int main(int ac, char **av, char **envp)
 	{
 		if (restore_stdin_stdout() != 0)
 			exit(42);
+		printf("\nExit code of the previous command is %d\n", m.status_code2);
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
@@ -81,7 +83,8 @@ int main(int ac, char **av, char **envp)
 		m.clist = parser(m);
 		//cmd = m.clist->value;
 		//execute_single_builtins(&m, cmd);
-		executor(m, cmd, envp);
+		m.status_code2 = executor(m, cmd, envp);
+		printf("m->status_code after executor in main is %d\n", m.status_code2);
 		free_memory_for_next_line(&m);
 	}
 }

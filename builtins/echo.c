@@ -45,14 +45,15 @@ int echo(t_minishell m, t_command *cmd)
         while (cmd->args[i] != NULL)
         {
             if (ft_strcmp(cmd->args[i], "~") == 0)
-                cmd->args[i] = *find_path_after_key(m.envp, "HOME");
+                cmd->args[i] = find_path_after_key(m.envp, "HOME");
             printf("%s", cmd->args[i]);
             if (cmd->args[i + 1] != NULL)
                 printf(" ");
+            //free(cmd->args[i]);  ///echo ~ was giving leaks, MR added this line
             i++;
         }
     }
     if (n_flag == false || cmd->args[1] == NULL)
         printf("\n");
-    return (0);
+    return (42);
 }

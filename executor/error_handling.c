@@ -2,12 +2,14 @@
 
 void error_handling_and_exit(char *error_msg)
 {
+    (void)error_msg;
+    //error_msg = strerror(errno);
     // errno = g_exit_code;
     //m->status_code;
     //perror(error_msg);
-    write(STDERR_FILENO, error_msg, ft_strlen(error_msg));
+    write(STDERR_FILENO, strerror(errno), ft_strlen(strerror(errno)));
     //printf("Error code: %d, Error message: %s\n", errno, strerror(errno));
-    exit(g_exit_code);
+    exit(errno);
 }
 
 void edge_cases(char *line)

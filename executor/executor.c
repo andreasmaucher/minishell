@@ -116,7 +116,7 @@ char	*valid_path(char **path, char *argv)
             correct_path = join_strings(path[i], "/", argv);
             if (access(correct_path, X_OK) == 0)
             {
-                g_exit_code = errno;
+                //g_exit_code = errno;
                 return (correct_path);
             }
             else
@@ -131,7 +131,7 @@ char	*valid_path(char **path, char *argv)
         //     perror("Permission denied to execute the file\n");
         // else
         //     perror("Error!\n");
-    g_exit_code = errno;
+    //g_exit_code = errno;
     return (NULL);
 }
   
@@ -139,16 +139,57 @@ int wait_processes(t_minishell *m)
 {
     int i;
     int wstatus;
+    pid_t pid;
     //pid_t w;
-    (void)m;
+    // (void)m;
     //int exit_status;
-
+    wstatus = 0;
     i = 0;
-    // while (i <= m->pipe_n && m->forked == 1)
-    while (i <= m->pipe_n)
+    pid = 0;
+    // while (i <= m->pipe_n )
+    while (i <= m->pipe_n && m->forked == 1)
     {
-        if (waitpid(-1, &wstatus, 0) != -1)
-        {     
+        pid = wait(&wstatus);
+        // if (pid == m->child_id[i])
+        // {
+            printf("Process %d is finished\n", i);
+            // if (i == m->pipe_n)
+                // m->status_code += wstatus;
+            if (WIFEXITED(wstatus)) 
+            {
+            printf("exited, m->status_code on process exit is2=%d\n", WEXITSTATUS(wstatus));
+            m->status_code2 = WEXITSTATUS(wstatus);
+            printf("In Wait_processes() m->status_code2 is =%d\n", m->status_code2);
+            }
+
+        i++;
+    }
+    // while (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus));
+    //            exit(EXIT_SUCCESS);
+    return(m->status_code2);
+}
+
+
+            // else
+            //     printf("else exited, status=%d\n", WEXITSTATUS(wstatus));
+
+            // else if (wstatus != 0)
+            //     m->status_code = wstatus % 255;
+            // else
+            //     m->status_code = 0;
+        // }
+        // waitpid(-1, &wstatus, 0);
+        // printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+        // m->status_code += WEXITSTATUS(wstatus);
+        
+        // if (waitpid(-1, &wstatus, 0) != -1)
+        // {     
+        //     if (WIFEXITED(wstatus)) 
+        //     {
+        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+        //     m->status_code += WEXITSTATUS(wstatus);
+        //     } 
+        // }
         //w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
         //printf("ERROR!!\n");
         // if (w == -1) 
@@ -156,35 +197,29 @@ int wait_processes(t_minishell *m)
         //     perror("waitpid");
         //     exit(EXIT_FAILURE);
         // }
-        if (WIFEXITED(wstatus)) 
-        {
-            printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-            m->status_code = WEXITSTATUS(wstatus);
-        } 
-        else if (WIFSIGNALED(wstatus)) 
-        {
-            printf("killed by signal %d\n", WTERMSIG(wstatus));
-            m->status_code = WTERMSIG(wstatus);
-        } 
-        else if (WIFSTOPPED(wstatus)) 
-        {
-            printf("stopped by signal %d\n", WSTOPSIG(wstatus));
-            m->status_code = WSTOPSIG(wstatus);
-        } 
-        else if (WIFCONTINUED(wstatus)) 
-        {
-            printf("continued\n");
-            m->status_code = WSTOPSIG(wstatus);
-        }
-        }
+        // if (WIFEXITED(wstatus)) 
+        // {
+        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
+        //     m->status_code = WEXITSTATUS(wstatus);
+        // } 
+        // else if (WIFSIGNALED(wstatus)) 
+        // {
+        //     printf("killed by signal %d\n", WTERMSIG(wstatus));
+        //     m->status_code = WTERMSIG(wstatus);
+        // } 
+        // else if (WIFSTOPPED(wstatus)) 
+        // {
+        //     printf("stopped by signal %d\n", WSTOPSIG(wstatus));
+        //     m->status_code = WSTOPSIG(wstatus);
+        // } 
+        // else if (WIFCONTINUED(wstatus)) 
+        // {
+        //     printf("continued\n");
+        //     m->status_code = WSTOPSIG(wstatus);
+        // }
+        
         // }
         //g_exit_code = wstatus;
-        i++;
-    }
-    // while (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus));
-    //            exit(EXIT_SUCCESS);
-    return(0);
-}
 
 void kill_process(t_minishell *m, int process_id)
 {
@@ -365,7 +400,7 @@ int out_redirections(t_minishell *m)
     return (0);
 }
 
-int output_redirect(t_command *cmd)
+int output_redirect(t_minishell *m, t_command *cmd)
 {
     t_list *tmp;
     int     fd;
@@ -425,8 +460,10 @@ int output_redirect(t_command *cmd)
             if (fd == -1) 
             {
                 perror("Error opening file");
-                g_exit_code = EXIT_FAILURE;
-                exit(g_exit_code);
+                m->status_code = errno;
+                free_m(m);
+                free_pipes(m);
+                exit(m->status_code);
             }
             close(fd);
 
@@ -483,8 +520,9 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
                 free_m(m);
                 free_to_null(cmd->path);
                 free_pipes(m);
-                g_exit_code = EXIT_FAILURE;
-                exit(g_exit_code);
+                //g_exit_code = EXIT_FAILURE;
+                m->status_code = errno;
+                exit(m->status_code);
 
                 // free_arr_to_null(m->path_buf);
                 // free_to_null(m->line);
@@ -522,8 +560,9 @@ int in_redirections_per_cmd(t_minishell *m, t_command *cmd)
                     free_m(m);
                     //free_to_null(cmd->path);
                     free_pipes(m);
-                    g_exit_code = EXIT_FAILURE;
-                    exit(g_exit_code);
+                    // g_exit_code = EXIT_FAILURE;
+                    m->status_code = errno;
+                    exit(m->status_code);
                     // free_arr_to_null(m->path_buf);
                     // free_to_null(cmd->path);
                     // free_to_null(m->line);
@@ -671,11 +710,12 @@ int single_cmd(t_minishell *m, t_command *cmd, char **envp)
         error_handling_and_exit("Fork failed\n");
     if (m->child_id[0] == 0)
     {
+        printf("Single cmd child process is running\n");
         cmd->path = NULL;
         if (cmd->input_redir_type == REDIRECT_IN || cmd->input_redir_type == REDIRECT_HEREDOC)
             in_redirections_per_cmd(m, cmd);
         if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-            output_redirect(cmd);
+            output_redirect(m, cmd);
         if (cmd->args)
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
         if (cmd->path == NULL)
@@ -707,7 +747,7 @@ int multiple_cmd(t_minishell *m, t_command *cmd, char **envp)
         }
         if (cmd->input_redir_type == REDIRECT_IN || cmd->input_redir_type == REDIRECT_HEREDOC)
             in_redirections_per_cmd(m, cmd);
-        output_redirect(cmd);
+        output_redirect(m, cmd);
         close_pipes(m);
         if (cmd->args)
             cmd->path = valid_path(m->path_buf, cmd->args[0]);
@@ -854,13 +894,18 @@ int init_executor(t_minishell *m)
 
 int exit_executor(t_minishell *m)
 {
-    int status;
+    //int status;
     if (m->pipe_n > 0)
     {
         close_pipes(m);
         free_pipes(m);
     }
-    status = wait_processes(m); // Here is a traditional way to place wait
+    // if (m->pipe_n != 0)
+    // {
+    m->status_code2 = wait_processes(m); // Here is a traditional way to place wait
+	printf("m->status_code2 after_wait process in exit)executor  is %d\n", m->status_code2);
+
+    //}
    	free_arr_to_null(m->path_buf);
 
     // if (m->path_buf)
@@ -868,7 +913,7 @@ int exit_executor(t_minishell *m)
     free_intp_to_null(m->child_id);
     // free(m->child_id);
     m->forked = 0;
-    return (status);
+    return (m->status_code2);
 }
 
 
@@ -886,15 +931,19 @@ int executor(t_minishell m, t_command *cmd, char **envp)
         if (cmd->type == BUILTIN && m.pipe_n == 0)
         {
             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-                output_redirect(cmd);
-            g_exit_code = execute_single_builtins(&m, cmd);
+                output_redirect(&m, cmd);
+            execute_single_builtins(&m, cmd);
+        	printf("m->status_code2 in executor after running single_bulitins() is = %d\n", m.status_code2);
+
         }
-        else if (m.pipe_n == 0)
+        if (m.pipe_n == 0 && cmd->type != BUILTIN)
             single_cmd(&m, cmd, envp);
         if (m.pipe_n > 0)
             multiple_cmd(&m, cmd, envp);
         tmp = tmp->next;
     }
-    exit_executor(&m);
-    return (0);
+    m.status_code2 = exit_executor(&m);
+    printf("m->status_code after exit_executor in main is %d\n", m.status_code2);
+
+    return (m.status_code2);
 }

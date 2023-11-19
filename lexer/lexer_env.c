@@ -112,7 +112,11 @@ char	*env_token(char *line, int *i, t_type *token_type,
 	if (line[*i] == '?' && (line[j + 1] == 32 || line[j + 1] == '\0'))
 	{
 		(*i)++;
-		env_final = ft_itoa(m->status_code);
+		//m->status_code = 2;
+		env_final = ft_itoa(m->status_code2);
+		//printf("env_token env final os %s\n", env_final);
+		printf(" m->status_code in env_token ss %d\n", m->status_code2);
+
 		return (env_final);
 	}
 	else

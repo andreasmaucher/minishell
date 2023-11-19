@@ -14,45 +14,51 @@
 
 int	execute_single_builtins(t_minishell *m, t_command *cmd)
 {
-	int	return_code;
-
-	return_code = 0;
+	// int	return_code;
+	//m->status_code = 0;
+	printf("in Bulitins m->status_code is = %d\n", m->status_code2);
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		return_code = echo(*m, cmd);
+		echo(*m, cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		return_code = pwd();
+		m->status_code2 = pwd();
+	// {
+		
+	// 	m->status_code2 = 42;
+	// 	printf("m->status_code2 in excute single builtin is = %d\n", m->status_code2);
+	// }
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return_code = unset(m, cmd);
+		m->status_code = unset(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		return_code = env(m);
+		m->status_code = env(m);
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		return_code = export(m, cmd);
+		m->status_code = export(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return_code = cd(m, cmd);
+		m->status_code = cd(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return_code = exit_builtin(m, cmd);
-	return (return_code);
+		m->status_code = exit_builtin(m, cmd);
+	// m->status_code = return_code;
+	return (m->status_code);
 }
 
 int	execute_builtins(t_minishell *m, t_command *cmd)
 {
-	int	return_code;
+	// int	return_code;
 
-	return_code = 0;
+	// return_code = 0;
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		return_code = echo(*m, cmd);
+		echo(*m, cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		return_code = pwd();
+		m->status_code = pwd();
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return_code = unset(m, cmd);
+		m->status_code = unset(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		return_code = env(m);
+		m->status_code = env(m);
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		return_code = export(m, cmd);
+		m->status_code = export(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return_code = cd(m, cmd);
+		m->status_code = cd(m, cmd);
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return_code = exit_builtin(m, cmd);
+		m->status_code = exit_builtin(m, cmd);
 
 	//this was added to free
 	//free_all(*m);
@@ -92,6 +98,5 @@ int	execute_builtins(t_minishell *m, t_command *cmd)
 	// // 	free(cmd);
 	// cmd = set_pt_to_null(cmd);
 	// }
-
-	exit (return_code);
+	exit (m->status_code);
 }
