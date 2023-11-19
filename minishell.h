@@ -29,6 +29,7 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <errno.h>
+#include <asm/termbits.h>
 
 extern int	g_exit_code;
 extern int	g_signal_switch;
