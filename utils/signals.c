@@ -31,7 +31,9 @@ void	handle_sigint_child(int signum)//, t_minishell *m, char *tmp_line, int fd)
 {
 	if (signum == SIGINT)
 	{
-		ioctl(STDOUT_FILENO, TIOCGWINSZ, "\n");
+		ioctl(STDOUT_FILENO, TIOCSTI, "\n"); //! works with this one
+		//write(1, "\n", 1);
+		//printf("handle sigint child\n");
 		g_exit_code = 130;
 		g_signal_switch = 1;
 		/* (void)tmp_line;
@@ -41,7 +43,7 @@ void	handle_sigint_child(int signum)//, t_minishell *m, char *tmp_line, int fd)
 		free_m(m);
 		free_pipes(m);
 		close(fd); */
-		exit (130);
+		//exit (130);
 	}
 }
 
@@ -50,10 +52,10 @@ void	handle_sigint_switch(int signum)
 	if (signum == SIGINT)
 	{
 		g_signal_switch = 1;
-		printf("Signals switched off in heredocs\n");
+		//printf("Signals switched off in heredocs\n");
 		// printf("child free by signal\n");
 		// //ioctl(STDOUT_FILENO, TIOCGWINSZ, "\n");
-		// g_exit_code = 130;
+		g_exit_code = 130;
 		// (void)tmp_line;
 		// //free(tmp_line);
 		// (void)m;
@@ -89,7 +91,8 @@ void	handle_sigint_parent(int signum)
 {
 	if (signum == SIGINT)
 	{
-		printf("\n");
+		write(1, "\n", 1);
+		rl_redisplay();
 		g_exit_code = 130;
 	}
 }

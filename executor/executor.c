@@ -287,7 +287,7 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
             {
                 //start heredoc specific signals here
 				//signal(SIGINT, handle_sigint_switch);
-				signal(SIGINT, handle_sigint_child);
+				signal(SIGINT, handle_sigint_child); //!SIGNAL
                 if_file_exists_delete(tmp->value);
                 // if (access(tmp->value, R_OK | W_OK) != 0)
                 //     error_handling_and_exit("Error removing file");
@@ -301,7 +301,7 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
                 {
 					printf("g_signal_switch = %d\n", g_signal_switch);
 
-					/* if (g_signal_switch == 1)
+					if (g_signal_switch == 1)
 					{
 						printf("signals should be turned off now\n");
 						//handle_sigint_child_free(SIGINT, m, tmp_line, fd);
@@ -312,7 +312,7 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
 						free_pipes(m);
 						close(fd);
 						exit (130);
-					}  */
+					} 
                     line = readline("heredoc> ");
 					/* signal(SIGINT, handle_sigint_child); */
                     tmp_line = ft_strjoin(line, "\n");
@@ -348,9 +348,10 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
         }
         wait(NULL); //make a waitpid function to catch signals and restore minishell signals
 		// parent 
-		//signal(SIGINT, handle_sigint_parent);
 		//init_signals();
 		g_signal_switch = 0;
+		signal(SIGINT, handle_sigint);
+		//signal(SIGINT, handle_sigint_parent);
     tmp = tmp->next;
     }
     //wait(NULL);

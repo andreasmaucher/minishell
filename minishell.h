@@ -313,7 +313,7 @@ void	handle_sigint_child(int signum);//, t_minishell *m, char *tmp_line, int fd)
 void	handle_sigint_child_free(int signum, t_minishell *m, char *tmp_line, int fd);
 void	handle_sigint_switch(int signum);
 void	handle_sigint_parent(int signum);
-
+void	handle_sigint(int signal);
 
 
 /* freeing */ 
