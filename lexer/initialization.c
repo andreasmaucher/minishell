@@ -35,6 +35,8 @@ t_command	*init_minishell_struct_and_signals(t_minishell *m, char **envp)
 	t_command	*cmd;
 
 	cmd = NULL;
+	m->stdin_original = dup(STDIN_FILENO);
+    m->stdout_original = dup(STDOUT_FILENO);
 	init_signals();
 	ft_memset(m, 0, sizeof(t_minishell));
 	//g_exit_code = 0;

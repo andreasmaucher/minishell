@@ -111,7 +111,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 	m.tlist = NULL;
 	i = skip_whitespace(m);
 	check_uneven_amount_of_quotes(m.line, &m);
-	check_weird_input(m.line, &i);
+	/* check_weird_input(m.line, &i); */
 	while (m.line[i])
 	{
 		if (m.line[i] == '|')
@@ -127,7 +127,7 @@ t_list	*split_line_into_tokens(t_minishell m)
 		else
 			m.token_str = check_for_word_token(m.line, &i, &m.token_type);
 		m.tlist = add_token_to_list(&m.tlist, m.token_str, m.token_type);
-		printf(" m->status_code in split_line_into_tokens is %d\n", m.status_code2);
+		//printf(" m->status_code in split_line_into_tokens is %d\n", m.status_code2);
 	}
 	cleanup_token_list(m.tlist);
 	return (m.tlist);

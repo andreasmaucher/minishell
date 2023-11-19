@@ -1,3 +1,8 @@
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
 a.out
 builtins
 eof
@@ -5,6 +10,7 @@ executor
 file
 inf
 infile
+infile1
 lexer
 main.c
 main.o
@@ -21,13 +27,16 @@ out3
 out3ls
 outexit
 outexite
+outhallo
 outls
 outls2
 outls3
 outls4
 outls5
 outls6
+outls99
 outlsexi
+outws
 parser
 README.md
 suppressions.supp

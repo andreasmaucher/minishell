@@ -55,5 +55,5 @@ int echo(t_minishell m, t_command *cmd)
     }
     if (n_flag == false || cmd->args[1] == NULL)
         printf("\n");
-    return (42);
+    return (0);
 }

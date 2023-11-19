@@ -1,10 +1,17 @@
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+m->path_buf is /home/amaucher/bin
 Makefile
 README.md
 TODO
-a.out
 builtins
+eof
 executor
 file
+inf
 infile
 lexer
 main.c

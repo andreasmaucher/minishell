@@ -15,13 +15,15 @@
 int g_exit_code;
 int	g_signal;
 
-int restore_stdin_stdout(void)
+
+
+int restore_stdin_stdout_main(void)
 {
-	int default_stdin; // Duplicate stdin (file descriptor 0)
-    int default_stdout; // Duplicate stdout (file descriptor 1)
+	int default_stdin;
+    int default_stdout;
 	
-	default_stdin = dup(STDIN_FILENO); // Duplicate stdin (file descriptor 0)
-    default_stdout = dup(STDOUT_FILENO); // Duplicate stdout (file descriptor 1)
+	default_stdin = dup(STDIN_FILENO);
+    default_stdout = dup(STDOUT_FILENO);
 	if (dup2(default_stdin, 0) == -1 || dup2(default_stdout, 1) == -1)
     {
         perror("Failed to restore stdin or stdout");
@@ -45,7 +47,7 @@ void free_memory_for_next_line(t_minishell *m)
 	if (m->line)
 		m->line = set_pt_to_null(m->line);
 	free_lists(m);
-	term_processes(m); // is this needed?
+	term_processes(m);
 }
 
 /* 
@@ -61,7 +63,6 @@ int main(int ac, char **av, char **envp)
 {
 	t_minishell m;
 	t_command *cmd;
-	//m.status_code2 = 0;
 
 	(void)av;
 	if (ac != 1)
@@ -69,8 +70,7 @@ int main(int ac, char **av, char **envp)
 	cmd = init_minishell_struct_and_signals(&m, envp);
 	while(1)
 	{
-		if (restore_stdin_stdout() != 0)
-			exit(42);
+		restore_stdin_stdout_main();
 		printf("\nExit code of the previous command is %d\n", m.status_code2);
 		m.line = readline("Myshell: ");
 		if (!m.line)
@@ -79,12 +79,11 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		printlist(m.tlist); //! only for testing
+		//printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
 		//cmd = m.clist->value;
 		//execute_single_builtins(&m, cmd);
 		m.status_code2 = executor(m, cmd, envp);
-		printf("m->status_code after executor in main is %d\n", m.status_code2);
 		free_memory_for_next_line(&m);
 	}
 }

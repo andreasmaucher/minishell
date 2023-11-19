@@ -65,6 +65,8 @@ void print_command_list(t_list *clist)
             printf("File Descriptor (fd): %d\n", cmd->out_redirects.fd);
             printf("File Name: %s\n", cmd->out_redirects.file_name != NULL ? cmd->out_redirects.file_name : "None");
         }
+
+        
 		// while (cmd->out_file != NULL)
         // {
         //     printf("Out file name for redirect: %s\n", (char *)cmd->out_file->value);

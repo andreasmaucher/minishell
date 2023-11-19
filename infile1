@@ -1,0 +1,56 @@
+in Bulitins m->status_code is = 0
+lala
+[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h^C[?2004l
+Myshell: [?2004hdrglkfdgjkfjkfdjkgffdg
+[?2004ltest
+
+--- Command List after Parser ---
+[0]
+Command Type: PATH
+Before Pipe: false
+After Pipe: false
+Single cmd child process is running
+
+[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h^C[?2004l
+Myshell: [?2004h^C[?2004l
+Myshell: [?2004h^C[?2004l
+Myshell: [?2004h
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: drglkfdgjkfjkfdjkgffdg[C[C[C[C[C[C[C[C[C[3Pecho lala > infile1[Kdfglkjkldf
+[?2004ltest
+
+--- Command List after Parser ---
+[0]
+Command Type: BUILTIN
+Before Pipe: false
+After Pipe: false
+in Bulitins m->status_code is = 2
+laladfglkjkldf
+[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h^C[?2004l
+Myshell: [?2004h
+[?2004l[?2004hMyshell: 
+[?2004l
+Myshell: [?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l[?2004hMyshell: 
+[?2004l
+Myshell: [?2004hMyshell: 
+[?2004l[?2004hMyshell: ^C[?2004l
+Myshell: [?2004h
+[?2004l[?2004hMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: 

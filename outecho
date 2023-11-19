@@ -1,0 +1,45 @@
+in Bulitins m->status_code is = 0
+hallo
+[?2004hMyshell: fweew
+[?2004ltest
+
+--- Command List after Parser ---
+[0]
+Command Type: PATH
+Before Pipe: false
+After Pipe: false
+Single cmd child process is running
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+
+[?2004hMyshell: e
+[?2004ltest
+
+--- Command List after Parser ---
+[0]
+Command Type: PATH
+Before Pipe: false
+After Pipe: false
+Single cmd child process is running
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+Error accessing file/directory.
+
+[?2004hMyshell: ^Z[?2004l[?2004h^Z[?2004l[?2004h^Z[?2004l[?2004h[KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: [KMyshell: 

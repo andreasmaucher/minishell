@@ -129,7 +129,7 @@ void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
 		tmp_tlist = *tlist;
 		tmp_command = (t_command *) clist->value;
 		tmp_token = (t_token *) tmp_tlist->value;
-		printf("within quotes after parser\n");
+		//printf("within quotes after parser\n");
 		check_if_builtin(tmp_token, tmp_command);
 		tlist_len = token_count_tlist(tmp_tlist);
 		tmp_command->args = malloc(sizeof(char *) * (tlist_len + 1));
