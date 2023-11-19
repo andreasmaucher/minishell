@@ -34,17 +34,15 @@ if not the command path needs to be searched for during execution
 */
 void	check_if_builtin(t_token *tmp_token, t_command *tmp_command)
 {
-	
 	if (tmp_token->str != NULL)
 	{
-		printf("test\n");
 		if (!ft_strcmp(tmp_token->str, "echo")
-		|| !ft_strcmp(tmp_token->str, "cd")
-		|| !ft_strcmp(tmp_token->str, "pwd")
-		|| !ft_strcmp(tmp_token->str, "export")
-		|| !ft_strcmp(tmp_token->str, "unset")
-		|| !ft_strcmp(tmp_token->str, "env")
-		|| !ft_strcmp(tmp_token->str, "exit"))
+			|| !ft_strcmp(tmp_token->str, "cd")
+			|| !ft_strcmp(tmp_token->str, "pwd")
+			|| !ft_strcmp(tmp_token->str, "export")
+			|| !ft_strcmp(tmp_token->str, "unset")
+			|| !ft_strcmp(tmp_token->str, "env")
+			|| !ft_strcmp(tmp_token->str, "exit"))
 			tmp_command->type = BUILTIN;
 		else
 			tmp_command->type = PATH;
@@ -129,7 +127,6 @@ void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd)
 		tmp_tlist = *tlist;
 		tmp_command = (t_command *) clist->value;
 		tmp_token = (t_token *) tmp_tlist->value;
-		printf("within quotes after parser\n");
 		check_if_builtin(tmp_token, tmp_command);
 		tlist_len = token_count_tlist(tmp_tlist);
 		tmp_command->args = malloc(sizeof(char *) * (tlist_len + 1));

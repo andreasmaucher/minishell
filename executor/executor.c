@@ -99,11 +99,19 @@ char	*valid_path(char **path, char *argv)
 
     i = 0;
     correct_path = NULL;
-    // if (argv != NULL && argv[0] == '/')
-    // {
-    //     if (access(argv, X_OK) == 0)
-    //         return (argv);
-    // }
+
+
+	//!! check if it is a directory or file
+	//!! ./ and / cases
+
+
+    if (argv != NULL && argv[0] == '/')
+    {
+        if (access(argv, X_OK) == 0)
+            return (argv);
+		else
+			return(NULL);
+    }
     // if (argv != NULL && argv[0] == '.' && argv[1] == '/')
     // {
     //     argv +=2;
@@ -111,6 +119,10 @@ char	*valid_path(char **path, char *argv)
     //         return (argv);
     // }
     // else
+
+		//!! check if it is a directory or file
+		//!! ./ and / cases
+
         while (path[i])
         {
             correct_path = join_strings(path[i], "/", argv);
@@ -126,7 +138,7 @@ char	*valid_path(char **path, char *argv)
             i++;
         }
         // if (errno == ENOENT)
-        //     perror("File does not exist.\n");
+        //     perror("Filepw does not exist.\n");
         // else if (errno == EACCES)  
         //     perror("Permission denied to execute the file\n");
         // else
@@ -157,9 +169,7 @@ int wait_processes(t_minishell *m)
                 // m->status_code += wstatus;
             if (WIFEXITED(wstatus)) 
             {
-            printf("exited, m->status_code on process exit is2=%d\n", WEXITSTATUS(wstatus));
             m->status_code2 = WEXITSTATUS(wstatus);
-            printf("In Wait_processes() m->status_code2 is =%d\n", m->status_code2);
             }
 
         i++;
@@ -917,8 +927,6 @@ int exit_executor(t_minishell *m)
     // if (m->pipe_n != 0)
     // {
     m->status_code2 = wait_processes(m); // Here is a traditional way to place wait
-	printf("m->status_code2 after_wait process in exit)executor  is %d\n", m->status_code2);
-
     //}
    	free_arr_to_null(m->path_buf);
 
@@ -947,8 +955,6 @@ int executor(t_minishell m, t_command *cmd, char **envp)
             if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
                 output_redirect(&m, cmd);
             execute_single_builtins(&m, cmd);
-        	printf("m->status_code2 in executor after running single_bulitins() is = %d\n", m.status_code2);
-
         }
         if (m.pipe_n == 0 && cmd->type != BUILTIN)
             single_cmd(&m, cmd, envp);
@@ -957,7 +963,5 @@ int executor(t_minishell m, t_command *cmd, char **envp)
         tmp = tmp->next;
     }
     m.status_code2 = exit_executor(&m);
-    printf("m->status_code after exit_executor in main is %d\n", m.status_code2);
-
     return (m.status_code2);
 }

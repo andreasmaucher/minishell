@@ -85,8 +85,8 @@ be the file name in the output redirection
 typedef struct s_file
 {
 	int		fd;
-	int		fd_read; //! if needed, add to ft_create_cmd to initialize it
-	int		fd_write; //! if needed, add to ft_create_cmd to initialize it
+	int		fd_read;
+	int		fd_write;
 	char	*file_name;
 	char	*stop_heredoc;
 	char	*new_heredoc_file;
@@ -99,8 +99,8 @@ typedef struct s_command
 	t_type				input_redir_type;
 	t_type				output_redir_type;
 	char				**args;
-	t_file				out_redirects; //!
-	t_file				in_redirects; //!
+	t_file				out_redirects;
+	t_file				in_redirects;
 	char				*path;
 	t_list				*out_file;
 	t_list				*in_file;
@@ -165,7 +165,6 @@ t_list	*parser(t_minishell m);
 char	*ft_itoa(int n);
 
 /* initialization */
-t_command *init_minishell_struct_and_signals(t_minishell *m, char **envp);
 void	*ft_memset(void *s, int c, size_t n);
 void	init_signals(void);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
@@ -219,9 +218,13 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	free_all(t_minishell m);
 void	delete_file(void *content);
 void	free_out_file_list(t_list *out_file);
+void	free_to_null(char *var);
+void	free_intp_to_null(int *var);
+void	free_all_the_og(t_minishell m);
+void	free_cmd_the_og(t_command *cmd);
 
 /* env */
-char	*env_token(char *line, int *i, t_type *token_type,
+char	*env_token(int *i, t_type *token_type,
 			t_list *env_list, t_minishell *m);
 char	*extract_env_name(char *line, int *i);
 char	*env_within_double_quotes(char *line, int *i);
@@ -275,12 +278,15 @@ char	*go_back_to_last_directory(t_minishell *m, char *path);
 void	delete_node(t_minishell *m, char *search_key);
 void	add_specific_envs(t_minishell *m, char *path, char *key);
 char	*get_path(t_minishell *m, char *search_path);
+int		count_cd_args(t_minishell *m, t_command *cmd);
+bool	invalid_identifier(char *args);
 
 /* execution */
 int		executor(t_minishell m, t_command *cmd, char **envp);
 int		single_cmd(t_minishell *m, t_command *cmd, char **envp);
 int		multiple_cmd(t_minishell *m, t_command *cmd, char **envp);
-int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp);
+int		execute_program(char **arg_vec, t_command *cmd, t_minishell *m,
+			char **envp);
 int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
@@ -290,16 +296,13 @@ void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
 void	free_args(char **args);
-//int 	in_redirections(t_minishell *m);
-int 	in_redirections_per_cmd(t_minishell *m, t_command *cmd);
+int		in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
 int		restore_stdin_stdout(void);
-//void	ft_heredoc(char *filename, char *eof, t_minishell *m);
 void	ft_heredoc(t_minishell *m, t_command *cmd);
-//void	ft_heredoc(t_list *in_file, t_minishell *m);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
 int		output_redirect(t_minishell *m, t_command *cmd);
@@ -308,38 +311,19 @@ void	handle_sigint_switch(int signum);
 void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
 
-//freeing 
+/* freeing */ 
 void	free_intp_to_null(int *var);
-void 	free_to_null(char *var);
+void	free_to_null(char *var);
 void	free_arr_to_null(char **arr);
 void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
 void	free_m(t_minishell *m);
 
+/* exiting and error handling */
+void	error_handling_and_exit(char *error_msg);
 
-//exiting and error handling
-void error_handling_and_exit(char *error_msg);
-
-//file_handling
-void if_file_exists_delete(void *filename);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* file_handling */
+void	if_file_exists_delete(void *filename);
 
 #endif

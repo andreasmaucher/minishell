@@ -12,6 +12,38 @@
 
 #include "../minishell.h"
 
+/* determine the size of a list */
+int	lst_size(t_list *head)
+{
+	int		lsize;
+	t_list	*current_node_pos;
+
+	lsize = 0;
+	current_node_pos = head;
+	while (current_node_pos != NULL)
+	{
+		current_node_pos = current_node_pos->next;
+		lsize++;
+	}
+	return (lsize);
+}
+
+/* returns the value of the last node in a list */
+t_list	*return_tail_value(t_list *head)
+{
+	t_list	*current_node_pos;
+	int		lsize;
+
+	current_node_pos = head;
+	lsize = lst_size(head);
+	while (lsize > 1)
+	{
+		current_node_pos = current_node_pos->next;
+		lsize--;
+	}
+	return (current_node_pos);
+}
+
 t_token	*add_token_type_and_str(char *token_str, t_type token_type)
 {
 	t_token	*token;

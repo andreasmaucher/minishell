@@ -19,6 +19,8 @@ char	*append_str(char *str, char *appendix)
 	if (!str)
 		return (appendix);
 	appended_str = ft_strjoin(str, appendix);
+	free(appendix);
+	free(str);
 	return (appended_str);
 }
 
@@ -43,7 +45,6 @@ char	*double_quote_to_string(char *line, int *i, t_minishell m)
 	char	*env_expanded;
 
 	str_between_quotes = NULL;
-	printf("within quotes\n");
 	while (line[*i] != '"' && line[*i] != '\0')
 	{
 		if (line[*i] == '$')
@@ -53,7 +54,7 @@ char	*double_quote_to_string(char *line, int *i, t_minishell m)
 			if (check_if_part_of_library(m.envp, search_str) == true)
 				env_expanded = find_path_after_key(m.envp, search_str);
 			else if (check_if_part_of_library(m.envp, search_str) == false)
-				env_expanded = "";
+				env_expanded = ft_strdup("");
 			str_between_quotes = append_str(str_between_quotes, env_expanded);
 			free(search_str);
 		}

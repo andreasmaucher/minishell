@@ -12,38 +12,6 @@
 
 #include "../minishell.h"
 
-/* determine the size of a list */
-int	lst_size(t_list *head)
-{
-	int		lsize;
-	t_list	*current_node_pos;
-
-	lsize = 0;
-	current_node_pos = head;
-	while (current_node_pos != NULL)
-	{
-		current_node_pos = current_node_pos->next;
-		lsize++;
-	}
-	return (lsize);
-}
-
-/* returns the value of the last node in a list */
-t_list	*return_tail_value(t_list *head)
-{
-	t_list	*current_node_pos;
-	int		lsize;
-
-	current_node_pos = head;
-	lsize = lst_size(head);
-	while (lsize > 1)
-	{
-		current_node_pos = current_node_pos->next;
-		lsize--;
-	}
-	return (current_node_pos);
-}
-
 /* creates a new node (that is to be added to a list in subsequent function) */
 t_list	*create_new_node(void *value)
 {
@@ -57,7 +25,8 @@ t_list	*create_new_node(void *value)
 	return (newnode);
 }
 
-/* creates a new node for in_filenames(that is to be added to a list in subsequent function) */
+/* creates a new node for in_filenames(that is to be added to a 
+list in subsequent function) */
 t_list	*create_new_filename_node(void *value, char *eof)
 {
 	t_list	*newnode;
@@ -72,7 +41,8 @@ t_list	*create_new_filename_node(void *value, char *eof)
 	return (newnode);
 }
 
-/* creates a new node for in_filenames(that is to be added to a list in subsequent function) */
+/* creates a new node for in_filenames(that is to be added to 
+a list in subsequent function) */
 t_list	*create_new_append_node(void *value)
 {
 	t_list	*newnode;
@@ -100,7 +70,8 @@ void	insert_at_tail(t_list *head, t_list *new_value)
 }
 
 /*
-adds a new node to a list; in case the list is empty, the new node becomes the
+adds a new node to a list; in case the list is empty, 
+the new node becomes the
 head, else it is added at the end of the list
 */
 t_list	*add_token_to_list(t_list **token_list, char *token_str,

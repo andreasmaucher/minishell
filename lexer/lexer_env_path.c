@@ -63,7 +63,7 @@ char	*find_path_after_key(t_list *envp, char *search_str)
 	while (ft_strnstr(dict->value, search_str, ft_strlen(search_str)) == NULL)
 	{
 		tmp = tmp->next;
-		dict = tmp->value;// maybe change the order?
+		dict = tmp->value;
 	}
 	path = ft_strstr(dict->value, "=");
 	if (path == NULL)

@@ -12,6 +12,17 @@
 
 #include "../minishell.h"
 
+int	count_cd_args(t_minishell *m, t_command *cmd)
+{
+	if ((arg_count(cmd->args) > 2))
+	{
+		printf("Too many arguments\n");
+		m->status_code2 = 1;
+		return (m->status_code);
+	}
+	return (0);
+}
+
 char	*go_back_to_home(t_minishell *m, char *path)
 {
 	path = get_path(m, "HOME");

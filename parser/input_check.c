@@ -55,7 +55,7 @@ bool	check_parser_redirections(t_list *tlist)
 	while (current != NULL)
 	{
 		if ((((t_token *)current->value)->type == REDIRECT_HEREDOC)
-			||(((t_token *)current->value)->type == REDIRECT_APPEND)
+			|| (((t_token *)current->value)->type == REDIRECT_APPEND)
 			|| (((t_token *)current->value)->type == REDIRECT_IN)
 			|| (((t_token *)current->value)->type == REDIRECT_OUT))
 		{

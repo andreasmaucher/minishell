@@ -13,6 +13,42 @@
 #include "../minishell.h"
 
 /*
+returns the path after the key, meaning everything after '='
+*/
+void	find_path_after_key_tilde(t_list *envp, char *search_str)
+{
+	char	*path;
+	t_list	*tmp;
+	t_dict	*dict;
+
+	tmp = envp;
+	dict = (t_dict *)tmp->value;
+	while (ft_strnstr(dict->value, search_str, ft_strlen(search_str)) == NULL)
+	{
+		tmp = tmp->next;
+		dict = tmp->value;
+	}
+	path = ft_strstr(dict->value, "=");
+	if (path == NULL)
+		return ;
+	path++;
+	printf("%s", path);
+}
+
+void	echo_print(t_command *cmd, int *i, t_minishell m)
+{
+	while (cmd->args[(*i)] != NULL)
+	{
+		if (ft_strcmp(cmd->args[(*i)], "~") == 0)
+			find_path_after_key_tilde(m.envp, "HOME");
+		printf("%s", cmd->args[(*i)]);
+		if (cmd->args[(*i) + 1] != NULL)
+			printf(" ");
+		(*i)++;
+	}
+}
+
+/*
 Expected behavior:
 - 'echo': prints the provided text to the terminal followed by a newline
 - 'echo -n': prints the provided text to the terminal but suppresses newline, -n
@@ -21,39 +57,30 @@ needs to be the first word after echo, if not it's simply 'echoed';
 - '~' can occur at any point after echo and prints the home directory path;
 */
 
-int echo(t_minishell m, t_command *cmd)
+int	echo(t_minishell m, t_command *cmd)
 {
-    bool    n_flag;
-    int     i;
+	bool	n_flag;
+	int		i;
 	int		j;
 
 	j = 0;
-    i = 1;
-    n_flag = false;
-    if (cmd->args[i] != NULL)
-    {
-        if (cmd->args[1][j] == '-' && cmd->args[1][++j] == 'n')
-        {
+	i = 1;
+	n_flag = false;
+	if (cmd->args[i] != NULL)
+	{
+		if (cmd->args[1][j] == '-' && cmd->args[1][++j] == 'n')
+		{
 			while (cmd->args[1][j] == 'n' && cmd->args[1][j])
 				j++;
 			if (cmd->args[1][j] == '\0')
 			{
 				n_flag = true;
-            	i = 2;
+				i = 2;
 			}
-        }
-        while (cmd->args[i] != NULL)
-        {
-            if (ft_strcmp(cmd->args[i], "~") == 0)
-                cmd->args[i] = find_path_after_key(m.envp, "HOME");
-            printf("%s", cmd->args[i]);
-            if (cmd->args[i + 1] != NULL)
-                printf(" ");
-            //free(cmd->args[i]);  ///echo ~ was giving leaks, MR added this line
-            i++;
-        }
-    }
-    if (n_flag == false || cmd->args[1] == NULL)
-        printf("\n");
-    return (42);
+		}
+		echo_print(cmd, &i, m);
+	}
+	if (n_flag == false || cmd->args[1] == NULL)
+		printf("\n");
+	return (0);
 }

@@ -26,10 +26,11 @@ void	join_str_and_del_old_node(t_list *tlist, t_list *current_node,
 	previous_token = previous_node->value;
 	if (previous_token->type == WORD)
 	{
-		if (previous_token->str != NULL && ((t_token *)current_node->value)->str != NULL)
+		if (previous_token->str != NULL
+			&& ((t_token *)current_node->value)->str != NULL)
 		{
 			new_joined_str = ft_strjoin(previous_token->str,
-				((t_token *)current_node->value)->str); 
+					((t_token *)current_node->value)->str); 
 			free(((t_token *)previous_node->value)->str);
 			((t_token *)previous_node->value)->str = new_joined_str;
 			ft_lstremove(&tlist, current_node, delete_token);
@@ -90,7 +91,6 @@ t_list	*apply_function_to_list(t_list **tlist, t_list *(*f)
 t_list	*cleanup_token_list(t_list *tlist)
 {
 	tlist = apply_function_to_list(&tlist, merge_tokens);
-	tlist = apply_function_to_list(&tlist, delete_env_fail);
 	tlist = apply_function_to_list(&tlist, delete_whitespace);
 	return (tlist);
 }

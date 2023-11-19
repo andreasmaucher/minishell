@@ -12,6 +12,12 @@
 
 #include "../minishell.h"
 
+bool	invalid_identifier(char *args)
+{
+	printf("export '%s' : not a valid identifier\n", args);
+	return (false);
+}
+
 /* 
 checks if the current key matches with the key in the user input;
 if true the corresponding node is deleted and free 

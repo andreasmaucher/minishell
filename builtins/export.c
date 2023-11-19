@@ -12,12 +12,6 @@
 
 #include "../minishell.h"
 
-bool	invalid_identifier(char *args)
-{
-	printf("export '%s' : not a valid identifier\n", args);
-	return (false);
-}
-
 /*
 first letter needs to be _ or a character;
 in the key only characters, digits & _ is allowed;
@@ -125,7 +119,7 @@ Function below only adds variables if all variables have the format MY_VAR=
 */
 int	export(t_minishell *m, t_command *cmd)
 {
-	int i;
+	int		i;
 
 	i = 1;
 	if (ft_strcmp(cmd->args[0], "export") == 0 && (arg_count(cmd->args) == 1))

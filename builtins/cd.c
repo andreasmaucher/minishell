@@ -148,12 +148,8 @@ int	cd(t_minishell *m, t_command *cmd)
 	char	*path;
 
 	path = NULL;
-	if ((arg_count(cmd->args) > 2))
-	{
-		printf("Too many arguments\n");
-		return (1);
-	}
-	else if (arg_count(cmd->args) == 1 && ft_strcmp(cmd->args[0], "cd") == 0)
+	count_cd_args(m, cmd);
+	if (arg_count(cmd->args) == 1 && ft_strcmp(cmd->args[0], "cd") == 0)
 		path = go_back_to_home(m, path);
 	else if (arg_count(cmd->args) == 2)
 	{
@@ -162,15 +158,13 @@ int	cd(t_minishell *m, t_command *cmd)
 		else if (cmd->args[1][0] == '/' && ft_strlen(cmd->args[1]) > 2)
 		{
 			path = ft_strdup(cmd->args[1]);
-			return(update_paths(path, m));
+			return (update_paths(path, m));
 		}
 		else if (ft_strcmp(cmd->args[1], "--") == 0
 			|| ft_strcmp(cmd->args[1], "~") == 0)
 			path = go_back_to_home(m, path);
 		else
-		{
 			path = standard_path(m, cmd);
-		}
 	}
 	update_paths(path, m);
 	return (0);

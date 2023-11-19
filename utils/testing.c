@@ -76,11 +76,11 @@ void print_command_list(t_list *clist)
         //     cmd->in_file = cmd->in_file->next;
         // }
         // i = 0;
-        // while (cmd->args[i] != NULL)
-        // {
-        //     printf("Arguments: %s\n", cmd->args[i]);
-        //     i++;
-        // }
+         /* while (cmd->args[i] != NULL)
+         {
+             printf("Arguments: %s\n", cmd->args[i]);
+             i++;
+         } */
         // Move to the next node
         current = current->next;
         i++;
