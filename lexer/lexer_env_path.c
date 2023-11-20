@@ -13,6 +13,26 @@
 #include "../minishell.h"
 
 /*
+custom implementation of strncpy
+*/
+char	*ft_strncpy(char *desti, char *src, unsigned int n)
+{
+	unsigned int j;
+
+	j = 0;
+	while (src[j] && j <= n)
+	{
+		desti[j] = src[j];
+		j++;
+	}
+	while (j <= n)
+	{
+		desti[j++] = '\0';
+	}
+	return (desti);
+}
+
+/*
 delete all ENV_FAIL type tokens at the end of the lexer
 */
 t_list	*delete_env_fail(t_list **tlist, t_list *current_node)

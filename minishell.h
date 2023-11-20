@@ -234,6 +234,7 @@ char	*extract_env_name(char *line, int *i);
 char	*extract_key_from_envp(char *envp);
 void	add_new_envs(t_minishell *m, t_command *cmd);
 char	*find_path_after_key(t_list *envp, char *search_str);
+char	*ft_strncpy(char *desti, char *src, unsigned int n);
 
 /* ft_split */
 char	**ft_split(char const *s, char c);

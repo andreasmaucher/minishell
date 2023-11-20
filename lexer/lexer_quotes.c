@@ -81,7 +81,7 @@ char	*single_quote_to_string(char *line, int *i)
 	str_between_quotes = malloc(sizeof(char) * (length + 1));
 	if (!str_between_quotes)
 		return (NULL);
-	strncpy(str_between_quotes, &line[start], length);
+	ft_strncpy(str_between_quotes, &line[start], length);
 	str_between_quotes[length] = '\0';
 	if (line[*i])
 		(*i)++;

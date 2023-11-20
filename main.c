@@ -85,7 +85,6 @@ int main(int ac, char **av, char **envp)
 	while(1)
 	{
 		restore_stdin_stdout_main();
-		printf("\nExit code of the previous command is %d\n", m.status_code2);
 		m.line = readline("Myshell: ");
 		if (!m.line)
 			exit_shell(m);
@@ -93,10 +92,7 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-		//printlist(m.tlist); //! only for testing
 		m.clist = parser(m);
-		//cmd = m.clist->value;
-		//execute_single_builtins(&m, cmd);
 		m.status_code2 = executor(m, cmd, envp);
 		free_memory_for_next_line(&m);
 	}

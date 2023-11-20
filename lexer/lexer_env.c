@@ -28,7 +28,7 @@ char	*env_within_double_quotes(char *line, int *i)
 	env_string = malloc(sizeof(char) * (length + 1));
 	if (!env_string)
 		return (NULL);
-	strncpy(env_string, &line[start], length);
+	ft_strncpy(env_string, &line[start], length);
 	env_string[length] = '\0';
 	return (env_string);
 }
@@ -41,7 +41,7 @@ char	*extract_env_name(char *line, int *i)
 	char	*search_str;
 
 	start = *i;
-	if (!line[*i] || line[*i] == '"')
+	if (!line[*i] || line[*i] == '"' || line[*i] == ' ')
 		return (ft_strdup("$"));
 	while (line[*i] != '\0' && check_for_metacharacter(line[*i]) == false
 		&& check_for_quotes(line[*i]) == false && line[*i] != '$')
@@ -78,7 +78,7 @@ char	*env_token_expansion(char *line, int *i, t_type *token_type,
 	if (check_if_part_of_library(env_list, search_str) == false)
 	{
 		if (ft_strcmp(search_str, "$") == 0)
-			return (handle_dollar_signs(token_type, search_str));
+			env_final = handle_dollar_signs(token_type, search_str);
 		else
 		{
 			*token_type = ENV_FAIL;
