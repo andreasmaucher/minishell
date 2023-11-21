@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:16:54 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 00:07:01 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 00:23:29 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,10 +150,6 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
 char	*join_strings(const char *str1, const char *str2, const char *str3);
 
-
-
-
-
 /* list operators */
 int		lst_size(t_list *head);
 t_list	*create_new_node(void *value);
@@ -186,8 +182,8 @@ void	printlist_envp(t_list *head);
 t_list	*split_line_into_tokens(t_minishell m);
 
 /* env_library */
-char	**create_envp_library(char **envp);
-char	**create_env_library(char **envp);
+//char	**create_envp_library(char **envp);
+//char	**create_env_library(char **envp);
 t_list	*create_envp_list(char **envp);
 char	*extract_key_from_envp(char *envp);
 t_list	*delete_env_fail(t_list **tlist, t_list *current_node);
@@ -254,9 +250,9 @@ void	cmd_pipe(t_list **clist, bool *new_cmd);
 void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd);
 t_list	*create_command_list(t_list **clist, t_command *tmp_cmd);
 t_list	*setup_command_list(t_list **clist, t_list *tlist);
-t_list	*ft_lstlast(t_list *lst);
-void	ft_lstadd_back(t_list **lst, t_list *new);
-t_list	*ft_lstnew(void *content);
+//t_list	*ft_lstlast(t_list *lst);
+//void	ft_lstadd_back(t_list **lst, t_list *new);
+//t_list	*ft_lstnew(void *content);
 int		command_count(t_list *tlist);
 void	add_token_to_command_list(t_list **token_list, char *token_info);
 bool	check_parser_input(t_list *tlist);
@@ -272,9 +268,9 @@ int		env(t_minishell *m);
 int		echo(t_minishell m, t_command *cmd);
 int		execute_builtins(t_minishell *m, t_command *cmd);
 char	*extract_search_str(t_command *cmd, int i);
-bool	check_if_existing_env(t_minishell *m, t_command *cmd, int len);
-int		calc_length_of_new_env_arr(t_minishell *m, t_command *cmd);
-void	update_env_lib(t_minishell *m, t_command *cmd);
+//bool	check_if_existing_env(t_minishell *m, t_command *cmd, int len);
+//int		calc_length_of_new_env_arr(t_minishell *m, t_command *cmd);
+//void	update_env_lib(t_minishell *m, t_command *cmd);
 bool	check_for_key(t_minishell *m, t_command *cmd, int i, t_list *tmp);
 int		cd(t_minishell *m, t_command *cmd);
 int		exit_builtin(t_minishell *m, t_command *cmd);
@@ -301,7 +297,7 @@ int		initialize_pipes(t_minishell *m);
 int		close_pipes(t_minishell *m);
 void	kill_process(t_minishell *m, int process_id);
 void	free_env(char **env);
-int		free_execve_fail(t_minishell *m);
+//int		free_execve_fail(t_minishell *m);
 void	term_processes(t_minishell *m);
 int		execute_single_builtins(t_minishell *m, t_command *cmd);
 int		free_pipes(t_minishell *m);
@@ -311,7 +307,7 @@ int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
 void	free_all_the_og(t_minishell m);
 void	free_cmd_the_og(t_command *cmd);
-int		restore_stdin_stdout(void);
+//int		restore_stdin_stdout(void);
 void	ft_heredoc(t_minishell *m, t_command *cmd);
 t_list	*create_new_filename_node(void *value, char *eof);
 t_list	*create_new_append_node(void *value);
@@ -337,13 +333,6 @@ int		wait_processes(t_minishell *m);
 void	no_cmd(t_command *cmd, t_minishell *m);
 void	free_all_filenames(t_command *cmd);
 
-
-
-
-
-
-
-
 /* freeing */ 
 void	free_intp_to_null(int *var);
 void	free_to_null(char *var);
@@ -354,13 +343,12 @@ void	ft_file_name_clear(t_list *lst);
 void	free_m(t_minishell *m);
 int		free_pipes(t_minishell *m);
 
-
 /* exiting and error handling */
 void	error_handling_and_exit(char *error_msg);
 
 /* file_handling */
-int	if_file_exists_delete(void *filename);
-int output_redirect_file_write(t_list *tmp, t_command *cmd);
+int		if_file_exists_delete(void *filename);
+int		output_redirect_file_write(t_list *tmp, t_command *cmd);
 
 
 #endif

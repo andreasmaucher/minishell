@@ -6,7 +6,7 @@
 #    By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
-#    Updated: 2023/11/22 00:07:22 by mrizakov         ###   ########.fr        #
+#    Updated: 2023/11/22 00:22:04 by mrizakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ MLXFLAGS = -lreadline
 all: $(NAME)	
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(MLXFLAGS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(MLXFLAGS) 
 
 clean:
 	$(RM) $(OBJS)
