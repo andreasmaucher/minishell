@@ -46,9 +46,9 @@ void	free_arr_to_null(char **arr)
 	int	i;
 
 	i = 0;
-	if (arr != NULL)
+	if (arr || arr != NULL)
 	{
-		while (arr[i] != NULL)
+		while (arr[i] || arr[i] != NULL)
 		{
 			free(arr[i]);
 			i++;

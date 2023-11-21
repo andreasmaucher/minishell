@@ -329,6 +329,8 @@ void	free_m(t_minishell *m);
 void	error_handling_and_exit(char *error_msg);
 
 /* file_handling */
-void	if_file_exists_delete(void *filename);
+int	if_file_exists_delete(void *filename);
+int output_redirect_file_write(t_list *tmp, t_command *cmd);
+
 
 #endif

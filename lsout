@@ -26,7 +26,6 @@ out3ls
 outee
 outexit
 outexite
-outls
 outls2
 outls3
 outls4
@@ -37,7 +36,6 @@ outnl
 outnlnl
 outp
 output
-out;s
 parser
 README.md
 suppressions.supp
