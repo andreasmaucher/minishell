@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+         #
+#    By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
-#    Updated: 2023/08/23 13:24:07 by amaucher         ###   ########.fr        #
+#    Updated: 2023/11/22 00:07:22 by mrizakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,11 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 		builtins/cd.c builtins/exit.c builtins/env.c builtins/export.c \
 		utils/signals.c lexer/lexer_env_path.c builtins/export_env.c \
 		builtins/cd_utils.c executor/error_handling.c \
-		executor/file_handling.c utils/free_memory_4.c \
+		executor/file_handling.c utils/free_memory_4.c utils/str_utils_3.c \
+		executor/in_redirections.c executor/out_redirections.c executor/heredocs.c \
+		executor/pipes.c executor/find_path.c executor/terminate_processes.c \
+		executor/misc.c
+		
 
 OBJS = $(SOURCES:.c=.o)
 

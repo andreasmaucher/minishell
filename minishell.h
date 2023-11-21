@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:16:54 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:16:56 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 00:07:01 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,14 @@ size_t	ft_strlen(const char *s);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 bool	ft_isalpha(int c);
 bool	ft_is_digit(int c);
+size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+size_t	ft_strlcat(char *dst, const char *src, size_t size);
+char	*join_strings(const char *str1, const char *str2, const char *str3);
+
+
+
+
 
 /* list operators */
 int		lst_size(t_list *head);
@@ -314,6 +322,26 @@ void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
 int		in_redirections_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
 int		check_if_file_can_be_opened(char *file);
+int		init_executor(t_minishell *m);
+int		initialize_pipes(t_minishell *m);
+char	*valid_path(char **path, char *argv);
+char	**find_path_executor(t_list *envp);
+int		init_executor(t_minishell *m);
+int		exit_executor(t_minishell *m);
+int		close_pipes(t_minishell *m);
+int		free_pipes(t_minishell *m);
+int		initialize_pipes(t_minishell *m);
+int		init_executor(t_minishell *m);
+void	kill_process(t_minishell *m, int process_id);
+int		wait_processes(t_minishell *m);
+void	no_cmd(t_command *cmd, t_minishell *m);
+void	free_all_filenames(t_command *cmd);
+
+
+
+
+
+
 
 
 /* freeing */ 
@@ -324,6 +352,8 @@ void	free_all_filenames(t_command *cmd);
 void	free_filename(char *filename);
 void	ft_file_name_clear(t_list *lst);
 void	free_m(t_minishell *m);
+int		free_pipes(t_minishell *m);
+
 
 /* exiting and error handling */
 void	error_handling_and_exit(char *error_msg);
