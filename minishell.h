@@ -313,6 +313,8 @@ void	handle_sigint_switch(int signum);
 void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
 int		in_redirections_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
+int		check_if_file_can_be_opened(char *file);
+
 
 /* freeing */ 
 void	free_intp_to_null(int *var);

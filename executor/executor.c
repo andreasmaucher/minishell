@@ -108,6 +108,19 @@ int check_if_file_or_dir(char *path)
     return(3);
 }
 
+int check_if_file_can_be_opened(char *file)
+{
+    if (check_if_file_or_dir(file) == 1)
+    {
+        errno = 126;
+        return (1);
+    }
+    if (access(file, X_OK) == 0)
+        return (0);
+	else
+		return(1);
+}
+
 
 char	*valid_path(char **path, char *argv)
 {
@@ -118,34 +131,36 @@ char	*valid_path(char **path, char *argv)
     correct_path = NULL;
     if (argv != NULL && (argv[0] == '/' || (argv[0] == '.' && argv[1] == '/')))
     {
-        if (check_if_file_or_dir(argv) == 1)
-        {
-            errno = 126;
-            return (NULL);
-        }
-        if (access(argv, X_OK) == 0)
-        {
-            printf("returning argv as =%s to cmd->path\n", argv);
+        if (check_if_file_can_be_opened(argv) == 0)
             return (argv);
-        }
-		else
-        {
-            printf("returning NULL to cmd->path\n");
-			return(NULL);
-        }
+        else
+            return (NULL);
+        // if (check_if_file_or_dir(argv) == 1)
+        // {
+        //     errno = 126;
+        //     return (NULL);
+        // }
+        // if (access(argv, X_OK) == 0)
+        //     return (argv);
+		// else
+		// 	return(NULL);
     }
     while (path[i])
     {
         correct_path = join_strings(path[i], "/", argv);
-        if (check_if_file_or_dir(correct_path) == 1)
-        {
-            errno = 126;
-            return (NULL);
-        }
-        if (access(correct_path, X_OK) == 0)
+        if (check_if_file_can_be_opened(correct_path) == 0)
             return (correct_path);
         else
-            free(correct_path);
+            free (correct_path);
+        // if (check_if_file_or_dir(correct_path) == 1)
+        // {
+        //     errno = 126;
+        //     return (NULL);
+        // }
+        // if (access(correct_path, X_OK) == 0)
+        //     return (correct_path);
+        // else
+        //     free(correct_path);
         i++;
     }
     return (NULL);
@@ -211,110 +226,29 @@ int wait_processes(t_minishell *m)
     int i;
     int wstatus;
     pid_t pid;
-    //pid_t w;
-    // (void)m;
-    //int exit_status;
+    
     wstatus = 0;
     i = 0;
     pid = 0;
-    // while (i <= m->pipe_n )
     while (i <= m->pipe_n && m->forked == 1)
     {
-        //if (waitpid(-1, &wstatus, 0) != -1)
         pid = wait(&wstatus);
         if (pid == m->child_id[m->pipe_n])
         {
-            //printf("Process %d is finished with wstatus %d\n", i, wstatus);
-            // if (i == m->pipe_n)
-                // m->status_code += wstatus;
             m->status_code2 = wstatus;
             if (WIFEXITED(wstatus)) 
-            {
-                // printf("exited, m->status_code on process exit is2=%d\n", WEXITSTATUS(wstatus));
                 m->status_code2 = WEXITSTATUS(wstatus);
-                //printf("In Wait_processes() m->status_code2 is =%d\n", m->status_code2);
-            }
             if (WIFSIGNALED(wstatus)) 
             {
-                // printf("killed by signal %d\n", WIFSIGNALED(wstatus));
-                // printf("killed by signal %d\n", WTERMSIG(wstatus));
                 m->status_code2 = WTERMSIG(wstatus);
                 m->status_code2 = WIFSIGNALED(wstatus);
-
             }
-            
-            // if (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus))
-            //     m->status_code2 = EXIT_SUCCESS;
         }
-
         m->status_code2 = m->status_code2 % 255;
-        // printf("\n");
-        // printf("Exit code is --->>>\n");
-        // write(STDERR_FILENO, strerror(m->status_code2), ft_strlen(strerror(m->status_code2)));
-        // printf("\n");
-        // printf("Exit code is --->>>\n");
-
-        printf("\n");
-
-
         i++;
     }
-    // while (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus));
-    //            exit(EXIT_SUCCESS);
     return(m->status_code2);
 }
-
-
-            // else
-            //     printf("else exited, status=%d\n", WEXITSTATUS(wstatus));
-
-            // else if (wstatus != 0)
-            //     m->status_code = wstatus % 255;
-            // else
-            //     m->status_code = 0;
-        // }
-        // waitpid(-1, &wstatus, 0);
-        // printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-        // m->status_code += WEXITSTATUS(wstatus);
-        
-        // if (waitpid(-1, &wstatus, 0) != -1)
-        // {     
-        //     if (WIFEXITED(wstatus)) 
-        //     {
-        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-        //     m->status_code += WEXITSTATUS(wstatus);
-        //     } 
-        // }
-        //w = waitpid(-1, &wstatus, 0); //another option for waiting for all processes
-        //printf("ERROR!!\n");
-        // if (w == -1) 
-        // {
-        //     perror("waitpid");
-        //     exit(EXIT_FAILURE);
-        // }
-        // if (WIFEXITED(wstatus)) 
-        // {
-        //     printf("exited, status=%d\n", WEXITSTATUS(wstatus));
-        //     m->status_code = WEXITSTATUS(wstatus);
-        // } 
-        // else if (WIFSIGNALED(wstatus)) 
-        // {
-        //     printf("killed by signal %d\n", WTERMSIG(wstatus));
-        //     m->status_code = WTERMSIG(wstatus);
-        // } 
-        // else if (WIFSTOPPED(wstatus)) 
-        // {
-        //     printf("stopped by signal %d\n", WSTOPSIG(wstatus));
-        //     m->status_code = WSTOPSIG(wstatus);
-        // } 
-        // else if (WIFCONTINUED(wstatus)) 
-        // {
-        //     printf("continued\n");
-        //     m->status_code = WSTOPSIG(wstatus);
-        // }
-        
-        // }
-        //g_exit_code = wstatus;
 
 void kill_process(t_minishell *m, int process_id)
 {
@@ -327,155 +261,108 @@ void kill_process(t_minishell *m, int process_id)
     }
 }
 
-// void ft_heredoc(char *delimiter)
+// void redirect_heredoc(char *filename)
 // {
-//     pid_t   pid;here
-//     int     fd[2];
-//     // Prompt the user for input until the heredoc delimiter is entered
-//     char *line;
-//     if (pipe(fd) == -1)
-//         exit(42);
-//     pid = fork();
-//     if (pid == 0)
-//     {
-//         close(fd[0]);
-//         line = NULL;
-//         while (1)
-//         {
-//             line = readline("heredoc> ");
-//             line = ft_strjoin(line, "\n");
-//             if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0 &&
-//                 ft_strlen(delimiter) == ft_strlen(line) - 1)
-//             {
-//                 free(line);
-//                 exit(EXIT_SUCCESS);
-//             }
-//             write(fd[1], line, ft_strlen(line));
-//             free(line);
-//         }
-//     }
-//     close(fd[1]);
-//     dup2(fd[0], STDIN_FILENO);
-//     wait(NULL);
+//     ssize_t fd;
+
+//     printf("Filename is %s\n", filename);
+//     fd = open(filename, O_RDONLY); // S_IRUSR | S_IWUSR
+//     if (fd == -1) 
+//         error_handling_and_exit("Couldn't open file");
+//     // {
+//     //     perror("Error opening file");
+//     //     exit(EXIT_FAILURE);
+//     // }
+//     if (dup2(fd, STDIN_FILENO) == -1)
+//         error_handling_and_exit("I/O redirection failed");
+//     // {
+//     //     perror("Couldnt redirect heredocs to STDIN\n");
+//     //     close(fd);
+//     //     exit(EXIT_FAILURE);
+//     // }
+//     close(fd);
+//     if_file_exists_delete(filename);
+//     // if (access(filename, R_OK | W_OK) == 0)
+//     // {
+//     //     if (unlink(filename) == 0)
+//     //         printf("File '%s' removed successfully.\n", filename);
+//     //     else 
+//     //         perror("Error removing file");
+//     // }
 // }
 
-void redirect_heredoc(char *filename)
+void ft_heredoc_exit_signal(t_minishell *m, int fd)
 {
-    ssize_t fd;
-
-    printf("Filename is %s\n", filename);
-    fd = open(filename, O_RDONLY); // S_IRUSR | S_IWUSR
-    if (fd == -1) 
-        error_handling_and_exit("Couldn't open file");
-    // {
-    //     perror("Error opening file");
-    //     exit(EXIT_FAILURE);
-    // }
-    if (dup2(fd, STDIN_FILENO) == -1)
-        error_handling_and_exit("I/O redirection failed");
-    // {
-    //     perror("Couldnt redirect heredocs to STDIN\n");
-    //     close(fd);
-    //     exit(EXIT_FAILURE);
-    // }
-    close(fd);
-    if_file_exists_delete(filename);
-    // if (access(filename, R_OK | W_OK) == 0)
-    // {
-    //     if (unlink(filename) == 0)
-    //         printf("File '%s' removed successfully.\n", filename);
-    //     else 
-    //         perror("Error removing file");
-    // }
+    if (g_signal_switch == 1)
+	{
+		free_m(m);
+		free_pipes(m);
+		close(fd);
+		exit (errno);
+	} 
 }
 
+void ft_heredoc_exit_eof(t_minishell *m, int fd, char *tmp_line)
+{
+    free(tmp_line);
+    free_m(m);
+    free_pipes(m);
+    close(fd);
+    exit(errno);
+}
 
+void ft_heredoc_loop(t_minishell *m, int fd, char *tmp_eof)
+{
+    char    *tmp_line;
+    char    *line;
 
-void ft_heredoc(t_minishell *m, t_command *cmd)
-//void ft_heredoc(t_list *in_file, t_minishell *m, t_command *cmd)
-//void ft_heredoc(char *filename, char *eof, t_minishell *m)
+    line = NULL;
+    tmp_line = NULL;
+    ft_heredoc_exit_signal(m, fd);
+    line = readline("heredoc> ");
+    tmp_line = ft_strjoin(line, "\n");
+    free(line);
+    if (ft_strncmp(tmp_line, tmp_eof, ft_strlen(tmp_eof)) == 0 && ft_strlen(tmp_eof) == ft_strlen(tmp_line) - 1)
+        ft_heredoc_exit_eof(m, fd, tmp_line);
+    write(fd, tmp_line, ft_strlen(tmp_line));
+    free(tmp_line);
+}
+
+void ft_launch_heredoc(t_list *tmp, t_minishell *m)
 {
     pid_t   pid;
     int     fd;
-    char *line;
+
+    pid = fork();
+    if (pid == -1) 
+        error_handling_and_exit("Fork issue");
+    if (pid == 0)
+    {
+        signal(SIGINT, handle_sigint_child);
+        if_file_exists_delete(tmp->value);
+        fd = open(tmp->value, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+        if (fd == -1) 
+            error_handling_and_exit("Error removing file");
+        while (1)
+            ft_heredoc_loop(m, fd, tmp->eof);
+    }
+}
+
+
+void ft_heredoc(t_minishell *m, t_command *cmd)
+{
     t_list *tmp;
-    char *tmp_line;
 
     tmp = cmd->in_file;
     while (tmp != NULL)
     {
         if (tmp->is_heredoc == 1)
-        {
-            //stop signals here
-            pid = fork();
-            //stop signals here
-
-            if (pid == -1) 
-                error_handling_and_exit("Fork issue");
-            if (pid == 0)
-            {
-                //start heredoc specific signals here
-				signal(SIGINT, handle_sigint_child); //!SIGNAL
-                if_file_exists_delete(tmp->value);
-                // if (access(tmp->value, R_OK | W_OK) != 0)
-                //     error_handling_and_exit("Error removing file");
-                // if (unlink(tmp->value) != 0)
-                //     error_handling_and_exit("Error removing file");
-                fd = open(tmp->value, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR | S_IRWXO); // S_IRUSR | S_IWUSR
-                if (fd == -1) 
-                    error_handling_and_exit("Error removing file");
-                line = NULL;
-                while (1)
-                {
-					if (g_signal_switch == 1)
-					{
-						printf("signals should be turned off now\n");
-						//handle_sigint_child_free(SIGINT, m, tmp_line, fd);
-						//signal(SIGINT, handle_sigint_child);
-						// if (tmp_line != NULL)
-						// 	free(tmp_line);
-						free_m(m);
-						free_pipes(m);
-						close(fd);
-						exit (130);
-					} 
-                    line = readline("heredoc> ");
-                    tmp_line = ft_strjoin(line, "\n");
-                    free(line);
-                    if (ft_strncmp(tmp_line, tmp->eof, ft_strlen(tmp->eof)) == 0 &&
-                        ft_strlen(tmp->eof) == ft_strlen(tmp_line) - 1)
-                    {
-                        free(tmp_line);
-                        free_m(m);
-                        // free_arr_to_null(m->path_buf);
-                        // free_to_null(m->line);
-                        // if (m->tlist)
-                        //     ft_lstclear(&m->tlist, delete_token);
-                        // if (m->clist)
-                        //     ft_lstclear(&m->clist, delete_cmd);
-                        // if (m->envp)
-                        //     ft_lstclear(&m->envp, delete_envp);
-                        // free_intp_to_null(m->child_id);
-                        free_pipes(m);
-                        close(fd);
-                        //error_handling_and_exit("Error closing heredocs");
-                        errno = 0;
-                        // g_exit_code = EXIT_SUCCESS;
-
-                        //turn off heredoc signals
-                        exit(errno);
-                    }
-                    write(fd, tmp_line, ft_strlen(tmp_line));
-                    free(tmp_line);
-                }
-            }
-        }
-        wait(NULL); //make a waitpid function to catch signals and restore minishell signals
+            ft_launch_heredoc(tmp, m);
+        wait(NULL);
     	g_signal_switch = 0;
 		signal(SIGINT, handle_sigint);
 	tmp = tmp->next;
     }
-    //wait(NULL);
 }
 
 int out_redirections(t_minishell *m)
