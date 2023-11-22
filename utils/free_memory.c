@@ -117,5 +117,5 @@ int	exit_shell(t_minishell m)
 		free(m.child_id);
 	if (m.path_buf)
 		free_env(m.path_buf);
-	exit(m.status_code);
+	exit(m.status_code2);
 }

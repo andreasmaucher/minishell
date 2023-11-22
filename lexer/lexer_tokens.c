@@ -12,6 +12,20 @@
 
 #include "../minishell.h"
 
+char	*char_to_str(char c)
+{
+	char	*str;
+	int		i;
+
+	str = malloc(sizeof(char) * 2);
+	if (str == NULL)
+		return (NULL);
+	i = 0;
+	str[i] = c;
+	str[++i] = '\0';
+	return (str);
+}
+
 /*
 function that gets called in case a redirection token was encountered in 
 the input string;determines the redirection type depending on the input and

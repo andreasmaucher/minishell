@@ -176,6 +176,7 @@ void	printlist_envp(t_list *head);
 
 /* lexer */
 t_list	*split_line_into_tokens(t_minishell m);
+char	*char_to_str(char c);
 
 /* env_library */
 char	**create_envp_library(char **envp);

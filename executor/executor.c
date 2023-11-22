@@ -890,7 +890,7 @@ int single_cmd(t_minishell *m, t_command *cmd, char **envp)
         error_handling_and_exit("Fork failed\n");
     if (m->child_id[0] == 0)
     {
-        printf("Single cmd child process is running\n");
+        //printf("Single cmd child process is running\n");
         cmd->path = NULL;
         if (cmd->input_redir_type == REDIRECT_IN || cmd->input_redir_type == REDIRECT_HEREDOC)
             in_redirections_per_cmd(m, cmd);

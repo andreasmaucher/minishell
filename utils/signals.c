@@ -32,7 +32,6 @@ void	handle_sigint_switch(int signum)
 	if (signum == SIGINT)
 	{
 		g_signal_switch = 1;
-		g_exit_code = 130;
 	}
 }
 
@@ -44,7 +43,7 @@ void	handle_sigint_parent(int signum)
 	{
 		write(1, "\n", 1);
 		rl_redisplay();
-		g_exit_code = 130;
+		g_signal_switch = 130;
 	}
 }
 
@@ -59,7 +58,7 @@ void	handle_sigint(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_exit_code = 130;
+		g_signal_switch = 130;
 	}
 }
 
