@@ -6,12 +6,11 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 23:56:22 by mrizakov          #+#    #+#             */
-/*   Updated: 2023/11/22 00:06:20 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 00:24:41 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 
 int single_cmd(t_minishell *m, t_command *cmd, char **envp)
 {   
@@ -58,7 +57,6 @@ void multiple_cmd_piping(t_minishell *m, t_command *cmd)
     close_pipes(m);
 }
 
-
 int multiple_cmd(t_minishell *m, t_command *cmd, char **envp)
 {
     m->forked = 1;
@@ -86,7 +84,6 @@ int multiple_cmd(t_minishell *m, t_command *cmd, char **envp)
     return (0);
 }
 
-
 int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp)
 {
     int i;
@@ -107,8 +104,6 @@ int	execute_program(char **arg_vec, t_command *cmd, t_minishell *m, char **envp)
     }
     return (0);
 }
-
-
 
 int executor(t_minishell m, t_command *cmd, char **envp)
 {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 01:50:23 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	handle_sigint_child(int signum)
 	if (signum == SIGINT)
 	{
 		ioctl(STDOUT_FILENO, TIOCSTI, "\n");
-		g_exit_code = 130;
 		g_signal_switch = 1;
 	}
 }
@@ -32,19 +31,6 @@ void	handle_sigint_switch(int signum)
 	if (signum == SIGINT)
 	{
 		g_signal_switch = 1;
-		g_exit_code = 130;
-	}
-}
-
-/* after the execution in the child is finished the parent needs to handle
-the signals again */
-void	handle_sigint_parent(int signum)
-{
-	if (signum == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_redisplay();
-		g_exit_code = 130;
 	}
 }
 
@@ -59,7 +45,7 @@ void	handle_sigint(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_exit_code = 130;
+		g_signal_switch = 2;
 	}
 }
 

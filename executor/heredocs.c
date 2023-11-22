@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 23:47:56 by mrizakov          #+#    #+#             */
-/*   Updated: 2023/11/21 23:47:58 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 01:41:39 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ void ft_heredoc(t_minishell *m, t_command *cmd)
         if (tmp->is_heredoc == 1)
             ft_launch_heredoc(tmp, m);
         wait(NULL);
-    	g_signal_switch = 0;
+        if (g_signal_switch == 1)
+            m->status_code2 = 130;
 		signal(SIGINT, handle_sigint);
 	tmp = tmp->next;
     }

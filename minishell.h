@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:16:54 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 00:23:29 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 01:20:54 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@
 # include <fcntl.h>
 # include <errno.h>
 
-extern int	g_exit_code;
 extern int	g_signal_switch;
 typedef enum type
 {

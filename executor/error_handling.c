@@ -20,5 +20,5 @@ void edge_cases(char *line)
         errno = 126;
     if (line[0] == '.' && line[1] == ' ')
         errno = 2;
-    g_exit_code = errno;
+    // g_exit_cod = errno;
 }

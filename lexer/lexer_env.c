@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   lexer_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 02:12:14 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,10 @@ char	*env_token(int *i, t_type *token_type,
 	if (m->line[*i] == '?' && (m->line[j + 1] == 32 || m->line[j + 1] == '\0'))
 	{
 		(*i)++;
+		printf("status code lexer: %d\n", m->status_code2);
+		printf("signal swithc lxer: %d\n", g_signal_switch);
+		if (g_signal_switch == 2)
+			m->status_code2 = 130;
 		env_final = ft_itoa(m->status_code2);
 		return (env_final);
 	}

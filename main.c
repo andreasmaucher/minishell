@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 02:05:28 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		g_exit_code;
 int		g_signal;
 
 /* first initialize all fields in the main data structure t_minishell 
@@ -84,6 +83,7 @@ int main(int ac, char **av, char **envp)
 	cmd = init_minishell_struct_and_signals(&m, envp);
 	while(1)
 	{
+		// m.status_code2 = signal(SIGINT, handle_sigint);
 		restore_stdin_stdout_main();
 		m.line = readline("Myshell: ");
 		if (!m.line)
@@ -92,8 +92,12 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
+				m.status_code2 = 0;
+
 		m.clist = parser(m);
 		m.status_code2 = executor(m, cmd, envp);
+		printf("m.status_code2 on exit is  %d\n", m.status_code2);
+		printf("g_signal_switch on exit is %d\n", g_signal_switch);
 		free_memory_for_next_line(&m);
 	}
 }
