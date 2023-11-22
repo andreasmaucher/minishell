@@ -324,6 +324,8 @@ void	no_cmd(t_command *cmd, t_minishell *m);
 void	free_all_filenames(t_command *cmd);
 void	exit_codes(t_minishell *m, int wstatus);
 int		output_redirect_delete_open(t_minishell *m, t_list *tmp);
+void	handle_sigint_block_cmd(int signum);
+char	*char_to_str(char c);
 
 /* freeing */ 
 void	free_intp_to_null(int *var);

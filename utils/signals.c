@@ -26,6 +26,15 @@ void	handle_sigint_child(int signum)
 	}
 }
 
+void	handle_sigint_block_cmd(int signum)
+{
+	if (signum == SIGINT)
+	{
+		printf("\n");
+		signal(SIGINT, SIG_IGN);
+	}
+}
+
 void	handle_sigint_switch(int signum)
 {
 	if (signum == SIGINT)

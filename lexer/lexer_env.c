@@ -114,10 +114,8 @@ char	*env_token(int *i, t_type *token_type,
 	if (m->line[*i] == '?' && (m->line[j + 1] == 32 || m->line[j + 1] == '\0'))
 	{
 		(*i)++;
-		printf("status code lexer: %d\n", m->status_code2);
-		printf("signal swithc lxer: %d\n", g_signal_switch);
 		if (g_signal_switch == 2)
-			m->status_code2 = 128;
+			m->status_code2 = 130;
 		env_final = ft_itoa(m->status_code2);
 		return (env_final);
 	}

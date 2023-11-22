@@ -43,6 +43,7 @@ int	wait_processes(t_minishell *m)
 		if (pid == m->child_id[m->pipe_n])
 		{
 			exit_codes(m, wstatus);
+			signal(SIGINT, handle_sigint);
 			return (m->status_code2);
 		}
 		i++;

@@ -15,6 +15,7 @@
 int	single_cmd(t_minishell *m, t_command *cmd, char **envp)
 {
 	m->forked = 1;
+	signal(SIGINT, handle_sigint_block_cmd);
 	m->child_id[0] = fork();
 	if (m->child_id[0] == -1) 
 		error_handling_and_exit("Fork failed\n");

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
 /*
 returns the number of arguments within one command
 */
@@ -50,19 +51,25 @@ int	exit_conditions(t_command *cmd, int ac, int i, t_minishell *m)
 	if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == true)
 	{
 		printf("exit\n");
-		m->status_code = 1;
+		m->status_code2 = 1;
 		return (exit_shell(*m));
 	}
 	else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false)
 	{
 		printf("exit: %s: numeric argument required\n", cmd->args[1]);
-		m->status_code = 2;
+		m->status_code2 = 2;
 		return (exit_shell(*m));
+	}
+	else if (ac > 2 && check_if_str_is_numeric(cmd->args[i]) == true)
+	{
+		printf("exit: too many arguments\n");
+		m->status_code2 = 0;
+		return (m->status_code2);
 	}
 	else
 	{
-		perror("exit: too many arguments\n");
-		m->status_code = 1;
+		printf("exit: too many arguments\n");
+		m->status_code2 = 1;
 		return (exit_shell(*m));
 	}
 }
@@ -90,7 +97,7 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 	i = 1;
 	if (ac == 1)
 	{
-		m->status_code = 0;
+		m->status_code2 = 0;
 		exit_shell(*m);
 	}
 	else if (ac != 1)
@@ -98,33 +105,10 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 		while (cmd->args[i] != NULL)
 		{
 			exit_conditions(cmd, ac, i, m);
+			if (m->status_code2 == 0)
+				break ;
 			i++;
 		}
 	}
 	return (0);
 }
-
-//old exit_builtin
-
-// int	exit_builtin(t_minishell *m, t_command *cmd)
-// {
-// 	int	ac;
-// 	int	i;
-
-// 	ac = arg_count(cmd->args);
-// 	i = 1;
-// 	if (ac == 1)
-// 	{
-// 		g_exit_code = 0;
-// 		exit_shell(*m);
-// 	}
-// 	else if (ac != 1)
-// 	{
-// 		while (cmd->args[i] != NULL)
-// 		{
-// 			exit_conditions(cmd, ac, i);
-// 			i++;
-// 		}
-// 	}
-// 	return (0);
-// }

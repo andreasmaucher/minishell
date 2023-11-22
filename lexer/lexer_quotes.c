@@ -24,44 +24,43 @@ char	*append_str(char *str, char *appendix)
 	return (appended_str);
 }
 
-char	*char_to_str(char c)
+char	*handle_dollar_quotes(char *line, int *i, t_minishell m, 
+			char *str_between_quotes)
 {
-	char	*str;
-	int		i;
+	char	*search_str;
+	char	*env_expanded;
 
-	str = malloc(sizeof(char) * 2);
-	if (str == NULL)
-		return (NULL);
-	i = 0;
-	str[i] = c;
-	str[++i] = '\0';
-	return (str);
+	env_expanded = NULL;
+	if (line[*i] == '$')
+	{
+		(*i)++;
+		search_str = extract_env_name(line, i);
+		if (check_if_part_of_library(m.envp, search_str) == true)
+			env_expanded = find_path_after_key(m.envp, search_str);
+		else if (check_if_part_of_library(m.envp, search_str) == false)
+		{
+			if (ft_strcmp(search_str, "$") == 0)
+				env_expanded = ft_strdup("$");
+			else
+				env_expanded = ft_strdup("");
+		}
+		str_between_quotes = append_str(str_between_quotes, env_expanded);
+		free(search_str);
+	}
+	else
+		str_between_quotes = append_str(str_between_quotes,
+				char_to_str(line[(*i)++]));
+	return (str_between_quotes);
 }
 
 char	*double_quote_to_string(char *line, int *i, t_minishell m)
 {
 	char	*str_between_quotes;
-	char	*search_str;
-	char	*env_expanded;
 
 	str_between_quotes = NULL;
 	while (line[*i] != '"' && line[*i] != '\0')
-	{
-		if (line[*i] == '$')
-		{
-			(*i)++;
-			search_str = extract_env_name(line, i);
-			if (check_if_part_of_library(m.envp, search_str) == true)
-				env_expanded = find_path_after_key(m.envp, search_str);
-			else if (check_if_part_of_library(m.envp, search_str) == false)
-				env_expanded = ft_strdup("");
-			str_between_quotes = append_str(str_between_quotes, env_expanded);
-			free(search_str);
-		}
-		else
-			str_between_quotes = append_str(str_between_quotes,
-					char_to_str(line[(*i)++]));
-	}
+		str_between_quotes = handle_dollar_quotes(line, i, m,
+				str_between_quotes);
 	if (line[*i])
 		(*i)++;
 	return (str_between_quotes);
