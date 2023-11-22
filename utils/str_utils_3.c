@@ -71,6 +71,8 @@ char	*join_strings(const char *str1, const char *str2, const char *str3)
 	size_t	len3;
 	char	*result;
 
+	if (str3 == NULL)
+		return (NULL);
 	len1 = ft_strlen(str1);
 	len2 = ft_strlen(str2);
 	len3 = ft_strlen(str3);

@@ -40,6 +40,8 @@ int	check_if_file_or_dir(char *path)
 
 int	check_if_file_can_be_opened(char *file)
 {
+	if (file == NULL)
+		return (1);
 	if (check_if_file_or_dir(file) == 1)
 	{
 		errno = 126;
