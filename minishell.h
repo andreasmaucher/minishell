@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:16:54 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 04:29:31 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:37:41 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,8 +182,6 @@ void	printlist_envp(t_list *head);
 t_list	*split_line_into_tokens(t_minishell m);
 
 /* env_library */
-//char	**create_envp_library(char **envp);
-//char	**create_env_library(char **envp);
 t_list	*create_envp_list(char **envp);
 char	*extract_key_from_envp(char *envp);
 t_list	*delete_env_fail(t_list **tlist, t_list *current_node);
@@ -224,8 +222,6 @@ void	delete_file(void *content);
 void	free_out_file_list(t_list *out_file);
 void	free_to_null(char *var);
 void	free_intp_to_null(int *var);
-void	free_all_the_og(t_minishell m);
-void	free_cmd_the_og(t_command *cmd);
 
 /* env */
 char	*env_token(int *i, t_type *token_type,
@@ -250,9 +246,6 @@ void	cmd_pipe(t_list **clist, bool *new_cmd);
 void	cmd_word(t_list **tlist, t_list *clist, bool *new_cmd);
 t_list	*create_command_list(t_list **clist, t_command *tmp_cmd);
 t_list	*setup_command_list(t_list **clist, t_list *tlist);
-//t_list	*ft_lstlast(t_list *lst);
-//void	ft_lstadd_back(t_list **lst, t_list *new);
-//t_list	*ft_lstnew(void *content);
 int		command_count(t_list *tlist);
 void	add_token_to_command_list(t_list **token_list, char *token_info);
 bool	check_parser_input(t_list *tlist);
@@ -305,8 +298,6 @@ void	free_args(char **args);
 int		in_redirections_per_cmd(t_minishell *m, t_command *cmd);
 int		check_file_rights(char *filename);
 int		free_in_redirects_file(t_minishell *m);
-void	free_all_the_og(t_minishell m);
-void	free_cmd_the_og(t_command *cmd);
 //int		restore_stdin_stdout(void);
 void	ft_heredoc(t_minishell *m, t_command *cmd);
 t_list	*create_new_filename_node(void *value, char *eof);
@@ -314,7 +305,6 @@ t_list	*create_new_append_node(void *value);
 int		output_redirect(t_minishell *m, t_command *cmd);
 void	handle_sigint_child(int signum);
 void	handle_sigint_switch(int signum);
-void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
 int		in_red_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
 int		check_if_file_can_be_opened(char *file);
