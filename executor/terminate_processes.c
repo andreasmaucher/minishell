@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 23:55:36 by mrizakov          #+#    #+#             */
-/*   Updated: 2023/11/22 04:32:30 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 18:22:42 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	wait_processes(t_minishell *m)
 	pid = 0;
 	while (i <= m->pipe_n && m->forked == 1)
 	{
-		pid = wait(&wstatus);
+		pid = waitpid(m->child_id[i], &wstatus, 0);
 		if (pid == m->child_id[m->pipe_n])
 		{
 			exit_codes(m, wstatus);

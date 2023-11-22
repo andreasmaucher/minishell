@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 23:53:44 by mrizakov          #+#    #+#             */
-/*   Updated: 2023/11/22 04:33:23 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 18:11:02 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,8 @@ char	*valid_path(char **path, char *argv)
 
 	i = 0;
 	correct_path = NULL;
-	if (argv != NULL && argv[0] == '/')
+	if (argv != NULL && (argv[0] == '.' || argv[0] == '/'))
 	{
-		argv++;
 		if (check_if_file_can_be_opened(argv) == 0)
 			return (argv);
 		else
