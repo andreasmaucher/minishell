@@ -20,7 +20,7 @@ int	skip_whitespace(t_minishell m)
 	int	i;
 
 	i = 0;
-	while (m.line[i] == ' ')
+	while (m.line[i] == ' ' || m.line[i] == '\t')
 	{
 		i++;
 	}
