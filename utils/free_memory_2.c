@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   free_memory_2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:22:11 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,40 +87,4 @@ void	ft_file_name_clear(t_list *lst)
 		lst = temp;
 	}
 	lst = NULL;
-}
-
-/*
-deletes an entire linked list
-*/
-void	ft_lstclear(t_list **lst, void (*del)(void *))
-{
-	t_list	*temp;
-
-	if (!del)
-		return ;
-	while (lst && *lst)
-	{
-		temp = (*lst)->next;
-		ft_lstdelone(*lst, del);
-		*lst = temp;
-	}
-}
-
-void	free_all(t_minishell m)
-{
-	if (m.line)
-		m.line = set_pt_to_null(m.line);
-	if (m.tlist)
-		ft_lstclear(&m.tlist, delete_token);
-	if (m.clist)
-		ft_lstclear(&m.clist, delete_cmd);
-	if (m.envp)
-		ft_lstclear(&m.envp, delete_envp);
-}
-
-void	free_filename(char *filename)
-{
-	if (filename || filename != NULL)
-		free(filename);
-	filename = NULL;
 }

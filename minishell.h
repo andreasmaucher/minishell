@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:16:54 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 01:20:54 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:29:31 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <errno.h>
 
 extern int	g_signal_switch;
+
 typedef enum type
 {
 	NOT_SET,
@@ -315,7 +316,7 @@ void	handle_sigint_child(int signum);
 void	handle_sigint_switch(int signum);
 void	handle_sigint_parent(int signum);
 void	handle_sigint(int signal);
-int		in_redirections_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
+int		in_red_per_cmd_single_builtins(t_minishell *m, t_command *cmd);
 int		check_if_file_can_be_opened(char *file);
 int		init_executor(t_minishell *m);
 int		initialize_pipes(t_minishell *m);
@@ -331,6 +332,8 @@ void	kill_process(t_minishell *m, int process_id);
 int		wait_processes(t_minishell *m);
 void	no_cmd(t_command *cmd, t_minishell *m);
 void	free_all_filenames(t_command *cmd);
+void	exit_codes(t_minishell *m, int wstatus);
+int		output_redirect_delete_open(t_minishell *m, t_list *tmp);
 
 /* freeing */ 
 void	free_intp_to_null(int *var);
@@ -348,6 +351,5 @@ void	error_handling_and_exit(char *error_msg);
 /* file_handling */
 int		if_file_exists_delete(void *filename);
 int		output_redirect_file_write(t_list *tmp, t_command *cmd);
-
 
 #endif

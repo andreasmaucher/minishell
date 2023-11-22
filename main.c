@@ -6,13 +6,13 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 02:05:28 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:26:14 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		g_signal;
+int	g_signal;
 
 /* first initialize all fields in the main data structure t_minishell 
 to zero by using memset;create libaries for the envp fields, one containing
@@ -30,24 +30,24 @@ t_command	*init_minishell_struct_and_signals(t_minishell *m, char **envp)
 	return (cmd);
 }
 
-int restore_stdin_stdout_main(void)
+int	restore_stdin_stdout_main(void)
 {
-	int default_stdin;
-    int default_stdout;
-	
+	int	default_stdin;
+	int	default_stdout;
+
 	default_stdin = dup(STDIN_FILENO);
-    default_stdout = dup(STDOUT_FILENO);
+	default_stdout = dup(STDOUT_FILENO);
 	if (dup2(default_stdin, 0) == -1 || dup2(default_stdout, 1) == -1)
-    {
-        perror("Failed to restore stdin or stdout");
-        exit (42);
-    }
+	{
+		perror("Failed to restore stdin or stdout");
+		exit (42);
+	}
 	close(default_stdin);
 	close(default_stdout);
 	return (0);
 }
 
-void free_lists(t_minishell *m)
+void	free_lists(t_minishell *m)
 {
 	if (m->tlist)
 		ft_lstclear(&m->tlist, delete_token);
@@ -55,7 +55,7 @@ void free_lists(t_minishell *m)
 		ft_lstclear(&m->clist, delete_cmd);
 }
 
-void free_memory_for_next_line(t_minishell *m)
+void	free_memory_for_next_line(t_minishell *m)
 {
 	if (m->line)
 		m->line = set_pt_to_null(m->line);
@@ -72,18 +72,17 @@ clist = commandlist, meaning the list that holds all commands;
 if (!m.line) -> this condition is to mimic the behavior of Ctrl+D and signals
 that there's no more input and closes the shell
 */
-int main(int ac, char **av, char **envp)
+int	main(int ac, char **av, char **envp)
 {
-	t_minishell m;
-	t_command *cmd;
+	t_minishell	m;
+	t_command	*cmd;
 
 	(void)av;
 	if (ac != 1)
 		return (1);
 	cmd = init_minishell_struct_and_signals(&m, envp);
-	while(1)
+	while (1)
 	{
-		// m.status_code2 = signal(SIGINT, handle_sigint);
 		restore_stdin_stdout_main();
 		m.line = readline("Myshell: ");
 		if (!m.line)
@@ -92,12 +91,8 @@ int main(int ac, char **av, char **envp)
 			continue ;
 		add_history(m.line);
 		m.tlist = split_line_into_tokens(m);
-				m.status_code2 = 0;
-
 		m.clist = parser(m);
 		m.status_code2 = executor(m, cmd, envp);
-		printf("m.status_code2 on exit is  %d\n", m.status_code2);
-		printf("g_signal_switch on exit is %d\n", g_signal_switch);
 		free_memory_for_next_line(&m);
 	}
 }

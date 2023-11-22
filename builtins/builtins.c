@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 01:33:17 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:27:55 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,28 @@
 
 int	execute_single_builtin_logic(t_minishell *m, t_command *cmd)
 {
-    int original_stdout = dup(STDOUT_FILENO);
-    int original_stdin = dup(STDIN_FILENO);
+	int	original_stdout;
+	int	original_stdin;
 
-
-	if (cmd->input_redir_type == REDIRECT_IN || cmd->input_redir_type == REDIRECT_HEREDOC)
-        in_redirections_per_cmd_single_builtins(m, cmd);
-	if (cmd->output_redir_type == REDIRECT_OUT || cmd->output_redir_type == REDIRECT_APPEND)
-    	output_redirect(m, cmd);
-    m->status_code2 = execute_single_builtins(m, cmd);
-	if (dup2(original_stdout, STDOUT_FILENO) == -1 || dup2(original_stdin, STDIN_FILENO) == -1)
-    {
-        perror("Failed to restore stdin or stdout");
-        exit (42);
-    }
-    close(original_stdout);
+	original_stdout = dup(STDOUT_FILENO);
+	original_stdin = dup(STDIN_FILENO);
+	if (cmd->input_redir_type == REDIRECT_IN 
+		|| cmd->input_redir_type == REDIRECT_HEREDOC)
+		in_red_per_cmd_single_builtins(m, cmd);
+	if (cmd->output_redir_type == REDIRECT_OUT 
+		|| cmd->output_redir_type == REDIRECT_APPEND)
+		output_redirect(m, cmd);
+	m->status_code2 = execute_single_builtins(m, cmd);
+	if (dup2(original_stdout, STDOUT_FILENO) == -1 
+		|| dup2(original_stdin, STDIN_FILENO) == -1)
+	{
+		perror("Failed to restore stdin or stdout");
+		exit (42);
+	}
+	close(original_stdout);
 	close(original_stdin);
 	return (m->status_code2);
 }
-
 
 int	execute_single_builtins(t_minishell *m, t_command *cmd)
 {

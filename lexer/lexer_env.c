@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 02:12:14 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 02:45:22 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,9 @@ char	*env_token(int *i, t_type *token_type,
 {
 	char	*env_final;
 	int		j;
+	int		tmp;
 
+	tmp = 0;
 	(*i)++;
 	*token_type = WORD;
 	env_final = NULL;
@@ -115,7 +117,7 @@ char	*env_token(int *i, t_type *token_type,
 		printf("status code lexer: %d\n", m->status_code2);
 		printf("signal swithc lxer: %d\n", g_signal_switch);
 		if (g_signal_switch == 2)
-			m->status_code2 = 130;
+			m->status_code2 = 128;
 		env_final = ft_itoa(m->status_code2);
 		return (env_final);
 	}

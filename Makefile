@@ -6,7 +6,7 @@
 #    By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/23 13:24:02 by amaucher          #+#    #+#              #
-#    Updated: 2023/11/22 00:22:04 by mrizakov         ###   ########.fr        #
+#    Updated: 2023/11/22 04:24:11 by mrizakov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ SOURCES = main.c utils/list_operators.c utils/itoa.c \
 		executor/file_handling.c utils/free_memory_4.c utils/str_utils_3.c \
 		executor/in_redirections.c executor/out_redirections.c executor/heredocs.c \
 		executor/pipes.c executor/find_path.c executor/terminate_processes.c \
-		executor/misc.c
+		executor/misc.c utils/free_memory_3.c 
 		
 
 OBJS = $(SOURCES:.c=.o)

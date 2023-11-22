@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   free_memory_4.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:19:36 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 
 /* delete a node in the env list */
 
-void free_m(t_minishell *m)
+void	free_m(t_minishell *m)
 {
 	free_arr_to_null(m->path_buf);
-    free_to_null(m->line);
+	free_to_null(m->line);
 	free_intp_to_null(m->child_id);
 	if (m->tlist)
-        ft_lstclear(&m->tlist, delete_token);
-    if (m->clist)
-        ft_lstclear(&m->clist, delete_cmd);
-    if (m->envp)
+		ft_lstclear(&m->tlist, delete_token);
+	if (m->clist)
+		ft_lstclear(&m->clist, delete_cmd);
+	if (m->envp)
 		ft_lstclear(&m->envp, delete_envp);
 }
 
@@ -41,28 +41,47 @@ void	free_intp_to_null(int *var)
 	var = NULL;
 }
 
-void	free_all_the_og(t_minishell m)
+// void	free_all_the_og(t_minishell m)
+// {
+// 	if (m.line != NULL)
+// 		m.line = set_pt_to_null(m.line);
+// 	if (m.path_buf != NULL)
+// 		free_arr_to_null(m.path_buf);
+// 	if (m.child_id != NULL)
+// 	{
+// 		free(m.child_id);
+// 		m.child_id = NULL;
+// 	}
+// 	if (m.tlist)
+// 		ft_lstclear(&m.tlist, delete_token);
+// 	if (m.clist)
+// 		ft_lstclear(&m.clist, delete_cmd);
+// 	if (m.envp)
+// 		ft_lstclear(&m.envp, delete_envp);
+// 	free_pipes(&m);
+// }
+
+// void	free_cmd_the_og(t_command *cmd)
+// {
+// 	if (cmd->args != NULL)
+// 		free_arr_to_null(cmd->args);
+// }
+
+void	free_filename(char *filename)
 {
-	if (m.line != NULL)
+	if (filename || filename != NULL)
+		free(filename);
+	filename = NULL;
+}
+
+void	free_all(t_minishell m)
+{
+	if (m.line)
 		m.line = set_pt_to_null(m.line);
-	if (m.path_buf != NULL)
-		free_arr_to_null(m.path_buf);
-	if (m.child_id != NULL)
-	{
-		free(m.child_id);
-		m.child_id = NULL;
-	}
 	if (m.tlist)
 		ft_lstclear(&m.tlist, delete_token);
 	if (m.clist)
 		ft_lstclear(&m.clist, delete_cmd);
 	if (m.envp)
 		ft_lstclear(&m.envp, delete_envp);
-	free_pipes(&m);
-}
-
-void	free_cmd_the_og(t_command *cmd)
-{
-	if (cmd->args != NULL)
-		free_arr_to_null(cmd->args);
 }

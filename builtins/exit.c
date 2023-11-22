@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:28:47 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,19 +51,19 @@ int	exit_conditions(t_command *cmd, int ac, int i, t_minishell *m)
 	{
 		printf("exit\n");
 		m->status_code = 1;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 	else if (ac == 2 && check_if_str_is_numeric(cmd->args[i]) == false)
 	{
 		printf("exit: %s: numeric argument required\n", cmd->args[1]);
 		m->status_code = 2;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 	else
 	{
 		perror("exit: too many arguments\n");
 		m->status_code = 1;
-		return(exit_shell(*m));
+		return (exit_shell(*m));
 	}
 }
 
@@ -85,7 +85,7 @@ int	exit_builtin(t_minishell *m, t_command *cmd)
 {
 	int	ac;
 	int	i;
-	printf("Exit is working\n");
+
 	ac = arg_count(cmd->args);
 	i = 1;
 	if (ac == 1)

@@ -6,7 +6,7 @@
 /*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/11/22 01:22:43 by mrizakov         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:30:45 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void	check_for_single_dot(char *line, int *i)
 	if (line[*i] == '\0')
 	{
 		errno = 2;
-		printf("Error code: %d, Error message: %s\n", errno, strerror(errno)); //set error code
+		printf("Error code: %d, Error message: %s\n", 
+			errno, strerror(errno));
 	}
 }
 

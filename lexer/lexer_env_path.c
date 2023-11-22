@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   lexer_env_path.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amaucher <amaucher@student.42berlin.d      +#+  +:+       +#+        */
+/*   By: mrizakov <mrizakov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 10:13:39 by amaucher          #+#    #+#             */
-/*   Updated: 2023/08/23 10:13:42 by amaucher         ###   ########.fr       */
+/*   Updated: 2023/11/22 04:30:02 by mrizakov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ custom implementation of strncpy
 */
 char	*ft_strncpy(char *desti, char *src, unsigned int n)
 {
-	unsigned int j;
+	unsigned int	j;
 
 	j = 0;
 	while (src[j] && j <= n)
